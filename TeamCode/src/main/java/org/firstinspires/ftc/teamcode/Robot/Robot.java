@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.opmodes.GeneralOpMode;
 
 @Config
 public class Robot {
@@ -42,9 +43,11 @@ public class Robot {
 
     private boolean resettingImu = false;
     private double AutoStartAngle = 0;
-
-    public void init(HardwareMap hardwareMap){
+    public void init(HardwareMap hardwareMap,Telemetry telemetry){
         driveTrain = new MecanumDriveTrain(hardwareMap);
+        this.telemetry = telemetry;
+        telemetry.addData("Telemetry test:","SUCCESSFUL");
+        telemetry.update();
     }
 
     public void IMU_Update() {

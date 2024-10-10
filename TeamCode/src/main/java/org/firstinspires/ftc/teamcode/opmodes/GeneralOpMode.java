@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.ITDbot;
 abstract public class GeneralOpMode extends LinearOpMode {
     public ITDbot robot;
     public void initialize() {
-        robot = new ITDbot();
+        robot = new ITDbot(this.telemetry);
         robot.Init(hardwareMap);
     }
 }
