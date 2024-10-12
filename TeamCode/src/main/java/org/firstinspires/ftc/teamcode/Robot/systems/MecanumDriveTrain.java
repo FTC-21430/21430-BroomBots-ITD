@@ -12,7 +12,6 @@ public class MecanumDriveTrain {
     DcMotor motorBR;
 
     double speedMultiplier = 1;
-
     /**
      * constructor for mecanum drive train
      * -assigns motors from hardware map
