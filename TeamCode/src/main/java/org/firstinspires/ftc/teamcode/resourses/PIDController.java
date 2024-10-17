@@ -26,6 +26,8 @@ public class PIDController {
   // The runtime instance from the main op-mode
   private ElapsedTime runtime;
   
+  private double minWrap = 0.0, maxWrap = 0.0;
+  
   /**
    * This is the constructor for this class, this just assigns the constants from the specific mechanism.
    * @param pConstant - Proportional Constant - used for tuning the Proportional factor.
@@ -49,6 +51,7 @@ public class PIDController {
   public void update(double currentPosition) {
     // the error of how far you are from where you want to be
     double error = currentPosition - target;
+    error = Utlities.wrap(error);
     
     // The derivative factor scales down the Proportional factor so that we don't over shoot our target.
     double derivative = (error - lastError) / (runtime.time() - lastTime);
@@ -71,6 +74,19 @@ public class PIDController {
    */
   public void setTarget(double target) {
     this.target = target;
+  }
+  
+  /**
+   * Used for getting the target in the turning code for teleop
+   * @return returns the target
+   */
+  public double getTarget() {
+    return target;
+  }
+  
+  public void setWrap(double min, double max){
+    minWrap = min;
+    maxWrap = max;
   }
   
   /**
