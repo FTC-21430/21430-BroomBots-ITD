@@ -9,8 +9,16 @@ public class ITDbot extends Robot {
     //TODO tune these numbers for ITDbot, these are from Zirka
     public static double derivativeConstantAngleDef = 0.0015;
     public static double proportionalConstantAngleDef = 0.02;
-
-
+    
+    @Override
+    public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle){
+        while(distanceCircle(targetX, targetY) > targetCircle &&opModeActive){
+            //put all control things that teleop has in here
+            pathFollowing.followPath(odometry.getRobotX(),odometry.getRobotY(),odometry.getRobotAngle());
+            driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
+        }
+    }
+    
     public void Init(HardwareMap hardwareMap){
         super.init(hardwareMap, 0, 0, 0);
         derivativeConstantAngle = derivativeConstantAngleDef;

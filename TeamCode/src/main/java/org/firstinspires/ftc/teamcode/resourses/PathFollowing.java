@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.resourses;
 
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot.systems.MecanumDriveTrain;
@@ -9,39 +10,42 @@ public class PathFollowing {
   
   private ElapsedTime runtime;
   
-  private double followSpeed;
+  private double followSpeed = 1;
   
   private PIDController xPID;
   private PIDController yPID;
   
-  private MecanumDriveTrain driveTrain;
-  
   private double pXConstant, pYConstant;
   private double dXConstant, dYConstant;
   
-  public PathFollowing(double pX, double pY, double dX, double dY, ElapsedTime runtime, MecanumDriveTrain driveTrain){
+  double powerS, powerF;
+  
+  public PathFollowing(double pX, double pY, double dX, double dY, ElapsedTime runtime){
    pXConstant = pX;
    pYConstant = pY;
    dXConstant = dX;
    dYConstant = dY;
    this.runtime = runtime;
-   this.driveTrain = driveTrain;
+  
     xPID = new PIDController(pXConstant, dXConstant, runtime);
     yPID = new PIDController(pYConstant, dYConstant, runtime);
   }
   
+ 
+  
   public void followPath(double robotX, double robotY, double robotAngle){
-    double powerS, powerF;
-    
     xPID.update(robotX);
     yPID.update(robotY);
-    
-    driveTrain.setSpeedMultiplier(followSpeed);
+    powerS = xPID.getPower() * Math.cos(Math.toRadians(-robotAngle)) - yPID.getPower() * Math.sin(Math.toRadians(-robotAngle)) * followSpeed;
+    powerF = xPID.getPower() * Math.sin(Math.toRadians(-robotAngle)) + yPID.getPower() * Math.cos(Math.toRadians(-robotAngle)) * followSpeed;
+  }
   
-    powerS = xPID.getPower() * Math.cos(-robotAngle) - yPID.getPower() * Math.sin(-robotAngle);
-    powerF = xPID.getPower() * Math.sin(-robotAngle) + yPID.getPower() * Math.cos(-robotAngle);
-    
-    driveTrain.setDrivePower(powerF, powerS,);
+  public double getPowerS(){
+    return powerS;
+  }
+  
+  public double getPowerF(){
+    return powerF;
   }
   
   public void setTargetPosition(double x, double y){
