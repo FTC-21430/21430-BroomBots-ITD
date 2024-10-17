@@ -10,6 +10,7 @@ public class ITDbot extends Robot {
     public static double derivativeConstantAngleDef = 0.0015;
     public static double proportionalConstantAngleDef = 0.02;
     
+    // overrides the autoMoveTo method in Robot.java to add in more year specific things.
     @Override
     public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle){
         while(distanceCircle(targetX, targetY) > targetCircle &&opModeActive){

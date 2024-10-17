@@ -52,6 +52,8 @@ public class Robot {
         pathFollowing = new PathFollowing(1,1,1,1,runtime);
     }
 
+    // you call this function in a main auto opMode to make the robot move somewhere.
+    // This is the foundation that every robot should need but you should more season specific things in the bot class.
     public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle){
         while(distanceCircle(targetX, targetY) > targetCircle &&opModeActive){
             //put all control things that teleop has in here
