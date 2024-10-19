@@ -49,6 +49,7 @@ public class Robot {
     public void init(HardwareMap hardwareMap, double robotX, double robotY, double robotAngle){
         driveTrain = new MecanumDriveTrain(hardwareMap);
         odometry = new Odometry(robotX,robotY,robotAngle, telemetry);
+        //TODO These numbers are placeholders
         pathFollowing = new PathFollowing(1,1,1,1,runtime);
     }
 
