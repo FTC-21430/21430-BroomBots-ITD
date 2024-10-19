@@ -2,6 +2,30 @@ package org.firstinspires.ftc.teamcode.resourses;
 
 // this class is just for figuring out how the robot should be positioned when intaking from the submersible,
 // this includes both the chassis and arm.
+
+/*
+ *
+ *   |   o (x`, y`, h`)
+ *   |
+ * __|__
+ * |   |
+ * |___| (x, y, h)
+ *
+ * dx = x`-x
+ * dy = y`-y
+ * h = atan(dy,dx)
+ *
+ *      /|
+ *     /b|
+ *  d /  | w
+ *   /a  |
+ * O---O   h
+ *
+ * d = math
+ * a = math
+ * b = ...
+ * ...
+ */
 public class InverseKinematics {
 
     // how much the arm extension should be out
