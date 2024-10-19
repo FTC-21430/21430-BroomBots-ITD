@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.resourses;
+package org.firstinspires.ftc.teamcode.Resources;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-// This class is designed to make using PID controllers easier when programming.
-// all this does is takes in constants and the runtime, is given a target number and a current number.
-// then calculates what motor power would be needed to get there.
+/** This class is designed to make using PID controllers easier when programming.
+* all this does is takes in constants and the runtime, is given a target number and a current number.
+* then calculates what motor power would be needed to get there.
 
-// NOTE, right now this only uses a PD controller as there is not much current use for an integral
-// with our robots systems.
+*NOTE, right now this only uses a PD controller as there is not much current use for an integral
+ *with our robots systems.
+ */
 
 public class PIDController {
   
@@ -25,6 +26,8 @@ public class PIDController {
   
   // The runtime instance from the main op-mode
   private ElapsedTime runtime;
+  
+  private double minWrap = 0.0, maxWrap = 0.0;
   
   /**
    * This is the constructor for this class, this just assigns the constants from the specific mechanism.
@@ -48,7 +51,9 @@ public class PIDController {
    */
   public void update(double currentPosition) {
     // the error of how far you are from where you want to be
+    // added wrap to the error equation
     double error = currentPosition - target;
+    error = Utlities.wrap(error);
     
     // The derivative factor scales down the Proportional factor so that we don't over shoot our target.
     double derivative = (error - lastError) / (runtime.time() - lastTime);
@@ -71,6 +76,19 @@ public class PIDController {
    */
   public void setTarget(double target) {
     this.target = target;
+  }
+  
+  /**
+   * Used for getting the target in the turning code for teleop
+   * @return returns the target
+   */
+  public double getTarget() {
+    return target;
+  }
+  
+  public void setWrap(double min, double max){
+    minWrap = min;
+    maxWrap = max;
   }
   
   /**

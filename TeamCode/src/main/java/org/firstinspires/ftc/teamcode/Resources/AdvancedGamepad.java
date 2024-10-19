@@ -1,47 +1,30 @@
-package org.firstinspires.ftc.teamcode.resourses;
+package org.firstinspires.ftc.teamcode.Resources;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class AdvancedGamepad extends Gamepad {
-
-    /**
-     * dpad up
-     */
+     // dpad up
     public volatile boolean dpad_up = false;
 
-    /**
-     * dpad down
-     */
+     // dpad down
     public volatile boolean dpad_down = false;
 
-    /**
-     * dpad left
-     */
+    //dpad left
     public volatile boolean dpad_left = false;
 
-    /**
-     * dpad right
-     */
+    // dpad right
     public volatile boolean dpad_right = false;
 
-    /**
-     * button a
-     */
+     //button a
     public volatile boolean a = false;
 
-    /**
-     * button b
-     */
+    // button b
     public volatile boolean b = false;
 
-    /**
-     * button x
-     */
+      //button x
     public volatile boolean x = false;
 
-    /**
-     * button y
-     */
+     // button y
     public volatile boolean y = false;
 
     /**
@@ -51,37 +34,25 @@ public class AdvancedGamepad extends Gamepad {
      */
     public volatile boolean guide = false;
 
-    /**
-     * button start
-     */
+    //button start
     public volatile boolean start = false;
 
-    /**
-     * button back
-     */
+     // button back
     public volatile boolean back = false;
 
-    /**
-     * button left bumper
-     */
+    // button left bumper
     public volatile boolean left_bumper = false;
 
-    /**
-     * button right bumper
-     */
+     // button right bumper
     public volatile boolean right_bumper = false;
 
-    /**
-     * left stick button
-     */
+     // left stick button
     public volatile boolean left_stick_button = false;
 
-    /**
-     * right stick button
-     */
+    //  right stick button
     public volatile boolean right_stick_button = false;
 
-
+// These are the different buttons on the controler
     private enum buttons {
         dpad_up,
         dpad_down,
