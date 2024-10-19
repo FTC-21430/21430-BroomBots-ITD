@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.systems;
+package org.firstinspires.ftc.teamcode.Robot.Systems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -96,6 +96,10 @@ public class MecanumDriveTrain {
         // sets speed multiplier
         this.speedMultiplier = speedMultiplier;
 
+    }
+
+    public double getSpeedMultiplier(){
+        return speedMultiplier;
     }
 
     /**

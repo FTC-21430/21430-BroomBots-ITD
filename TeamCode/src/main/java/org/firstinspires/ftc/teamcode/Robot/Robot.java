@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import org.firstinspires.ftc.teamcode.Robot.systems.MecanumDriveTrain;
+import org.firstinspires.ftc.teamcode.Robot.Systems.MecanumDriveTrain;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.resourses.PIDController;
-import org.firstinspires.ftc.teamcode.resourses.Odometry;
+import org.firstinspires.ftc.teamcode.Resources.PIDController;
+import org.firstinspires.ftc.teamcode.Resources.Odometry;
 
 @Config
 public class Robot {
@@ -75,7 +75,7 @@ public class Robot {
         return radians*(180/Math.PI);
     }
 
-    // This is the equation used to convert from degrees to radians 
+    // This is the equation used to convert from degrees to radians
     public double degreesToRadians(double degrees){
         return degrees*(Math.PI/180);
     }

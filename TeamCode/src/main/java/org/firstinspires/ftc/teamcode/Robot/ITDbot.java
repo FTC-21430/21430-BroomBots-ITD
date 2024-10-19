@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.Robot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot.systems.MecanumDriveTrain;
-import org.firstinspires.ftc.teamcode.Robot.Robot;
 
 public class ITDbot extends Robot {
     //TODO tune these numbers for ITDbot, need to be updated for Into the deep

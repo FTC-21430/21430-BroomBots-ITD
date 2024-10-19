@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.resourses;
+package org.firstinspires.ftc.teamcode.Resources;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,11 +10,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 //This class is used to track the robots position while the op-mode is running.
 public class Odometry {
-  // the IMU sensor in the control hub
+  // The IMU(Inertial Measurement Unit) tracks the angles of the robot
   private IMU imu;
   
   //true if you are currently resetting the IMU so you don't use it while it is resetting
   private boolean resettingImu = false;
+
   // used to set the angle you start at during autonomous
   private double AutoStartAngle = 0;
   
@@ -30,7 +31,7 @@ public class Odometry {
   private final static double radiusX = 6.08;
   private final static double radiusY = 7.73886;
   
-  // make this a static double if you want to use FTC dashboard for it. used incase odometry is slightly off.
+  // make this a static double if you want to use FTC dashboard for it. used in case odometry is slightly off.
   private final double correctionFactor = 1.0;
   
   // used in the odometry math to store the previous iterations robot position.
@@ -65,8 +66,6 @@ public class Odometry {
     RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
     RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
     imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-
   }
   
   // this does all of the math to recalculate where to robot is.
@@ -137,7 +136,6 @@ public class Odometry {
     //TODO this is temp so you can assign the values from the odometry pods to these variables.
     odometryPodX = 0;
     odometryPodY = 0;
-    //the Y Odometry pod is plugged into port 2 which is the same port as the intake and its the same thing for the transfer
     double tempX = odometryPodX - odometryPodOldX;
     double tempY = odometryPodY - odometryPodOldY;
     

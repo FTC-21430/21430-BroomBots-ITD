@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.resourses;
+package org.firstinspires.ftc.teamcode.Resources;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-// This class is designed to make using PID controllers easier when programming.
-// all this does is takes in constants and the runtime, is given a target number and a current number.
-// then calculates what motor power would be needed to get there.
+/** This class is designed to make using PID controllers easier when programming.
+* all this does is takes in constants and the runtime, is given a target number and a current number.
+* then calculates what motor power would be needed to get there.
 
-// NOTE, right now this only uses a PD controller as there is not much current use for an integral
-// with our robots systems.
+*NOTE, right now this only uses a PD controller as there is not much current use for an integral
+ *with our robots systems.
+ */
 
 public class PIDController {
   

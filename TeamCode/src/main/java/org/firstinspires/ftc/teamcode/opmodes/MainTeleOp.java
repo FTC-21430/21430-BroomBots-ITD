@@ -1,32 +1,47 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.sun.tools.javac.comp.Todo;
 
-import org.firstinspires.ftc.teamcode.resourses.Utlities;
-
+import org.firstinspires.ftc.teamcode.Resources.Utlities;
+//This is the teleop we run during competitions.
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
     @Override
     public void runOpMode() throws InterruptedException {
-        final double speedMultiplier = 0.40;
+        // We multiply this by the speed to activate slowmode.
+        final double slowSpeedMultiplier = 0.40;
         initialize();
         waitForStart();
         while (opModeIsActive()) {
-
+            // Sets slow mode if right bumper is pressed.
             if (gamepad1.right_bumper) {
-                robot.driveTrain.setSpeedMultiplier(speedMultiplier);
+                robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
             } else{
                 robot.driveTrain.setSpeedMultiplier(1);
 
             robot.odometry.updateOdometry();
-            double target = Utlities.wrap(robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * speedMultiplier));
-            robot.anglePID.setTarget(target);
+            /** Target angle gives the angle from -180 to 180 that the robot wants to be at
+             *
+             * Wrap makes the angle reset at -180 or 180 when we make a full rotation
+             * robot.anglePID.getTarget() is our current angle
+             * The driver input is equal to the right joystick
+             * RETEST!!! maxTurnDegPerSecond is the fastest we can turn
+             * robot.getDeltaTime gets the in time for each run through of our code
+             * Speed multiplier changes how fast the robot is during slow mode
+             *
+             * We multiply the variables by each other and add it to our current angle to determine our new target angle
+             */
+            double targetAngle = Utlities.wrap(robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
+
+            // These call functions and pass the relevant parameters
+            robot.anglePID.setTarget(targetAngle);
             robot.anglePID.update(robot.odometry.getRobotAngle());
             robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
+
+            // Telemetry for testing purposes
             telemetry.addData("Robot Angle",robot.odometry.getRobotAngle());
-            telemetry.addData("Target Angle",target);
-            telemetry.addData("Robot Power",robot.anglePID.getPower());
-            telemetry.addData("Field Centric Driving 1:", robot.driveTrain.fieldCentricDriving);
+            telemetry.addData("Target Angle",targetAngle);
             telemetry.update();
 
             }
