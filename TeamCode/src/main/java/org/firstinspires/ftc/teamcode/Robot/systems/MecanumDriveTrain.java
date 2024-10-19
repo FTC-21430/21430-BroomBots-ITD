@@ -17,7 +17,6 @@ public class MecanumDriveTrain {
     double speedMultiplier = 1;
     public boolean fieldCentricDriving = true;
     private Telemetry telemetry;
-
     /**
      * constructor for mecanum drive train
      * -assigns motors from hardware map
