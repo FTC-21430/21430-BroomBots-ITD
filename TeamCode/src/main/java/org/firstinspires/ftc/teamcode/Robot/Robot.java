@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 import org.firstinspires.ftc.teamcode.Resources.Odometry;
+import org.firstinspires.ftc.teamcode.Robot.Systems.Climber;
 import org.firstinspires.ftc.teamcode.Robot.Systems.MecanumDriveTrain;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -53,6 +54,7 @@ public class Robot {
   private double lastErrorAngle;
   private boolean IsProgramAutonomous;
   public PathFollowing pathFollowing;
+  public Climber climber;
  
   
   public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle) {
@@ -85,8 +87,7 @@ public class Robot {
     anglePID.setTarget(0);
   }
   
- 
-  
+
   // This is the equation used to convert from radians to degrees
   public double radiansToDegrees(double radians) {
     return radians * (180 / Math.PI);
