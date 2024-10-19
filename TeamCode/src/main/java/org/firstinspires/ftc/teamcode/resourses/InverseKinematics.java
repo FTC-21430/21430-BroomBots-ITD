@@ -60,7 +60,7 @@ public class InverseKinematics {
     }
 
     private void blueFront(double targetX, double targetY, double targetZ, double targetAngle){
-        robotX = -29;
+        robotX = -33;
         robotAngle = Math.atan(Math.abs(robotY - targetY) / Math.abs(robotX - targetX)) * (180/Math.PI);
         armRotation = Math.atan(Math.abs(wristLength-targetZ) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset) * (180/Math.PI);
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset;
@@ -74,7 +74,7 @@ public class InverseKinematics {
     }
 
     private void redFront(double targetX, double targetY, double targetZ, double targetAngle){
-        robotX = 29;
+        robotX = 33;
         robotAngle = Math.atan(Math.abs(robotY - targetY) / Math.abs(robotX - targetX)) * (180/Math.PI);
         armRotation = Math.atan(Math.abs(wristLength-targetZ) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset) * (180/Math.PI);
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset;
@@ -83,7 +83,7 @@ public class InverseKinematics {
     }
 
     private void redSide(double targetX, double targetY, double targetZ, double targetAngle){
-        robotX = -15;
+        robotX = -25;
         robotAngle = Math.atan(Math.abs(robotX - targetX) / Math.abs(robotY - targetY)) * (180/Math.PI);
         armRotation = Math.atan(Math.abs(wristLength-targetZ) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
@@ -92,7 +92,7 @@ public class InverseKinematics {
     }
 
     private void blueSide(double targetX, double targetY, double targetZ, double targetAngle){
-        robotX = 15;
+        robotX = 25;
         robotAngle = Math.atan(Math.abs(robotX - targetX) / Math.abs(robotY - targetY)) * (180/Math.PI);
         armRotation = Math.atan(Math.abs(wristLength-targetZ) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
