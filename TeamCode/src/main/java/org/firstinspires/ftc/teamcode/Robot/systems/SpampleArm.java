@@ -31,16 +31,18 @@ public class SpampleArm {
         //TODO: confirm names
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
+        shoulderMotor.setTargetPosition(0);
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
+        linearSlideMotor.setTargetPosition(0);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Mapping/initializing servos
         wristServo = new ServoPlus(hardwareMap.get(Servo.class,"wristServo"),
-                180,0,180);
+                180,-0.00001,180);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 180,0,180);
