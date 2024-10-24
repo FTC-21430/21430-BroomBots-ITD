@@ -109,6 +109,14 @@ AprilTagSystem {
     return Math.sqrt(Math.pow(robotX - projectedX, 2) + Math.pow(robotY + projectedY, 2));
   }
   
+  public boolean hasDetection(){
+    if (detection == null){
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
   // returns the tag ID for the current detection
   public int getTagID() {
     return detection.id;
@@ -116,7 +124,7 @@ AprilTagSystem {
   
   // returns the x of the robot for the current detection
   public double getRobotX() {
-    return detection.robotPose.getPosition().x;
+      return detection.robotPose.getPosition().x;
   }
   
   // returns the y of the robot for the current detection
