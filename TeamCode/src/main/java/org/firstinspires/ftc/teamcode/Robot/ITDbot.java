@@ -20,7 +20,7 @@ public class ITDbot extends Robot {
             pathFollowing.followPath(odometry.getRobotX(),odometry.getRobotY(),odometry.getRobotAngle());
             driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
         }
-    }
+    
         derivativeConstantAngle = derivativeConstantAngleDef;
         proportionalConstantAngle = proportionalConstantAngleDef;
     }

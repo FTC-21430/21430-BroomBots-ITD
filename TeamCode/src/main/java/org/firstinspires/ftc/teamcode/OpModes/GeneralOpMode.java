@@ -8,8 +8,8 @@ abstract public class GeneralOpMode extends LinearOpMode {
     public ITDbot robot;
     
     public void initialize() {
-        robot = new ITDbot();
-        robot.Init(hardwareMap,telemetry);
-        robot.setIsOpModeActive(opModeIsActive());
+       robot = new ITDbot();
+       robot.Init(hardwareMap,telemetry);
+        
     }
 }
