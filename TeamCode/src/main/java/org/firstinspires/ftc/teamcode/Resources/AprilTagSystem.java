@@ -109,6 +109,7 @@ AprilTagSystem {
     return Math.sqrt(Math.pow(robotX - projectedX, 2) + Math.pow(robotY + projectedY, 2));
   }
   
+  //used to determine if there is an april tag detected so we don't use data that does not exist.
   public boolean hasDetection(){
     if (detection == null){
       return false;
