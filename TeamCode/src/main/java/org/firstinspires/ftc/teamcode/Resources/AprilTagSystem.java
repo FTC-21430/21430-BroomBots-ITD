@@ -15,7 +15,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 // used for figuring out the robots position with the april tags around the field.
-public class AprilTagSystem {
+public class
+AprilTagSystem {
  
   // TODO: tune these values to match the physical robot.
   
@@ -47,7 +48,7 @@ public class AprilTagSystem {
    * Initialize the AprilTag processor.
    * @param hardwareMap the hardware map instance from the first SDK
    */
-  private AprilTagSystem(HardwareMap hardwareMap) {
+  public AprilTagSystem(HardwareMap hardwareMap) {
     
     // Create the AprilTag processor.
     aprilTag = new AprilTagProcessor.Builder()
@@ -81,14 +82,20 @@ public class AprilTagSystem {
     
     //TODO: handle the case in which there are no visible tags
     
-    // the idea for choosing the best tag to use it's data
+    // the idea for choosing the best tag to use it's data to figure out which one is
+    // closest to the position that we think the robot should be
     for (AprilTagDetection detection : currentDetections) {
-      double RX = robotXCurrent, RY = robotYCurrent;
-      double TX = detection.robotPose.getPosition().x, TY = detection.robotPose.getPosition().y;
-      double BX = bestDetection.robotPose.getPosition().x, BY = bestDetection.robotPose.getPosition().y;
       
-      
+      // if there is not a tag to compare this to, just set the tag without the calculations.
       if (bestDetection != null) {
+  
+        // the x and y position variables are condensed so the code below is readable
+        double RX = robotXCurrent, RY = robotYCurrent;
+        double TX = detection.robotPose.getPosition().x, TY = detection.robotPose.getPosition().y;
+        double BX = bestDetection.robotPose.getPosition().x, BY = bestDetection.robotPose.getPosition().y;
+        
+        // if the distance of the current tag is closer to where to we think the robot is then we make that the new best detection,
+        // else we go to the top of the for loop.
         if (calculateDistance(RX,RY,TX,TY) > calculateDistance(RX,RY,BX,BY)) continue;
       }
       
@@ -97,26 +104,32 @@ public class AprilTagSystem {
     }
   }
   
+  // the distance formula in a function
   public double calculateDistance(double robotX, double robotY, double projectedX, double projectedY) {
     return Math.sqrt(Math.pow(robotX - projectedX, 2) + Math.pow(robotY + projectedY, 2));
   }
   
+  // returns the tag ID for the current detection
   public int getTagID() {
     return detection.id;
   }
   
+  // returns the x of the robot for the current detection
   public double getRobotX() {
     return detection.robotPose.getPosition().x;
   }
   
+  // returns the y of the robot for the current detection
   public double getRobotY() {
     return detection.robotPose.getPosition().y;
   }
   
+  // returns the z of the robot for the current detection
   public double getRobotZ() {
     return detection.robotPose.getPosition().z;
   }
   
+  // returns the yaw rotation of the robot for the current detection
   public double getRobotYaw() {
     return detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
   }
