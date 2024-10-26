@@ -1,10 +1,7 @@
-package org.firstinspires.ftc.teamcode.resourses;
+package org.firstinspires.ftc.teamcode.Resources;
 
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.Robot.systems.MecanumDriveTrain;
 
 // this class is for autonomous movement of the drivetrain.
 public class PathFollowing {
