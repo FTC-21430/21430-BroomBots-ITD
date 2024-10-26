@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.systems;
+package org.firstinspires.ftc.teamcode.Robot.Systems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -36,7 +36,7 @@ public class Claw {
 
     /**
      * Controls the four positions of the claw
-     * @param position Must be one of the values from {@link org.firstinspires.ftc.teamcode.Robot.systems.Claw.ClawPosition}
+     * @param position Must be one of the values from {@link org.firstinspires.ftc.teamcode.Robot.Systems.Claw.ClawPosition}
      */
     public void setPosition(ClawPosition position){
         switch (position){
