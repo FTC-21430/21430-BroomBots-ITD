@@ -74,7 +74,10 @@ public class SpampleArm {
         }
         shoulderMotor.setTargetPosition((int) (angle * shoulderTicksPerDegrees));
     }
-
+    
+    /**
+     * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
+     */
     public void updateSlide(){
         linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) - (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
