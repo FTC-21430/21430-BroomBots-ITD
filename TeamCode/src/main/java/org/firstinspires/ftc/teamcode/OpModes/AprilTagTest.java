@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.sun.tools.javac.comp.Todo;
 
 import org.firstinspires.ftc.teamcode.Resources.AprilTagSystem;
-import org.firstinspires.ftc.teamcode.Resources.Utlities;
 
 @Disabled
 @TeleOp
