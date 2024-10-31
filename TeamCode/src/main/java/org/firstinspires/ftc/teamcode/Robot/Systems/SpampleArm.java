@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+//This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     //Actuators for the arm
     DcMotor shoulderMotor;
@@ -15,20 +15,20 @@ public class SpampleArm {
     double targetExtension = 0;
     
     //TODO: replace with correct value; calibrated for 312 RPM motor
-    //TODO: the motor will not turn correctly without these values right.
+    //the motor will not turn correctly without these values right.
     //Constants for the shoulder
-    double shoulderPulsesPerRevolution = 537.7;
-    double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
+    final double shoulderPulsesPerRevolution = 537.7;
+    final double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
     
     // used to correct the error caused in the slide by the rotation of the shoulder.
     // TODO: tune this value
-    double shoulderRotationToSlide = 0.02;
+    final double shoulderRotationToSlide = 0.02;
 
     //Constants for the linear slide
-    double linearSlidePulsesPerRevolution = 537.7;
-    double linearSlideRevPerInch = 1;
-    double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
-    double linearSlideMaxExtension = 23;
+    final double linearSlidePulsesPerRevolution = 537.7;
+    final double linearSlideRevPerInch = 1;
+    final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
+    final double linearSlideMaxExtension = 23;
 
     /**
      * Arm constructor
@@ -66,6 +66,7 @@ public class SpampleArm {
      * @param angle Angle for shoulder in degrees
      */
     public void rotateShoulderTo (double angle){
+        //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
         if (angle < 0) {
             angle = 0;
         }
