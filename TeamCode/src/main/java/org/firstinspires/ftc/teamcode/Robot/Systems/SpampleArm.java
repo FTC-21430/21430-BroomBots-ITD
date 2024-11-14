@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     //Actuators for the arm
@@ -54,9 +55,11 @@ public class SpampleArm {
         //Mapping/initializing servos
         wristServo = new ServoPlus(hardwareMap.get(Servo.class,"wristServo"),
                 180,-0.00001,180);
+        //wristServo makes wrist go up and down
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 180,0,180);
+        //twistServo makes wrist twist
 
         claw = new Claw(hardwareMap);
     }
@@ -107,7 +110,7 @@ public class SpampleArm {
 
     /**
      * Controls the twist of the wrist
-     * @param angle Angle for twist rotation in degrees
+     * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
         twistServo.setServoPos(angle);
@@ -120,5 +123,100 @@ public class SpampleArm {
     public void setClawPosition (Claw.ClawPosition position){
         claw.setPosition(position);
     }
+
+
+
+    // TODO Functions:
+    /*
+  X Dropoff             -D-pad up
+  X Grab Specimen       -D-pad left
+  X Idle                -D-pad down
+  X Extension Offset    -Joystick left
+    Wrist Twist (don't) -Joystick right
+  X High Basket         -Y
+  X Low Basket          -X
+  X High Chamber        -B
+  X Low Chamber         -A
+
+     */
+    //shoulder
+    //extensor
+    //elbow :sob: ADD THE ELBOW!!?!!
+    //twist
+    //wrist
+    //pinchy
+
+    //High Basket
+    //fix variables
+    public void highBasket(){
+
+        //PLACEHOLDER VALUES MAYBE
+
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+        setClawPosition(Claw.ClawPosition.open);
+
+    }
+
+    public void lowBasket(){
+
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+        setClawPosition(Claw.ClawPosition.open);
+
+    }
+
+    public void highChamber(){
+
+        setClawPosition(Claw.ClawPosition.closed);
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void lowChamber(){
+
+        setClawPosition(Claw.ClawPosition.closed);
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void idle(){
+
+        setClawPosition(Claw.ClawPosition.closed);
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void dropOff(){
+
+        setClawPosition(Claw.ClawPosition.open);
+        rotateTwistTo(1);
+        rotateWristTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void grabSpample(){
+
+    }
+    public void extensionOffset(){
+
+    }
+
+
 
 }

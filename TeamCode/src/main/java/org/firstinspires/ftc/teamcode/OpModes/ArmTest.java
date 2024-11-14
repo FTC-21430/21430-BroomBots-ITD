@@ -43,8 +43,6 @@ public class ArmTest extends LinearOpMode {
             
             
             telemetry.update();
-            
-            
         }
     }
 }
