@@ -16,10 +16,10 @@ public class ArmTest extends LinearOpMode {
         while (opModeIsActive()) {
            
             if (gamepad2.a) {
-                spampleArm.rotateWristTo(90);
+                spampleArm.rotateElbowTo(90);
             }
             if (gamepad2.b) {
-                spampleArm.rotateWristTo(0);
+                spampleArm.rotateElbowTo(0);
             }
 
             if (gamepad2.right_bumper) {

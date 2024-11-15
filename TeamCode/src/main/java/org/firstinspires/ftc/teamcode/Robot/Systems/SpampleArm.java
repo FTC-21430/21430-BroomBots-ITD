@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class SpampleArm {
     //Actuators for the arm
     DcMotor shoulderMotor;
+    DcMotor elbowServo;
     DcMotor linearSlideMotor;
-    ServoPlus wristServo;
+    ServoPlus elbowServo;
     ServoPlus twistServo;
     Claw claw;
 
@@ -53,13 +54,13 @@ public class SpampleArm {
         linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
-        wristServo = new ServoPlus(hardwareMap.get(Servo.class,"wristServo"),
+        elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
                 180,-0.00001,180);
-        //wristServo makes wrist go up and down
+        //elbowServo makes elbow go up and down
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 180,0,180);
-        //twistServo makes wrist twist
+        //twistServo makes twist twist
 
         claw = new Claw(hardwareMap);
     }
@@ -101,15 +102,15 @@ public class SpampleArm {
     }
 
     /**
-     * Controls the wrist motor
-     * @param angle Angle for wrist in degrees
+     * Controls the elbow motor
+     * @param angle Angle for elbow in degrees
      */
-    public void rotateWristTo (double angle){
-        wristServo.setServoPos(angle);
+    public void rotateElbowTo(double angle){
+        elbowServo.setTargetPosition(angle);
     }
 
     /**
-     * Controls the twist of the wrist
+     * Controls the twist of the twist
      * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
@@ -132,7 +133,7 @@ public class SpampleArm {
   X Grab Specimen       -D-pad left
   X Idle                -D-pad down
   X Extension Offset    -Joystick left
-    Wrist Twist (don't) -Joystick right
+    Twist (beware)      -Joystick right
   X High Basket         -Y
   X Low Basket          -X
   X High Chamber        -B
@@ -141,9 +142,8 @@ public class SpampleArm {
      */
     //shoulder
     //extensor
-    //elbow :sob: ADD THE ELBOW!!?!!
+    //elbow
     //twist
-    //wrist
     //pinchy
 
     //High Basket
@@ -153,7 +153,7 @@ public class SpampleArm {
         //PLACEHOLDER VALUES MAYBE
 
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
         setClawPosition(Claw.ClawPosition.open);
@@ -163,7 +163,7 @@ public class SpampleArm {
     public void lowBasket(){
 
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
         setClawPosition(Claw.ClawPosition.open);
@@ -172,9 +172,8 @@ public class SpampleArm {
 
     public void highChamber(){
 
-        setClawPosition(Claw.ClawPosition.closed);
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
 
@@ -182,9 +181,8 @@ public class SpampleArm {
 
     public void lowChamber(){
 
-        setClawPosition(Claw.ClawPosition.closed);
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
 
@@ -192,9 +190,8 @@ public class SpampleArm {
 
     public void idle(){
 
-        setClawPosition(Claw.ClawPosition.closed);
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
 
@@ -202,9 +199,8 @@ public class SpampleArm {
 
     public void dropOff(){
 
-        setClawPosition(Claw.ClawPosition.open);
         rotateTwistTo(1);
-        rotateWristTo(1);
+        rotateElbowTo(1);
         extendTo(1);
         rotateShoulderTo(1);
 
