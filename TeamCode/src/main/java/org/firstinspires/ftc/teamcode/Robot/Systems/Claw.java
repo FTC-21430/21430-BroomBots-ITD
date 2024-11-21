@@ -44,7 +44,7 @@ public class Claw {
             //Servo positions for the four claw states
             case open:
                 claw1Servo.setServoPos(50);
-                claw2Servo.setServoPos(130);
+                claw2Servo.setServoPos(50);
                 break;
             case closed:
                 claw1Servo.setServoPos(0);
@@ -52,11 +52,11 @@ public class Claw {
                 break;
             case grabOutside:
                 claw1Servo.setServoPos(30);
-                claw2Servo.setServoPos(150);
+                claw2Servo.setServoPos(30);
                 break;
             case grabInside:
                 claw1Servo.setServoPos(40);
-                claw2Servo.setServoPos(140);
+                claw2Servo.setServoPos(40);
                 break;
         }
     }

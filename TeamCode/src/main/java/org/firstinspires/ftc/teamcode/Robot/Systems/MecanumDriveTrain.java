@@ -26,10 +26,10 @@ public class MecanumDriveTrain {
      */
     public MecanumDriveTrain(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        motorFL = hardwareMap.get(DcMotor.class, "motorFL");
-        motorFR = hardwareMap.get(DcMotor.class, "motorFR");
-        motorBL = hardwareMap.get(DcMotor.class, "motorBL");
-        motorBR = hardwareMap.get(DcMotor.class, "motorBR");
+        motorFL = hardwareMap.get(DcMotor.class, "FL");
+        motorFR = hardwareMap.get(DcMotor.class, "FR");
+        motorBL = hardwareMap.get(DcMotor.class, "BL");
+        motorBR = hardwareMap.get(DcMotor.class, "BR");
 
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
