@@ -32,6 +32,15 @@ cv.createTrackbar("theta", "input", 50,200,foo)
 cv.createTrackbar("threshhold", "input", 25,200,foo)
 cv.createTrackbar("minLength", "input", 25, 100,foo)
 cv.createTrackbar("lineGap", "input", 10,100,foo)
+
+camera = cv.VideoCapture(1)
+
+
+
+# Get the default frame width and height
+frame_width = int(camera.get(cv.CAP_PROP_FRAME_WIDTH))
+frame_height = int(camera.get(cv.CAP_PROP_FRAME_HEIGHT))
+
 while True:
     if update:
         update = False
@@ -40,7 +49,10 @@ while True:
         cannyLower = cv.getTrackbarPos("CannyLow", "input")
         cannyHigher = cv.getTrackbarPos("CannyHigh", "input")
 
-        img = cv.imread('Photos/singleSample2.jpg')
+        
+        ret, img = camera.read()
+
+        # img = cv.imread('Photos/singleSample2.jpg')
 
         # img = cv.imread('Photos/doubleSample.jpg')
 
@@ -187,4 +199,5 @@ while True:
 
     key = cv.waitKey(1)
     if key == 27:
+        camera.release()
         break
