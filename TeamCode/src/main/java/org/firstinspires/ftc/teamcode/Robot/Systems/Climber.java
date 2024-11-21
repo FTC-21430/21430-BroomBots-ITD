@@ -12,6 +12,18 @@ import java.util.Base64;
 
 // This class has the functions for the climbers
 public class Climber {
+    
+    //THIS IS A PLACEHOLDER. More testing is needed.
+    final private double extensionPosition = 1.0;
+    
+    // This function is always the starting position of the climber at 0,0
+    
+    //THESE NUMBERS ARE PLACEHOLDERS! 25.4 is mm per inch|2000 is ticks per revolution|48*Math.PI is
+    // mm per revolution
+    private double ticksPerInches = 25.4*364.9/(112);
+    
+    DcMotor leftClimberMotor;
+    DcMotor rightClimberMotor;
     // These are the two motors that control the climber and they run in parallel
     private Telemetry telemetry;
     public Climber(HardwareMap hardwareMap){
@@ -26,24 +38,17 @@ public class Climber {
         leftClimberMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightClimberMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftClimberMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightClimberMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftClimberMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightClimberMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftClimberMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightClimberMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
+        leftClimberMotor.setPower(1);
+        rightClimberMotor.setPower(1);
     }
-    DcMotor leftClimberMotor;
-    DcMotor rightClimberMotor;
+   
 
-
-    //THIS IS A PLACEHOLDER. More testing is needed.
-    final private double extensionPosition = 1.0;
-
-    // This function is always the starting position of the climber at 0,0
-
-    //THESE NUMBERS ARE PLACEHOLDERS! 25.4 is mm per inch|2000 is ticks per revolution|48*Math.PI is
-    // mm per revolution
-    private double ticksPerInches = 25.4*2000/(48 * Math.PI);
 
     // The motors go to their lowest extension
     public void startingPosition(){
