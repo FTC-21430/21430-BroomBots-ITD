@@ -7,6 +7,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     //Actuators for the arm
+    
+    enum armPositions{
+        highBasket,
+        lowBasket,
+        highChamber,
+        lowChamber,
+        dropOff,
+        idle,
+        
+    }
+    
     DcMotor shoulderMotor;
     DcMotor elbowServo;
     DcMotor linearSlideMotor;
@@ -148,6 +159,34 @@ public class SpampleArm {
 
     //High Basket
     //fix variables
+    
+    public void switchTo(armPositions state){
+        switch (state){
+            case idle:
+                idle();
+                break;
+            case dropOff:
+                dropOff();
+                break;
+            case lowBasket:
+                lowBasket();
+                break;
+            case highBasket:
+                highBasket();
+                break;
+            case lowChamber:
+                lowChamber();
+                break;
+            case highChamber:
+                highChamber();
+                break;
+        }
+    }
+    
+    
+    
+    
+    
     public void highBasket(){
 
         //PLACEHOLDER VALUES MAYBE
