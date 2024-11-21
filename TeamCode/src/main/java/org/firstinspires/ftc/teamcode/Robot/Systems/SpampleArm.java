@@ -17,7 +17,7 @@ public class SpampleArm {
     //TODO: replace with correct value; calibrated for 312 RPM motor
     //the motor will not turn correctly without these values right.
     //Constants for the shoulder
-    final double shoulderPulsesPerRevolution = 537.7;
+    final double shoulderPulsesPerRevolution = 2446.163048;
     final double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
     
     // used to correct the error caused in the slide by the rotation of the shoulder.
@@ -25,10 +25,10 @@ public class SpampleArm {
     final double shoulderRotationToSlide = 0.02;
 
     //Constants for the linear slide
-    final double linearSlidePulsesPerRevolution = 537.7;
+    final double linearSlidePulsesPerRevolution = 4005.558676;
     final double linearSlideRevPerInch = 1;
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
-    final double linearSlideMaxExtension = 23;
+    final double linearSlideMaxExtension = 19.625984;
 
     /**
      * Arm constructor
@@ -36,27 +36,29 @@ public class SpampleArm {
      */
     public SpampleArm (HardwareMap hardwareMap){
         //TODO: confirm names
+        //TODO: commented for testing
         //Mapping/initializing motors
-        shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
-        shoulderMotor.setTargetPosition(0);
-        shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // you need to set how fast the motor moves before it will move at all.
-        shoulderMotor.setPower(1);
+//        shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
+//        shoulderMotor.setTargetPosition(0);
+//        shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        // you need to set how fast the motor moves before it will move at all.
+//        shoulderMotor.setPower(1);
 
-        linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
-        linearSlideMotor.setTargetPosition(0);
-        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // you need to set how fast the motor moves before it will move at all.
-        linearSlideMotor.setPower(1);
+        //TODO:uncomment during testing
+//        linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
+//        linearSlideMotor.setTargetPosition(0);
+//        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        // you need to set how fast the motor moves before it will move at all.
+//        linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
         wristServo = new ServoPlus(hardwareMap.get(Servo.class,"wristServo"),
-                180,-0.00001,180);
+                1800,360,1440);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
-                180,0,180);
+                300,0,360);
 
         claw = new Claw(hardwareMap);
     }

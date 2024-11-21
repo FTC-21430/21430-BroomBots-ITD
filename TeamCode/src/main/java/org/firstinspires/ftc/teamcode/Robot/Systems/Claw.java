@@ -29,9 +29,9 @@ public class Claw {
     public Claw (HardwareMap hardwareMap){
         //Mapping/initializing the claw
         claw1Servo = new ServoPlus(hardwareMap.get(Servo.class,"claw1Servo"),
-                180,0,180);
+                145,0,145);
         claw2Servo = new ServoPlus(hardwareMap.get(Servo.class,"claw2Servo"),
-                180,0,180);
+                145,0,145);
     }
 
     /**
