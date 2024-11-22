@@ -1,10 +1,20 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
+    
+    
+    private double elbowAngleOffset = 1029;
+    private double shoulderAngleOffset;
+    
+    //Arm sensors
+    public AnalogInput armPotentiometer = null;
+    
     //Actuators for the arm
     DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
@@ -20,24 +30,21 @@ public class SpampleArm {
     final double shoulderPulsesPerRevolution = 8011.117;
     final double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
     
-    // used to correct the error caused in the slide by the rotation of the shoulder.
-    // TODO: tune this value
-    final double shoulderRotationToSlide = -0.2;
-
     //Constants for the linear slide
     final double linearSlidePulsesPerRevolution = 1223.08;
     // multiplied by two because of the cascade rigging
     final double linearSlideRevPerInch = 1/(4.725*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
     final double linearSlideMaxExtension = 19.625984;
+    
+    // used to correct the error caused in the slide by the rotation of the shoulder.
+    final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
     /**
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
     public SpampleArm (HardwareMap hardwareMap){
-        //TODO: confirm names
-        //TODO: commented for testing
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
         shoulderMotor.setTargetPosition(0);
@@ -45,8 +52,8 @@ public class SpampleArm {
         shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
         shoulderMotor.setPower(1);
+        shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //TODO:uncomment during testing
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -56,34 +63,43 @@ public class SpampleArm {
 
         //Mapping/initializing servos
         wristServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                1800,0,1800);
+                1650,0,1650);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
-                300,0,360);
+                260,0,260);
 
         claw = new Claw(hardwareMap);
+        
+        armPotentiometer = hardwareMap.get(AnalogInput.class, "shoulderAngleP");
+        shoulderAngleOffset = getArmAngle();
     }
 
+    
+    
+    public double getArmAngle(){
+        return -143.12* armPotentiometer.getVoltage()+248.72;
+    }
+    
     /**
      * Controls the shoulder motor
      * @param angle Angle for shoulder in degrees
      */
     public void rotateShoulderTo (double angle){
         //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
-        if (angle < 0) {
-            angle = 0;
+        if (angle < 8.5) {
+            angle = 8.5;
         }
-        if (angle > 180) {
-            angle = 180;
+        if (angle > 169.5) {
+            angle = 169.5;
         }
-        shoulderMotor.setTargetPosition((int) (angle * shoulderTicksPerDegrees));
+        shoulderMotor.setTargetPosition((int) ((angle- shoulderAngleOffset) * shoulderTicksPerDegrees));
     }
     
     /**
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
     public void updateSlide(){
-        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) - (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
+        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
     
     /**
@@ -105,7 +121,7 @@ public class SpampleArm {
      * @param angle Angle for wrist in degrees
      */
     public void rotateWristTo (double angle){
-        wristServo.setServoPos(angle);
+        wristServo.setServoPos(angle+elbowAngleOffset);
     }
 
     /**
@@ -113,7 +129,7 @@ public class SpampleArm {
      * @param angle Angle for twist rotation in degrees
      */
     public void rotateTwistTo (double angle){
-        twistServo.setServoPos(angle);
+        twistServo.setServoPos(angle+21);
     }
 
     /**

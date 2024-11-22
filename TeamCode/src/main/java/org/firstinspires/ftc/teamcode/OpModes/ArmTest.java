@@ -39,15 +39,32 @@ public class ArmTest extends LinearOpMode {
 //            if (gamepad1.b){
 //                spampleArm.extendTo(10);
 //            }
+
+////
+//            if (gamepad1.a){
+//                spampleArm.rotateShoulderTo(90);
+//            }
+//            if (gamepad1.b){
+//                spampleArm.rotateShoulderTo(40);
+//            }
+//            if (gamepad1.x){
+//                spampleArm.rotateShoulderTo(130);
+//            }
+//
+//            if (gamepad1.dpad_down){
+//                spampleArm.rotateTwistTo(0);
+//            }
+//            if (gamepad1.dpad_up){
+//                spampleArm.rotateTwistTo(90);
+//            }
+//            if (gamepad1.dpad_left){
+//                spampleArm.rotateTwistTo(180);
+//
+//            }
+           
             
-            //YAYYYAYYAYYYAYYYYAYYY
             
-            if (gamepad1.a){
-                spampleArm.rotateShoulderTo(45);
-            }
-            if (gamepad1.b){
-                spampleArm.rotateShoulderTo(0);
-            }
+            telemetry.addData("arm angle", spampleArm.getArmAngle());
             
             spampleArm.updateSlide();
             
