@@ -29,9 +29,9 @@ public class Claw {
     public Claw (HardwareMap hardwareMap){
         //Mapping/initializing the claw
         claw1Servo = new ServoPlus(hardwareMap.get(Servo.class,"claw1Servo"),
-                145,0,145);
+                145,20,120);
         claw2Servo = new ServoPlus(hardwareMap.get(Servo.class,"claw2Servo"),
-                145,0,145);
+                145,20,120);
     }
 
     /**
@@ -43,20 +43,20 @@ public class Claw {
             //TODO: un-zero these values
             //Servo positions for the four claw states
             case open:
-                claw1Servo.setServoPos(50);
-                claw2Servo.setServoPos(50);
+                claw2Servo.setServoPos(70);
+                claw1Servo.setServoPos(75);
                 break;
             case closed:
-                claw1Servo.setServoPos(0);
-                claw2Servo.setServoPos(0);
+                claw2Servo.setServoPos(20);
+                claw1Servo.setServoPos(120);
                 break;
             case grabOutside:
-                claw1Servo.setServoPos(30);
-                claw2Servo.setServoPos(30);
+                claw2Servo.setServoPos(22);
+                claw1Servo.setServoPos(118);
                 break;
             case grabInside:
-                claw1Servo.setServoPos(40);
-                claw2Servo.setServoPos(40);
+                claw2Servo.setServoPos(42);
+                claw1Servo.setServoPos(103);
                 break;
         }
     }
