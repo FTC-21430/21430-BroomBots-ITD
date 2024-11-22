@@ -14,18 +14,18 @@ public class ArmTest extends LinearOpMode {
         spampleArm = new SpampleArm(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
-//            if (gamepad1.a){
-//                spampleArm.setClawPosition(Claw.ClawPosition.closed);
-//            }
-//            if (gamepad1.b){
-//                spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
-//            }
-//            if (gamepad1.y){
-//                spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
-//            }
-//            if (gamepad1.x){
-//                spampleArm.setClawPosition(Claw.ClawPosition.open);
-//            }
+            if (gamepad1.a){
+                spampleArm.setClawPosition(Claw.ClawPosition.closed);
+            }
+            if (gamepad1.b){
+                spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
+            }
+            if (gamepad1.y){
+                spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
+            }
+            if (gamepad1.x){
+                spampleArm.setClawPosition(Claw.ClawPosition.open);
+            }
 //            if (gamepad1.a){
 //                spampleArm.rotateTwistTo(90);
 //            }
