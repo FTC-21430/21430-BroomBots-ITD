@@ -19,7 +19,7 @@ public class Robot {
   
   //used for how fast the turning input is used.
   // the number for maxTurnDegPerSecond is how much the robot can turn for one degree
-  public static double maxTurnDegPerSecond = 1000;
+  public static double maxTurnDegPerSecond = 500;
   public static double pCon = 0.017;
   public static double dCon = 0;
   
