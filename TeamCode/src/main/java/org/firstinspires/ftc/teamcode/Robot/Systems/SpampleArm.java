@@ -74,7 +74,7 @@ public class SpampleArm {
         linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
-        wristServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
+        elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
                 1650,0,1650);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
