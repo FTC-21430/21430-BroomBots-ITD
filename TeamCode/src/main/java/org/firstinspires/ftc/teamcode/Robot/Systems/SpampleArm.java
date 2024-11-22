@@ -19,7 +19,6 @@ public class SpampleArm {
     }
     
     DcMotor shoulderMotor;
-    DcMotor elbowServo;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
     ServoPlus twistServo;
@@ -117,7 +116,7 @@ public class SpampleArm {
      * @param angle Angle for elbow in degrees
      */
     public void rotateElbowTo(double angle){
-        elbowServo.setTargetPosition(angle);
+        elbowServo.setServoPos(angle);
     }
 
     /**
