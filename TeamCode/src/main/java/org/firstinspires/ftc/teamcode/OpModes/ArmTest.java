@@ -14,6 +14,7 @@ public class ArmTest extends LinearOpMode {
         spampleArm = new SpampleArm(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
+
             if (gamepad1.a){
                 spampleArm.setClawPosition(Claw.ClawPosition.closed);
             }
@@ -69,8 +70,6 @@ public class ArmTest extends LinearOpMode {
             spampleArm.updateSlide();
             
             telemetry.update();
-            
-            
         }
     }
 }

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     
@@ -16,9 +17,20 @@ public class SpampleArm {
     public AnalogInput armPotentiometer = null;
     
     //Actuators for the arm
+    
+    enum armPositions{
+        highBasket,
+        lowBasket,
+        highChamber,
+        lowChamber,
+        dropOff,
+        idle,
+        
+    }
+    
     DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
-    ServoPlus wristServo;
+    ServoPlus elbowServo;
     ServoPlus twistServo;
     Claw claw;
 
@@ -117,16 +129,17 @@ public class SpampleArm {
     }
 
     /**
-     * Controls the wrist motor
-     * @param angle Angle for wrist in degrees
+     * Controls the elbow motor
+     * @param angle Angle for elbow in degrees
      */
-    public void rotateWristTo (double angle){
-        wristServo.setServoPos(angle+elbowAngleOffset);
+
+    public void rotateElbowTo (double angle){
+        elbowServo.setServoPos(angle+elbowAngleOffset);
     }
 
     /**
-     * Controls the twist of the wrist
-     * @param angle Angle for twist rotation in degrees
+     * Controls the twist of the twist
+     * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
         twistServo.setServoPos(angle+21);
@@ -139,5 +152,123 @@ public class SpampleArm {
     public void setClawPosition (Claw.ClawPosition position){
         claw.setPosition(position);
     }
+
+
+
+    // TODO Functions:
+    /*
+  X Dropoff             -D-pad up
+  X Grab Specimen       -D-pad left
+  X Idle                -D-pad down
+  X Extension Offset    -Joystick left
+    Twist (beware)      -Joystick right
+  X High Basket         -Y
+  X Low Basket          -X
+  X High Chamber        -B
+  X Low Chamber         -A
+
+     */
+    //shoulder
+    //extensor
+    //elbow
+    //twist
+    //pinchy
+
+    //High Basket
+    //fix variables
+    
+    public void switchTo(armPositions state){
+        switch (state){
+            case idle:
+                idle();
+                break;
+            case dropOff:
+                dropOff();
+                break;
+            case lowBasket:
+                lowBasket();
+                break;
+            case highBasket:
+                highBasket();
+                break;
+            case lowChamber:
+                lowChamber();
+                break;
+            case highChamber:
+                highChamber();
+                break;
+        }
+    }
+    
+    
+    
+    
+    
+    public void highBasket(){
+
+        //PLACEHOLDER VALUES MAYBE
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+        setClawPosition(Claw.ClawPosition.open);
+
+    }
+
+    public void lowBasket(){
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+        setClawPosition(Claw.ClawPosition.open);
+
+    }
+
+    public void highChamber(){
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void lowChamber(){
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void idle(){
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void dropOff(){
+
+        rotateTwistTo(1);
+        rotateElbowTo(1);
+        extendTo(1);
+        rotateShoulderTo(1);
+
+    }
+
+    public void grabSpample(){
+
+    }
+    public void extensionOffset(){
+
+    }
+
+
 
 }

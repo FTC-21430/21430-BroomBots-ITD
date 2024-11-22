@@ -35,10 +35,10 @@ public class InverseKinematics {
     private double armRotation;
     
     // how much the wrist is angled, this should always have the wrist perpendicular with the field floor.
-    private double wristRotation;
+    private double elbowRotation;
     
-    // how much the wrist should rotated to align with the sample's orientation
-    private double wristTwist;
+    // how much the twist should rotated to align with the sample's orientation
+    private double twist;
     
     // the target X and Y position the robot should go to.
     private double robotX, robotY;
@@ -50,13 +50,13 @@ public class InverseKinematics {
     //Todo tune these values correctly
     
     // the mechanical limits of the mechanisms so that you cannot pass a value that would break the robot.
-    private final double armExtensionMax = 1.0, armExtensionMin = 1.0;
+    private final double armExtensionMax  = 1.0, armExtensionMin  = 1.0;
 
-    private final double armRotationMin = 1.0, armRotationMax = 1.0;
+    private final double armRotationMin   = 1.0, armRotationMax   = 1.0;
 
-    private final double wristRotMin = 1.0, wristRotMax = 1.0;
+    private final double elbowRotationMin = 1.0, elbowRotationMax = 1.0;
 
-    private final double wristTwistMin = 1.0, wristTwistMax = 1.0;
+    private final double twistMin         = 1.0, twistMax         = 1.0;
 
 
 // the different valid sides of the Submersible that can you go to.
@@ -74,8 +74,8 @@ public class InverseKinematics {
 
     //TODO these values are from CAD, tune these more accurate to the real robot
     
-    // the length in inches of the wrist.
-    private final double wristLength = 8.95;
+    // the length in inches of the non-extending shaft.
+    private final double Length = 8.95;
 
     // how far the pivot point of the arm is away from the center of the robot.
     private final double pivotOffset = 5.55;
@@ -143,7 +143,7 @@ public class InverseKinematics {
          *          will get converted to degrees once we are done with it in rads.
          */
       
-        armRotation = Math.atan(Math.abs(wristLength-(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset);
+        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset);
         
         
         // calculates what the distance the arm should extend in inches using the arm rotation
@@ -152,18 +152,18 @@ public class InverseKinematics {
         // converts armRotation into degrees
         armRotation *= (180/Math.PI);
         
-        // calculates how much the wrist should twist to get all the way aligned with the sample
-        wristTwist = robotAngle - targetAngle;
+        // calculates how much the elbow should twist to get all the way aligned with the sample
+        twist = robotAngle - targetAngle;
         
-        //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
+        //calculates the elbow rotation to make it perpendicular with the field floor using the rule that
         // all the angles of a triangle add up to 180.
-        wristRotation = 90 - armRotation;
+        elbowRotation = 90 - armRotation;
 
         // ensures that the range of values is legal.
         armLength = clipRange(armLength, armExtensionMin, armExtensionMax);
         armRotation = clipRange(armRotation, armRotationMin, armRotationMax);
-        wristTwist = clipRange(wristTwist, wristTwistMin, wristTwistMax);
-        wristRotation = clipRange(wristRotation, wristRotMin, wristRotMax);
+        twist = clipRange(twist, twistMin, twistMax);
+        elbowRotation = clipRange(elbowRotation, elbowRotationMin, elbowRotationMax);
     }
     
     /**
@@ -185,17 +185,17 @@ public class InverseKinematics {
         // the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
         // this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
         // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(wristLength-(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset) * (180/Math.PI);
+        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset) * (180/Math.PI);
        
         // calculates what the distance the arm should extend in inches using the arm rotation
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset;
     
         // calculates how much the wrist should twist to get all the way aligned with the sample
-        wristTwist = robotAngle - targetAngle;
+        twist = robotAngle - targetAngle;
     
         //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
         // all the angles of a triangle add up to 180.
-        wristRotation = 90 - armRotation;
+        elbowRotation = 90 - armRotation;
     }
     
     /**
@@ -217,17 +217,17 @@ public class InverseKinematics {
         // the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
         // this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
         // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(wristLength-(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
+        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
     
         // calculates what the distance the arm should extend in inches using the arm rotation
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
     
         // calculates how much the wrist should twist to get all the way aligned with the sample
-        wristTwist = robotAngle - targetAngle;
+        twist = robotAngle - targetAngle;
     
         //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
         // all the angles of a triangle add up to 180.
-        wristRotation = 90 - armRotation;
+        elbowRotation = 90 - armRotation;
     }
     
     /**
@@ -246,20 +246,20 @@ public class InverseKinematics {
         robotAngle = Math.atan(Math.abs(robotX - targetX) / Math.abs(robotY - targetY)) * (180/Math.PI);
     
         //calculates how much the pivot should to rotated from the base of the robot using tan^-1 and
-        // the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
-        // this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
+        // the distance of the the sample from the pivot and the sample along with the rod length as the opposite length.
+        // this assumes that the rod will always be perpendicular to the field floor making this a right triangle
         // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(wristLength-(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
+        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
     
         // calculates what the distance the arm should extend in inches using the arm rotation
         armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
        
-        // calculates how much the wrist should twist to get all the way aligned with the sample
-        wristTwist = robotAngle - targetAngle;
+        // calculates how much the twist should twist to get all the way aligned with the sample
+        twist = robotAngle - targetAngle;
     
-        //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
+        //calculates the elbow/rod rotation to make it perpendicular with the field floor using the rule that
         // all the angles of a triangle add up to 180.
-        wristRotation = 90 - armRotation;
+        elbowRotation = 90 - armRotation;
     }
 
     // returns how much the arm should be extended
@@ -287,14 +287,14 @@ public class InverseKinematics {
         return robotAngle;
     }
 
-    // returns the target rotation for the wrist
-    public double getWristRotation(){
-        return wristRotation;
+    // returns the target rotation for the elbow
+    public double getElbowRotation(){
+        return elbowRotation;
     }
 
-    // returns the target twist for the wrist
-    public double getWristTwist(){
-        return wristTwist;
+    // returns the target twist for the twist
+    public double getTwist(){
+        return twist;
     }
     
     // clips the values so the mechanisms do not exceed the mechanical limits
