@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 //This class is used to track the robots position while the op-mode is running.
-public class Odometry {
+public class TwoWheelOdometry {
   // The IMU(Inertial Measurement Unit) tracks the angles of the robot
   private IMU imu;
   
@@ -53,7 +53,7 @@ public class Odometry {
    * @param robotAngle
    * @param telemetry
    */
-  public Odometry(double initX, double initY, double robotAngle, Telemetry telemetry, HardwareMap hardwareMap){
+  public TwoWheelOdometry(double initX, double initY, double robotAngle, Telemetry telemetry, HardwareMap hardwareMap){
     this.initX = initX;
     this.initY = initY;
     robotX = initX;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import org.firstinspires.ftc.teamcode.Resources.Odometry;
+import org.firstinspires.ftc.teamcode.Resources.AprilTagSystem;
+import org.firstinspires.ftc.teamcode.Resources.OdometryOTOS;
 import org.firstinspires.ftc.teamcode.Robot.Systems.MecanumDriveTrain;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
 import org.firstinspires.ftc.teamcode.Resources.PathFollowing;
+import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @Config
 public class Robot {
@@ -19,8 +21,8 @@ public class Robot {
   
   //used for how fast the turning input is used.
   // the number for maxTurnDegPerSecond is how much the robot can turn for one degree
-  public static double maxTurnDegPerSecond = 500;
-  public static double pCon = 0.017;
+  public static double maxTurnDegPerSecond = 280;
+  public static double pCon = 0.025;
   public static double dCon = 0;
   
   private double drive;
@@ -29,12 +31,13 @@ public class Robot {
   //TODO Make more permanent system to detect turning
   public boolean turningBoolean;
   public MecanumDriveTrain driveTrain;
-  public Odometry odometry;
+  public OdometryOTOS odometry;
   
   private ElapsedTime runtime = new ElapsedTime();
   //TODO Tune the pConstant and d Constant numbers, these are place holders.
   public PIDController anglePID = new PIDController(pCon, dCon, runtime);
   
+  public SpampleArm spampleArm;
   FtcDashboard dashboard;
   private double robotHeading;
   private double lastTimeAngle;
@@ -54,12 +57,14 @@ public class Robot {
   private boolean IsProgramAutonomous;
   public PathFollowing pathFollowing;
  
-  
+  public AprilTagSystem aprilTags;
   public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle) {
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
-    odometry = new Odometry(robotX, robotY, robotAngle, telemetry, hardwareMap);
+    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap);
     //TODO These numbers are placeholders
     pathFollowing = new PathFollowing(1, 1, 1, 1, runtime);
+    spampleArm = new SpampleArm(hardwareMap, runtime);
+    aprilTags = new AprilTagSystem(hardwareMap);
   }
   
   // you call this function in a main auto opMode to make the robot move somewhere.
@@ -81,7 +86,7 @@ public class Robot {
   }
   
   public void IMUReset() {
-    odometry.IMUReset();
+    odometry.overridePosition(odometry.getRobotX(),odometry.getRobotY(),0);
     anglePID.setTarget(0);
   }
   

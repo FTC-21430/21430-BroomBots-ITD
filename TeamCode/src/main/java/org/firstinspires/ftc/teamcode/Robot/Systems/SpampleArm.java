@@ -5,11 +5,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     
-    
+    private ElapsedTime runtime = null;
     private double elbowAngleOffset = 1029;
     private double shoulderAngleOffset;
     
@@ -31,6 +32,9 @@ public class SpampleArm {
     DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
+    
+    double elbowTimer =0.0;
+    
     ServoPlus twistServo;
     Claw claw;
 
@@ -56,7 +60,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
         shoulderMotor.setTargetPosition(0);
@@ -84,6 +88,8 @@ public class SpampleArm {
         
         armPotentiometer = hardwareMap.get(AnalogInput.class, "shoulderAngleP");
         shoulderAngleOffset = getArmAngle();
+        
+        this.runtime = runtime;
     }
 
     
@@ -135,6 +141,7 @@ public class SpampleArm {
 
     public void rotateElbowTo (double angle){
         elbowServo.setServoPos(angle+elbowAngleOffset);
+        elbowTimer = runtime.milliseconds();
     }
 
     /**
@@ -177,98 +184,27 @@ public class SpampleArm {
     //High Basket
     //fix variables
     
-    public void switchTo(armPositions state){
-        switch (state){
-            case idle:
-                idle();
-                break;
-            case dropOff:
-                dropOff();
-                break;
-            case lowBasket:
-                lowBasket();
-                break;
-            case highBasket:
-                highBasket();
-                break;
-            case lowChamber:
-                lowChamber();
-                break;
-            case highChamber:
-                highChamber();
-                break;
-        }
-    }
+   
     
     
     
     
     
-    public void highBasket(){
 
-        //PLACEHOLDER VALUES MAYBE
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-        setClawPosition(Claw.ClawPosition.open);
-
+    //TODO: tune the tick values to be the most optimized for our needs.
+    public boolean shoulderAtPosition(){
+        double shoulderErrorThreshold = 5; // in degrees
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(shoulderMotor.getCurrentPosition() - shoulderMotor.getTargetPosition()) < shoulderErrorThreshold * shoulderTicksPerDegrees;
     }
-
-    public void lowBasket(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-        setClawPosition(Claw.ClawPosition.open);
-
+    public boolean extensionAtPosition(){
+        double extensionTargetErrorThreshold = 1; // in inches
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
     }
-
-    public void highChamber(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
+    public boolean elbowAtPosition(){
+        double elbowTimeS = 0.8;
+        return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
     }
-
-    public void lowChamber(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void idle(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void dropOff(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void grabSpample(){
-
-    }
-    public void extensionOffset(){
-
-    }
-
-
 
 }
