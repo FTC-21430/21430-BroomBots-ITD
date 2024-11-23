@@ -50,41 +50,30 @@ public class InverseKinematics {
     //Todo tune these values correctly
     
     // the mechanical limits of the mechanisms so that you cannot pass a value that would break the robot.
-    private final double armExtensionMax  = 1.0, armExtensionMin  = 1.0;
+    private final double armExtensionMax  = 19.5, armExtensionMin  = 0.0;
 
-    private final double armRotationMin   = 1.0, armRotationMax   = 1.0;
+    private final double armRotationMin   = 8.0, armRotationMax   = 180.0;
 
-    private final double elbowRotationMin = 1.0, elbowRotationMax = 1.0;
+    private final double elbowRotationMin = -180.0, elbowRotationMax = 180.0;
 
-    private final double twistMin         = 1.0, twistMax         = 1.0;
-
-
-// the different valid sides of the Submersible that can you go to.
-    private enum sides {
-        redFront, // from red chambers
-        redSide, // from red rungs
-        blueFront, // from blue chambers
-        blueSide // from blue rungs
-    }
-
-    // the current side we are picking up from
-    private sides currentSide;
+    private final double twistMin         = 0, twistMax         = 180.0;
     
-
-
-    //TODO these values are from CAD, tune these more accurate to the real robot
     
     // the length in inches of the non-extending shaft.
-    private final double Length = 8.95;
+    private final double elbowLength = 11.18;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double pivotOffset = 5.55;
+    private final double pivotOffset = 5.25;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
-    private final double chassisHeight = 6.31;
+    private final double chassisHeight = 5.73;
+    
+    
 
-    private final double tubeLength = 13.16;
+    private final double tubeLength = 16.75;
 
+    // how close we can be to a sample and still pick it up without moving back = ~21.5
+    private final double minL = pivotOffset + Math.sqrt(tubeLength*tubeLength- Math.pow(elbowLength + 1.5 - chassisHeight,2));
     
     // the constructor for this class.... that needs to do nothing.. yup
     public InverseKinematics() {
@@ -93,6 +82,17 @@ public class InverseKinematics {
 
     //TODO: re-comment main code as I did it wrong the first time - Tobin
 
+    
+    
+    public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
+        double l = calculateDistance(Tx,Ty,Rx,Ry)-pivotOffset;
+        if (l < minL){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
     /**
      * The function you call from the main code to calculate the position of the robot.
      * This function decides which side you are trying to grab from then calls the corresponding method
@@ -105,28 +105,28 @@ public class InverseKinematics {
      *                   laying flat on the floor
      */
     public void calculateKinematics(double xCurrent, double yCurrent, double targetX, double targetY, double targetZ, double targetAngle) {
-
-       if (xCurrent > 14){
-           robotAngle = Math.acos((targetX-robotX)/(targetY-robotY)) * (180/Math.PI);
-       }
-       else if (robotX < -14){
-           robotAngle = Math.asin((targetX-robotX)/(targetY-robotY)) * (180/Math.PI);
-       }
-       else if(robotY < 0){
-           robotAngle = Math.atan((targetX-robotX)/(targetY-robotY)) * (180/Math.PI) * -1;
-       }
-       else{
-           robotAngle = Math.atan((targetX-robotX)/(targetY-robotY)) * (180/Math.PI) * -1 + 180;
-       }
-        double l = Math.([robotX,robotY],[targetX,targetY])-pivotOffset;
-        double h = Length - targetZ;
-        armRotation = Math.atan(h/l) * (180/Math.PI);
+        double l = calculateDistance(targetX,targetY,robotX,robotY)-pivotOffset;
+        
+        robotAngle = Math.atan2((targetY-robotY),(targetX-robotX)) * (180/Math.PI) - 90;
+        // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds stardards, they should fix theirs
+        // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
+        
+        double h = elbowLength - targetZ + chassisHeight;
+        armRotation = Math.atan2(h,l) * (180/Math.PI);
         armLength = Math.sqrt(l*l + h*h)-tubeLength;
-        alpha = 90 - phi
-
+        elbowRotation = 90 - armRotation;
+        
+        if (armRotation < armRotationMin) armRotation = armRotationMin;
+        if (armRotation > armRotationMax) armRotation = armRotationMax;
+        
+        if (armLength < armExtensionMin) armLength = armExtensionMin;
+        if (armLength > armExtensionMax) armLength = armExtensionMax;
+        
     }
-
-
+    
+    public static double calculateDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
     // returns how much the arm should be extended
     public double getArmLength() {
         return armLength;

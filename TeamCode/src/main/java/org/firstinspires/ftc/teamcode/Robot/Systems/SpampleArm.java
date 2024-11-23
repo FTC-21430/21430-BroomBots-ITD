@@ -45,9 +45,9 @@ public class SpampleArm {
     //Constants for the linear slide
     final double linearSlidePulsesPerRevolution = 1223.08;
     // multiplied by two because of the cascade rigging
-    final double linearSlideRevPerInch = 1/(4.725*2);
+    final double linearSlideRevPerInch = 1/(4.724*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
-    final double linearSlideMaxExtension = 19.625984;
+    final double linearSlideMaxExtension = 19.5;
     
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
@@ -63,7 +63,7 @@ public class SpampleArm {
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        shoulderMotor.setPower(1);
+        shoulderMotor.setPower(0.4);
         shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
@@ -71,7 +71,7 @@ public class SpampleArm {
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        linearSlideMotor.setPower(1);
+        linearSlideMotor.setPower(0.4);
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
