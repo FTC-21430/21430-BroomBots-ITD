@@ -33,13 +33,6 @@ cv.createTrackbar("threshhold", "input", 25,200,foo)
 cv.createTrackbar("minLength", "input", 25, 100,foo)
 cv.createTrackbar("lineGap", "input", 10,100,foo)
 
-camera = cv.VideoCapture(1)
-
-
-
-# Get the default frame width and height
-frame_width = int(camera.get(cv.CAP_PROP_FRAME_WIDTH))
-frame_height = int(camera.get(cv.CAP_PROP_FRAME_HEIGHT))
 
 while True:
     if update:
@@ -50,8 +43,6 @@ while True:
         cannyHigher = cv.getTrackbarPos("CannyHigh", "input")
 
         
-        ret, img = camera.read()
-
         # img = cv.imread('Photos/singleSample2.jpg')
 
         # img = cv.imread('Photos/doubleSample.jpg')
@@ -66,12 +57,16 @@ while True:
 
         # img = cv.imread('Photos/offsetSideBySide.jpg')
 
-        # img = cv.imread('Photos/offToTheSide.jpg')
+        img = cv.imread('Photos/offToTheSide.jpg')
 
         # blank = cv.
 
         # img = cv.imread('Photos/stackedSamples.jpg')
 
+
+        img = rescaleFrame(img, 0.1)
+
+        img = cv.GaussianBlur(img, (1,1), 0)
         hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
         redLowerBound = (1,1,1)
@@ -97,9 +92,89 @@ while True:
 
         yellow = cv.bitwise_and(img, img,mask=yellow)
 
-        canny = cv.Canny(yellow, cannyLower, cannyHigher)
+        seperationCanny = cv.Canny(yellow, cannyLower, cannyHigher)
+
+        # seperationCanny = cv.dilate(seperationCanny, (1,1), 1000)
+
+        # seperationCanny = cv.GaussianBlur(seperationCanny, (3,3), 7)
+
+        seperatedYellow = cv.subtract(mask, seperationCanny)
+
+        
 
 
+
+        contours, hierarchy = cv.findContours(seperationCanny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+        # largestContour = contours[0]
+
+        # for i in range(len(contours)):
+        #     if cv.arcLength(largestContour, True) < cv.arcLength(contours[i], True):
+        #         largestContour = contours[i]
+            
+        for c in contours:
+            if cv.arcLength(c,True) < 50:
+                continue
+
+            # cv.drawContours(yellow, [c], -1, (0,0,255), 30)
+
+            approxContour = cv.approxPolyDP(c, cv.arcLength(c, True) / 50, True)
+            # cv.drawContours(yellow, [approxContour], -1, (0,255,0),20)
+            
+            if approxContour.size == 8:
+                 #found this code at https://learnopencv.com/head-pose-estimation-using-opencv-and-dlib/
+
+
+                sample_points = np.array([
+                                        
+                                        (-0.75, 1.75, 0.75),     # Left Top point
+                                        (0.75, 1.75, 0.75),      # Right Top point
+                                        (0.75, -1.75, 0.75),     # Right Bottom point
+                                        (-0.75, -1.75, 0.75),    # Left Bottom point
+                                    ])
+
+                # Camera internals
+                size = yellow.shape
+                focal_length = size[1]
+                center = (size[1]/2, size[0]/2)
+                camera_matrix = np.array(
+                                    [[focal_length, 0, center[0]],
+                                    [0, focal_length, center[1]],
+                                    [0, 0, 1]], dtype = "double"
+                                    )
+                approxContour=np.array(approxContour, dtype=np.float32)
+                
+                dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
+                
+
+                (success, rotation_vector, translation_vector) = cv.solvePnP(sample_points, approxContour, camera_matrix, dist_coeffs, flags = cv.SOLVEPNP_ITERATIVE)
+
+                if success:
+                    points, _ = cv.projectPoints(sample_points, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
+
+                
+
+                for p in points:
+                    cv.circle(yellow,tuple(p.reshape(2).astype(int).tolist()),4,(255,0,0),5)
+
+
+     
+    
+        cv.imshow('raw image', img)
+        cv.imshow('yellow', yellow)
+        cv.imshow('mask', seperatedYellow)
+        cv.imshow('canny', seperationCanny)
+
+    
+
+    key = cv.waitKey(1)
+    if key == 27:
+        break
+
+
+
+
+    
         # lines = cv.HoughLines(canny, 1, np.pi / 180, 150, None, 0, 0)
 
         # if lines is not None:
@@ -114,90 +189,17 @@ while True:
         #         pt2 = (int(x0 - img.shape[1]*(-b)), int(y0 - img.shape[0]*(a)))
         #         cv.line(canny, pt1, pt2, (0,0,255), 3, cv.LINE_AA)
         
-        rho = cv.getTrackbarPos("rho", "input")
-        theta = cv.getTrackbarPos("theta", "input")
-        threshold = cv.getTrackbarPos("threshhold","input")
-        minLength = cv.getTrackbarPos("minLength", "input")
-        lineGap = cv.getTrackbarPos("lineGap", "input")
+        # rho = cv.getTrackbarPos("rho", "input")
+        # theta = cv.getTrackbarPos("theta", "input")
+        # threshold = cv.getTrackbarPos("threshhold","input")
+        # minLength = cv.getTrackbarPos("minLength", "input")
+        # lineGap = cv.getTrackbarPos("lineGap", "input")
 
-        linesP = cv.HoughLinesP(canny, rho, np.pi / theta, threshold, None, minLength, lineGap)
+        # linesP = cv.HoughLinesP(canny, rho, np.pi / theta, threshold, None, minLength, lineGap)
         
-        # canny = cv.cvtColor(canny, cv.COLOR_GRAY2BGR)
+        # # canny = cv.cvtColor(canny, cv.COLOR_GRAY2BGR)
         
-        if linesP is not None:
-            for i in range(0, len(linesP)):
-                l = linesP[i][0]
-                # cv.line(canny, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv.LINE_AA)
-
-        contours, hierarchy = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-
-        largestContour = contours[0]
-
-        for i in range(len(contours)):
-            if cv.arcLength(largestContour, True) < cv.arcLength(contours[i], True):
-                largestContour = contours[i]
-            
-        
-        
-
-        cv.drawContours(yellow, [largestContour], -1, (0,0,255), 50)
-
-        
-
-        approxContour = cv.approxPolyDP(largestContour, cv.arcLength(largestContour, True) / 50, True)
-        cv.drawContours(yellow, [approxContour], -1, (0,255,0),30)
-        print(approxContour)
-
-        #found this code at https://learnopencv.com/head-pose-estimation-using-opencv-and-dlib/
-
-
-        sample_points = np.array([
-                                
-                                (-0.75, 1.75, 0.75),     # Left Top point
-                                (0.75, 1.75, 0.75),      # Right Top point
-                                (0.75, -1.75, 0.75),     # Right Bottom point
-                                (-0.75, -1.75, 0.75),    # Left Bottom point
-                            ])
-
-        # Camera internals
-        size = yellow.shape
-        focal_length = size[1]
-        center = (size[1]/2, size[0]/2)
-        camera_matrix = np.array(
-                            [[focal_length, 0, center[0]],
-                            [0, focal_length, center[1]],
-                            [0, 0, 1]], dtype = "double"
-                            )
-        approxContour=np.array(approxContour, dtype=np.float32)
-        
-        dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
-
-        (success, rotation_vector, translation_vector) = cv.solvePnP(sample_points, approxContour, camera_matrix, dist_coeffs, flags = cv.SOLVEPNP_ITERATIVE)
-
-        if success:
-            points, _ = cv.projectPoints(sample_points, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
-
-        print(points)
-        for p in points:
-            cv.circle(yellow,tuple(p.reshape(2).astype(int).tolist()),4,(255,0,0),40)
-
-
-        mask = rescaleFrame(mask, 0.1)
-        yellow = rescaleFrame(yellow, 0.2)
-        img = rescaleFrame(img, 0.1)
-        canny = rescaleFrame(canny, 0.1)
-        
-
-
-    
-        cv.imshow('raw image', img)
-        cv.imshow('yellow', yellow)
-        cv.imshow('mask', mask)
-        cv.imshow('canny', canny)
-
-    
-
-    key = cv.waitKey(1)
-    if key == 27:
-        camera.release()
-        break
+        # if linesP is not None:
+        #     for i in range(0, len(linesP)):
+        #         l = linesP[i][0]
+        #         # cv.line(canny, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv.LINE_AA)
