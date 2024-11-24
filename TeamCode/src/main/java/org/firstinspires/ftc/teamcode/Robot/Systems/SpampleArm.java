@@ -67,7 +67,7 @@ public class SpampleArm {
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        shoulderMotor.setPower(0.4);
+        shoulderMotor.setPower(1);
         shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
@@ -75,7 +75,7 @@ public class SpampleArm {
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        linearSlideMotor.setPower(0.4);
+        linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
@@ -203,7 +203,7 @@ public class SpampleArm {
         return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
     }
     public boolean elbowAtPosition(){
-        double elbowTimeS = 0.8;
+        double elbowTimeS = 5;
         return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
     }
 

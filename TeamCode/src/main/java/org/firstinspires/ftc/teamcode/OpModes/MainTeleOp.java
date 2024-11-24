@@ -14,11 +14,13 @@ public class MainTeleOp extends BaseTeleOp {
     
     InverseKinematics kinematics;
     boolean gp1xJoy = false;
+    boolean gp2b = false;
     
     @Override
     public void runOpMode() throws InterruptedException {
         // We multiply this by the speed to activate slowmode.
-        final double slowSpeedMultiplier = 0.4;
+        final double slowSpeedMultiplier = 0.3;
+        final double mediumSpeedMultiplier = 0.6;
         initialize();
         
         kinematics = new InverseKinematics();
@@ -26,13 +28,15 @@ public class MainTeleOp extends BaseTeleOp {
         while (opModeIsActive()) {
             // get and update functions
             robot.odometry.updateOdometry();
-            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
-            if (robot.aprilTags.hasDetection()){
-                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
-                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
-                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
-                }
-            }
+            
+            //TODO: fix the april tag system
+//            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
+//            if (robot.aprilTags.hasDetection()){
+//                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
+//                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
+//                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
+//                }
+//            }
             
             
             /** Target angle gives the angle from -180 to 180 that the robot wants to be at
@@ -72,6 +76,8 @@ public class MainTeleOp extends BaseTeleOp {
             // Sets slow mode if right bumper is pressed.
             if (gamepad1.right_bumper) {
                 robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
+            } else if (gamepad1.right_trigger > 0.2) {
+                robot.driveTrain.setSpeedMultiplier(mediumSpeedMultiplier);
             } else {
                 robot.driveTrain.setSpeedMultiplier(1);
             }
@@ -84,7 +90,10 @@ public class MainTeleOp extends BaseTeleOp {
             if (gamepad2.y){
                 currentArmState = armState.highBasket;
             }
-            if (gamepad2.b) {
+            if (gamepad2.b && !gp2b) {
+                if (currentArmState == armState.highChamber){
+                    currentArmState = arm
+                }
                 currentArmState = armState.highChamber;
             }
             if (gamepad2.a){
@@ -100,6 +109,12 @@ public class MainTeleOp extends BaseTeleOp {
                 currentArmState = armState.grabSpecimen;
             }
             if (gamepad2.dpad_down){
+                if (currentArmState == armState.grabSpecimen){
+                    currentArmState = armState.specimenIdle;
+                } else{
+                    currentArmState = armState.idle;
+                }
+                
                 currentArmState = armState.idle;
             }
             if (gamepad2.dpad_right){
@@ -118,6 +133,7 @@ public class MainTeleOp extends BaseTeleOp {
             // the old input for the left stick x axis for gamepad 1,
                 // updated at the end of the loop so the turning logic works :)
             gp1xJoy = gamepad1.left_stick_x > 0.1;
+            gp2b = gamepad2.b;
             
             telemetry.update();
             
