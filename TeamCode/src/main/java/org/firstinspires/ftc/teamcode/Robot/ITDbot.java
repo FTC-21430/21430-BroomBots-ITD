@@ -15,8 +15,11 @@ public class ITDbot extends Robot {
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
     @Override
     public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle){
-        while(distanceCircle(targetX, targetY) > targetCircle &&opModeActive){
+        while(distanceCircle(targetX, targetY) > targetCircle&&opModeActive){
+            pathFollowing.setTargetPosition(targetX,targetY);
+            anglePID.setTarget(robotAngle);
             //put all control things that teleop has in here
+            anglePID.update(odometry.getRobotAngle());
             pathFollowing.followPath(odometry.getRobotX(),odometry.getRobotY(),odometry.getRobotAngle());
             driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
         }

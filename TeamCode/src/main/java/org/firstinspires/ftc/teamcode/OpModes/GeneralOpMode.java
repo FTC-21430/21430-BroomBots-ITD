@@ -26,6 +26,8 @@ abstract public class GeneralOpMode extends LinearOpMode {
     specimenIdle,
     sampleIdle,
     scoreHighChamber,
+    spearHead,
+    intake,
   }
   
   public boolean extensionMoved = false;
@@ -205,6 +207,17 @@ abstract public class GeneralOpMode extends LinearOpMode {
           elbowMoved = false;
           extensionMoved = false;
           break;
+        case intake:
+          
+          break;
+        case spearHead:
+          robot.spampleArm.rotateTwistTo(0);
+          robot.spampleArm.rotateElbowTo(0);
+          robot.spampleArm.extendTo(3);
+          robot.spampleArm.rotateShoulderTo(8);
+          shoulderMoved = false;
+          elbowMoved = false;
+          extensionMoved = false;
       }
     }
     

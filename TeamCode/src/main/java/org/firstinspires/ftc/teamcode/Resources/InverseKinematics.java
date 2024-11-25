@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Resources;
 // this class is just for figuring out how the robot should be positioned when intaking from the submersible,
 // this includes both the chassis and arm.
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 /*
  *
  *   |   o (x`, y`, h`)
@@ -58,6 +60,8 @@ public class InverseKinematics {
 
     private final double twistMin         = 0, twistMax         = 180.0;
     
+    //the distance between the center of the robot and the center of the claw on the x axis
+    private final double elbowOffsetX = 4;
     
     // the length in inches of the non-extending shaft.
     private final double elbowLength = 11.18;
@@ -75,6 +79,10 @@ public class InverseKinematics {
     // how close we can be to a sample and still pick it up without moving back = ~21.5
     private final double minL = pivotOffset + Math.sqrt(tubeLength*tubeLength- Math.pow(elbowLength + 1.5 - chassisHeight,2));
     
+    // how far away a sample can be without us breaking the expansion limit
+    private final double maxL = 26; // inches from center the of the robot
+    
+    
     // the constructor for this class.... that needs to do nothing.. yup
     public InverseKinematics() {
 
@@ -86,12 +94,9 @@ public class InverseKinematics {
     
     public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
         double l = calculateDistance(Tx,Ty,Rx,Ry)-pivotOffset;
-        if (l < minL){
-            return false;
-        }
-        else{
-            return true;
-        }
+      
+      return !(l + pivotOffset > maxL);
+//        !(l < minL) &&
     }
     /**
      * The function you call from the main code to calculate the position of the robot.
@@ -105,16 +110,28 @@ public class InverseKinematics {
      *                   laying flat on the floor
      */
     public void calculateKinematics(double xCurrent, double yCurrent, double targetX, double targetY, double targetZ, double targetAngle) {
-        double l = calculateDistance(targetX,targetY,robotX,robotY)-pivotOffset;
+        robotX = xCurrent;
+        robotY = yCurrent;
+        double l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
         
-        robotAngle = Math.atan2((targetY-robotY),(targetX-robotX)) * (180/Math.PI) - 90;
-        // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds stardards, they should fix theirs
+        robotAngle = Math.atan2((targetY- yCurrent),(targetX-xCurrent)) * (180/Math.PI) - 90;
+        // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds standards, they should fix theirs
         // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
+        
+        double elbowX = -elbowOffsetX * Math.cos(-AngleUnit.DEGREES.toRadians(robotAngle)) + l * Math.sin(-AngleUnit.DEGREES.toRadians(robotAngle));
+        double elbowY = elbowOffsetX * Math.sin(-AngleUnit.DEGREES.toRadians(robotAngle)) + l * Math.cos(-AngleUnit.DEGREES.toRadians(robotAngle));
+        
+        robotX -= (elbowX - targetX)/2;
+        robotY += elbowY - targetY;
+        
+        l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
         
         double h = elbowLength - targetZ + chassisHeight;
         armRotation = Math.atan2(h,l) * (180/Math.PI);
         armLength = Math.sqrt(l*l + h*h)-tubeLength;
         elbowRotation = 90 - armRotation;
+        
+        twist = targetAngle - (-robotAngle);
         
         if (armRotation < armRotationMin) armRotation = armRotationMin;
         if (armRotation > armRotationMax) armRotation = armRotationMax;

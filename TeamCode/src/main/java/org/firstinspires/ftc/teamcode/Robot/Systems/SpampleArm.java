@@ -149,7 +149,7 @@ public class SpampleArm {
      * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
-        twistServo.setServoPos(angle+21);
+        twistServo.setServoPos(angle+15);
     }
 
     /**

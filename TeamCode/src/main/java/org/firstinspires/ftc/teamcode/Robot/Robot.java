@@ -62,7 +62,7 @@ public class Robot {
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
     odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap);
     //TODO These numbers are placeholders
-    pathFollowing = new PathFollowing(1, 1, 1, 1, runtime);
+    pathFollowing = new PathFollowing(0.12, 0.17, 0.01, 0.01, runtime);
     spampleArm = new SpampleArm(hardwareMap, runtime);
     aprilTags = new AprilTagSystem(hardwareMap);
   }
@@ -71,9 +71,14 @@ public class Robot {
   // This is the foundation that every robot should need but you should more season specific things in the bot class.
   public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle) {
     while (distanceCircle(targetX, targetY) > targetCircle && opModeActive) {
+      pathFollowing.setTargetPosition(targetX,targetY);
+      anglePID.setTarget(robotAngle);
       //put all control things that teleop has in here
+      anglePID.update(odometry.getRobotAngle());
       pathFollowing.followPath(odometry.getRobotX(), odometry.getRobotY(), odometry.getRobotAngle());
       driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
+      
+      spampleArm.updateSlide();
     }
   }
   
