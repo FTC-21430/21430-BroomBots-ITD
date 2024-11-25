@@ -18,12 +18,19 @@ def rescaleFrame(frame, scale = 0.1):
 
     return cv.resize(frame, dimensions, interpolation=cv.INTER_AREA)
 
+def rescan(x,y,z):
+    z = 12
+    y *= -1
+    print(x)
+    print(y)
+    print(z)
+
 cv.namedWindow("input",cv.WINDOW_NORMAL)
-cv.createTrackbar("HL", "input", 0, 180, foo)
-cv.createTrackbar("HH", "input", 51, 180, foo)
-cv.createTrackbar("SL", "input", 154, 255, foo)
+cv.createTrackbar("HL", "input", 12, 180, foo)
+cv.createTrackbar("HH", "input", 61, 180, foo)
+cv.createTrackbar("SL", "input", 119, 255, foo)
 cv.createTrackbar("SH", "input", 255, 255, foo)
-cv.createTrackbar("VL", "input", 110, 255, foo)
+cv.createTrackbar("VL", "input", 160, 255, foo)
 cv.createTrackbar("VH", "input", 255, 255, foo)
 cv.createTrackbar("CannyHigh","input", 401,2000,foo)
 cv.createTrackbar("CannyLow","input",5,1000,foo)
@@ -36,13 +43,17 @@ cv.createTrackbar("lineGap", "input", 10,100,foo)
 
 while True:
     if update:
+
+        foundSamples = []
+
         update = False
         lower = (cv.getTrackbarPos("HL", 'input'), cv.getTrackbarPos("SL", 'input'), cv.getTrackbarPos("VL", 'input'))
         upper = (cv.getTrackbarPos("HH", 'input'), cv.getTrackbarPos("SH", 'input'), cv.getTrackbarPos("VH", 'input'))
         cannyLower = cv.getTrackbarPos("CannyLow", "input")
         cannyHigher = cv.getTrackbarPos("CannyHigh", "input")
 
-        
+        img = cv.imread('ROBOT Photos/4.jpg')
+
         # img = cv.imread('Photos/singleSample2.jpg')
 
         # img = cv.imread('Photos/doubleSample.jpg')
@@ -57,16 +68,18 @@ while True:
 
         # img = cv.imread('Photos/offsetSideBySide.jpg')
 
-        img = cv.imread('Photos/offToTheSide.jpg')
+        # img = cv.imread('Photos/offToTheSide.jpg')
+
 
         # blank = cv.
 
         # img = cv.imread('Photos/stackedSamples.jpg')
 
 
-        img = rescaleFrame(img, 0.1)
+        img = rescaleFrame(img, 0.2)
+        
+        img = cv.GaussianBlur(img, (3,3), 5)
 
-        img = cv.GaussianBlur(img, (1,1), 0)
         hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
         redLowerBound = (1,1,1)
@@ -75,8 +88,8 @@ while True:
         blueLowerBound = (1,1,1)
         blueHigherBound = (255,255,255)
 
-        yellowLowerBound = (3,116,112)
-        yellowHigherBound = (30,255,255)
+        yellowLowerBound = lower
+        yellowHigherBound = upper
 
 
     # red
@@ -92,16 +105,37 @@ while True:
 
         yellow = cv.bitwise_and(img, img,mask=yellow)
 
+        # new_image = np.zeros(yellow.shape, yellow.dtype)
+
+        
+        # alpha = 0.8 # Simple contrast control
+        # beta = 1.6    # Simple brightness control 
+
+        # for y in range(yellow.shape[0]):
+        #     for x in range(yellow.shape[1]):
+        #         for c in range(yellow.shape[2]):
+        #             yellow[y,x,c] = np.clip(alpha*yellow[y,x,c] + beta, 0, 255)
+
+
+
+
         seperationCanny = cv.Canny(yellow, cannyLower, cannyHigher)
 
-        # seperationCanny = cv.dilate(seperationCanny, (1,1), 1000)
+        seperationCanny = cv.dilate(seperationCanny, (3333,3333), 0)
 
-        # seperationCanny = cv.GaussianBlur(seperationCanny, (3,3), 7)
+        seperationCanny = cv.GaussianBlur(seperationCanny, (1,1), 0)
+        # seperationCanny =cv.erode(seperationCanny, (3333,3333), 0)
 
         seperatedYellow = cv.subtract(mask, seperationCanny)
 
-        
+        Canny = cv.Canny(seperatedYellow, 5,10)
 
+        Canny = cv.dilate(Canny, (333,333),3)
+        Canny = cv.erode(Canny, (3,3), 3)
+
+        Canny = cv.GaussianBlur(Canny,(3,3), 3)
+
+        cv.imshow("after Canny",Canny)
 
 
         contours, hierarchy = cv.findContours(seperationCanny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -109,17 +143,22 @@ while True:
         # largestContour = contours[0]
 
         # for i in range(len(contours)):
-        #     if cv.arcLength(largestContour, True) < cv.arcLength(contours[i], True):
-        #         largestContour = contours[i]
+        #      if cv.arcLength(largestContour, True) < cv.arcLength(contours[i], True):
+        #          largestContour = contours[i]
             
+            # rediculusly bad sample position that any sample is better than this, I need to give a a value soo yeah
+        bestSample = (10000,10000)
+
         for c in contours:
-            if cv.arcLength(c,True) < 50:
+            if cv.arcLength(c,True) < 100:
+                continue
+            if cv.arcLength(c, True) > 700:
                 continue
 
-            # cv.drawContours(yellow, [c], -1, (0,0,255), 30)
+            cv.drawContours(yellow, [c], -1, (0,0,255), 5)
 
-            approxContour = cv.approxPolyDP(c, cv.arcLength(c, True) / 50, True)
-            # cv.drawContours(yellow, [approxContour], -1, (0,255,0),20)
+            approxContour = cv.approxPolyDP(c, cv.arcLength(c, True) / 22, True)
+            cv.drawContours(yellow, [approxContour], -1, (0,255,0),3)
             
             if approxContour.size == 8:
                  #found this code at https://learnopencv.com/head-pose-estimation-using-opencv-and-dlib/
@@ -143,7 +182,7 @@ while True:
                                     [0, 0, 1]], dtype = "double"
                                     )
                 approxContour=np.array(approxContour, dtype=np.float32)
-                
+                        
                 dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
                 
 
@@ -152,18 +191,29 @@ while True:
                 if success:
                     points, _ = cv.projectPoints(sample_points, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 
-                
+                averagePoint = (0,0)
 
                 for p in points:
+
+                    averagePoint += p
+
                     cv.circle(yellow,tuple(p.reshape(2).astype(int).tolist()),4,(255,0,0),5)
+
+                averagePoint /= 4
+
+                # if (0,0) - averagePoint < contours[bestSample].
+
 
 
      
+
+
+
     
-        cv.imshow('raw image', img)
-        cv.imshow('yellow', yellow)
-        cv.imshow('mask', seperatedYellow)
-        cv.imshow('canny', seperationCanny)
+    cv.imshow('raw image', img)
+    cv.imshow('yellow', yellow)
+    cv.imshow('mask', seperatedYellow)
+    cv.imshow('canny', seperationCanny)
 
     
 
