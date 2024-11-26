@@ -114,10 +114,10 @@ abstract public class GeneralOpMode extends LinearOpMode {
           }
           break;
         case highChamber:
-          robot.spampleArm.rotateTwistTo(0);
-          robot.spampleArm.rotateElbowTo(180);
+          robot.spampleArm.rotateTwistTo(-90);
+          robot.spampleArm.rotateElbowTo(200);
           robot.spampleArm.extendTo(0);
-          robot.spampleArm.rotateShoulderTo(40);
+          robot.spampleArm.rotateShoulderTo(48);
           shoulderMoved = false;
           elbowMoved = false;
           extensionMoved = false;
