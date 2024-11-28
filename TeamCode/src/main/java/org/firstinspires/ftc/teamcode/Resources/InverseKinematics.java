@@ -67,7 +67,7 @@ public class InverseKinematics {
     private final double elbowLength = 11.18;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double pivotOffset = 5.25;
+    private final double pivotOffset = 2.55;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
     private final double chassisHeight = 5.73;
@@ -114,17 +114,19 @@ public class InverseKinematics {
         robotY = yCurrent;
         double l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
         
+        if (l < minL){
+            double lengthError = minL - l;
+            robotX -= lengthError * (Math.cos(robotAngle));
+            robotY -= lengthError * (Math.sin(robotAngle));
+        }
+        
+        
         robotAngle = Math.atan2((targetY- yCurrent),(targetX-xCurrent)) * (180/Math.PI) - 90;
         // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds standards, they should fix theirs
         // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
         
-        double elbowX = -elbowOffsetX * Math.cos(-AngleUnit.DEGREES.toRadians(robotAngle)) + l * Math.sin(-AngleUnit.DEGREES.toRadians(robotAngle));
-        double elbowY = elbowOffsetX * Math.sin(-AngleUnit.DEGREES.toRadians(robotAngle)) + l * Math.cos(-AngleUnit.DEGREES.toRadians(robotAngle));
-        
-        robotX -= (elbowX - targetX)/2;
-        robotY += elbowY - targetY;
-        
-        l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
+        robotX -= elbowOffsetX * (Math.cos(robotAngle));
+        robotY += elbowOffsetX * (Math.sin(robotAngle));
         
         double h = elbowLength - targetZ + chassisHeight;
         armRotation = Math.atan2(h,l) * (180/Math.PI);
