@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.Resources;
 // this class is just for figuring out how the robot should be positioned when intaking from the submersible,
 // this includes both the chassis and arm.
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 /*
  *
  *   |   o (x`, y`, h`)
@@ -61,7 +59,7 @@ public class InverseKinematics {
     private final double twistMin         = 0, twistMax         = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    private final double elbowOffsetX = 4;
+    private final double elbowOffset = 4.0;
     
     // the length in inches of the non-extending shaft.
     private final double elbowLength = 11.18;
@@ -108,8 +106,17 @@ public class InverseKinematics {
      * @param targetZ how far off the ground should the inside of the claw move to.
      * @param targetAngle the angle of the sample on the z axis, this cannot pickup samples that are not
      *                   laying flat on the floor
+     *      * 1) Adjust robot x,y for elbow offset
+     *      * 2) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
+     *      * 3) Find distance from elbow-offset-adjusted robot to sample
+     *      * 4) Find target Robot xy based on least movement to reach sample
+     *      * 5) Find arm extension, shoulder angle based on distance to sample and target height
+     *      * 6) tbd - Find twist
      */
     public void calculateKinematics(double xCurrent, double yCurrent, double targetX, double targetY, double targetZ, double targetAngle) {
+    // 1) Adjust robot x,y for elbow offset
+
+        //to be continued double adjX = xCurrent * Math.cos(Math.toRadians())
         robotX = xCurrent;
         robotY = yCurrent;
         double l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
@@ -125,8 +132,8 @@ public class InverseKinematics {
         // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds standards, they should fix theirs
         // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
         
-        robotX -= elbowOffsetX * (Math.cos(robotAngle));
-        robotY += elbowOffsetX * (Math.sin(robotAngle));
+        robotX -= elbowOffset * (Math.cos(robotAngle));
+        robotY += elbowOffset * (Math.sin(robotAngle));
         
         double h = elbowLength - targetZ + chassisHeight;
         armRotation = Math.atan2(h,l) * (180/Math.PI);
