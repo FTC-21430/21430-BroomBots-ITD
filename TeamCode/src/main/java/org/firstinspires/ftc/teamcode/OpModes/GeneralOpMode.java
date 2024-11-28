@@ -115,7 +115,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
           break;
         case highChamber:
           robot.spampleArm.rotateTwistTo(-90);
-          robot.spampleArm.rotateElbowTo(200);
+          robot.spampleArm.rotateElbowTo(172);
           robot.spampleArm.extendTo(0);
           robot.spampleArm.rotateShoulderTo(48);
           shoulderMoved = false;
@@ -132,14 +132,14 @@ abstract public class GeneralOpMode extends LinearOpMode {
           extensionMoved = false;
           break;
         case grabSpecimen:
-          robot.spampleArm.rotateTwistTo(180);
+          robot.spampleArm.rotateTwistTo(185);
           if (!robot.spampleArm.elbowAtPosition() || !elbowMoved){
             if(!elbowMoved) {
               robot.spampleArm.rotateElbowTo(-76);
               elbowMoved=true;
             }else {
               robot.spampleArm.extendTo(0);
-              robot.spampleArm.rotateShoulderTo(148);
+              robot.spampleArm.rotateShoulderTo(145);
               elbowMoved=false;
               shoulderMoved=false;
               extensionMoved=false;
@@ -208,7 +208,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
           extensionMoved = false;
           break;
         case intake:
-          
+          robot.spampleArm.rotateShoulderTo(27);
           break;
         case spearHead:
           robot.spampleArm.rotateTwistTo(0);

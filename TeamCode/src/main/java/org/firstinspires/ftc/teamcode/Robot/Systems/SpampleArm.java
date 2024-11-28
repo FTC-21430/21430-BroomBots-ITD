@@ -29,7 +29,7 @@ public class SpampleArm {
         
     }
     
-    DcMotor shoulderMotor;
+    public DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
     
@@ -103,6 +103,21 @@ public class SpampleArm {
      * @param angle Angle for shoulder in degrees
      */
     public void rotateShoulderTo (double angle){
+        
+        // I tried to do some fancy calibration and stuff but it did not work :(
+//        double correctedAngle = angle - (6.33 + 9.66E-03 * angle + -1.12E-03 * Math.pow(angle, 2));
+        double correctedAngle;
+        if (angle <= 30){
+            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
+            correctedAngle = angle + 7.2;
+        }
+        
+        
+        else{
+            correctedAngle = angle;
+        }
+        
+        
         //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
         if (angle < 8.5) {
             angle = 8.5;
@@ -110,7 +125,8 @@ public class SpampleArm {
         if (angle > 169.5) {
             angle = 169.5;
         }
-        shoulderMotor.setTargetPosition((int) ((angle- shoulderAngleOffset) * shoulderTicksPerDegrees));
+        
+        shoulderMotor.setTargetPosition((int) ((correctedAngle- shoulderAngleOffset) * shoulderTicksPerDegrees));
     }
     
     /**

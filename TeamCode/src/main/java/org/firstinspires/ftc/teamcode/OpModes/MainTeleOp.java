@@ -46,17 +46,17 @@ public class MainTeleOp extends BaseTeleOp {
                     currentArmState = armState.spearHead;
                 }
                 
-                robot.pathFollowing.setFollowSpeed(1);
-                if (kinematics.verifyLength(robot.odometry.getRobotX(),robot.odometry.getRobotY(), 0, 20.5)) {
-                    telemetry.addLine("Kinematics passed");
-                    kinematics.calculateKinematics(robot.odometry.getRobotX(), robot.odometry.getRobotY(), 0, 20.5, 4, 0);
-
-                    robot.spampleArm.rotateElbowTo(kinematics.getElbowRotation());
-                    robot.spampleArm.rotateShoulderTo(kinematics.getArmRotation());
-                    robot.spampleArm.extendTo(kinematics.getArmLength());
-                    robot.pathFollowing.setTargetPosition(kinematics.getRobotX(),kinematics.getRobotY());
-                    robot.anglePID.setTarget(kinematics.getRobotAngle());
-                          }
+//                robot.pathFollowing.setFollowSpeed(1);
+//                if (kinematics.verifyLength(robot.odometry.getRobotX(),robot.odometry.getRobotY(), 0, 20.5)) {
+//                    telemetry.addLine("Kinematics passed");
+//                    kinematics.calculateKinematics(robot.odometry.getRobotX(), robot.odometry.getRobotY(), 0, 20.5, 4, 0);
+//
+//                    robot.spampleArm.rotateElbowTo(kinematics.getElbowRotation());
+//                    robot.spampleArm.rotateShoulderTo(kinematics.getArmRotation());
+//                    robot.spampleArm.extendTo(kinematics.getArmLength());
+//                    robot.pathFollowing.setTargetPosition(kinematics.getRobotX(),kinematics.getRobotY());
+//                    robot.anglePID.setTarget(kinematics.getRobotAngle());
+//                          }
                 telemetry.addData("kinematics X", kinematics.getRobotX());
                 telemetry.addData("kinematics Y", kinematics.getRobotY());
                 telemetry.addData("kinematics arm", kinematics.getArmRotation());

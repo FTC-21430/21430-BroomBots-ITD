@@ -10,71 +10,38 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
 public class ArmTest extends LinearOpMode {
-    SpampleArm spampleArm;
-    InverseKinematics kinematics;
+    
+    
+    
+    
+    double targetAngle = 90;
+    boolean aOLd = false;
+    boolean bOld = false;SpampleArm spampleArm;
     @Override
     public void runOpMode() throws InterruptedException {
         
         spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
         waitForStart();
         while (opModeIsActive()) {
-
-//            if (gamepad1.a){
-//                spampleArm.setClawPosition(Claw.ClawPosition.closed);
-//            }
-//            if (gamepad1.b){
-//                spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
-//            }
-//            if (gamepad1.y){
-//                spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
-//            }
-//            if (gamepad1.x){
-//                spampleArm.setClawPosition(Claw.ClawPosition.open);
-//            }
-//            if (gamepad1.a){
-//                spampleArm.rotateTwistTo(90);
-//            }
-//            if (gamepad1.b){
-//                spampleArm.rotateTwistTo(-90);
-//            }
+            double offsetAmount = 5;
+            if (gamepad1.a && !aOLd) targetAngle += offsetAmount;
+            if (gamepad1.b && !bOld) targetAngle -= offsetAmount;
             
-//            if (gamepad1.a){
-//                spampleArm.extendTo(0);
-//            }
-//            if (gamepad1.b){
-//                spampleArm.extendTo(10);
-//            }
-
-            if (gamepad1.y){
-                spampleArm.rotateShoulderTo(30);
-            }
-            if (gamepad1.a){
-                spampleArm.rotateShoulderTo(90);
-            }
-            if (gamepad1.b){
-                spampleArm.rotateShoulderTo(60);
-            }
-            if (gamepad1.x){
-                spampleArm.rotateShoulderTo(130);
-            }
-
-//            if (gamepad1.dpad_down){
-//                spampleArm.rotateTwistTo(0);
-//            }
-//            if (gamepad1.dpad_up){
-//                spampleArm.rotateTwistTo(90);
-//            }
-//            if (gamepad1.dpad_left){
-//                spampleArm.rotateTwistTo(180);
-//
-//            }
-           
-
+            
+            aOLd = gamepad1.a;
+            bOld = gamepad1.b;
+            
+            spampleArm.rotateShoulderTo(targetAngle);
+            
             telemetry.addData("arm angle", spampleArm.getArmAngle());
+            telemetry.addData("arm encoder", spampleArm.shoulderMotor.getCurrentPosition());
+            telemetry.addData("targetAngle", targetAngle);
+            
             
             spampleArm.updateSlide();
             
             telemetry.update();
+            
         }
     }
 }
