@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
 import org.firstinspires.ftc.teamcode.Resources.PathFollowing;
+import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @Config
 public class Robot {
@@ -30,6 +31,8 @@ public class Robot {
   public boolean turningBoolean;
   public MecanumDriveTrain driveTrain;
   public Odometry odometry;
+  
+  public SpampleArm spampleArm;
   
   private ElapsedTime runtime = new ElapsedTime();
   //TODO Tune the pConstant and d Constant numbers, these are place holders.
@@ -56,8 +59,10 @@ public class Robot {
  
   
   public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle) {
+    
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
     odometry = new Odometry(robotX, robotY, robotAngle, telemetry, hardwareMap);
+    spampleArm = new SpampleArm(hardwareMap);
     //TODO These numbers are placeholders
     pathFollowing = new PathFollowing(1, 1, 1, 1, runtime);
   }
