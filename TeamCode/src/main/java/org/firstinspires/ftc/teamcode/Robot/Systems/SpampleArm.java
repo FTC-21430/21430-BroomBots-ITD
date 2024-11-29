@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.Resources.PIDController;
 
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
@@ -28,12 +31,18 @@ public class SpampleArm {
         
     }
     
+    
+    PIDController shoulderPID;
+    
     DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
     ServoPlus twistServo;
     Claw claw;
-
+// the robot pitch from the field floor... odd...
+    
+    double robotTilt = 1.0;
+    
     double targetExtension = 0;
     
     //TODO: replace with correct value; calibrated for 312 RPM motor
@@ -57,13 +66,18 @@ public class SpampleArm {
      * @param hardwareMap Robot hardware map
      */
     public SpampleArm (HardwareMap hardwareMap){
+        
+        
+        shoulderPID = new PIDController(0.02,0.01, new ElapsedTime());
+        
+        
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
-        shoulderMotor.setTargetPosition(0);
+        
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // you need to set how fast the motor moves before it will move at all.
-        shoulderMotor.setPower(1);
+        
         shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
@@ -74,7 +88,7 @@ public class SpampleArm {
         linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
-        wristServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
+        elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
                 1650,0,1650);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
@@ -89,7 +103,7 @@ public class SpampleArm {
     
     
     public double getArmAngle(){
-        return -143.12* armPotentiometer.getVoltage()+248.72;
+        return 38.412 * Math.pow(armPotentiometer.getVoltage(),2) - 232.78 * armPotentiometer.getVoltage() + 299.5 - robotTilt;
     }
     
     /**
@@ -101,18 +115,21 @@ public class SpampleArm {
         if (angle < 8.5) {
             angle = 8.5;
         }
-        if (angle > 169.5) {
-            angle = 169.5;
+        if (angle > 178) {
+            angle = 178;
         }
-        shoulderMotor.setTargetPosition((int) ((angle- shoulderAngleOffset) * shoulderTicksPerDegrees));
+        shoulderPID.setTarget(angle);
     }
     
     /**
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
-    public void updateSlide(){
-        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
+    public void updateArm(){
+        shoulderPID.update(getArmAngle());
+        shoulderMotor.setPower(shoulderPID.getPower());
+//        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
+    
     
     /**
      * Controls the linear slide
