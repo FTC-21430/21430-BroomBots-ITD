@@ -18,15 +18,13 @@ import java.util.List;
 public class
 AprilTagSystem {
  
-  // TODO: tune these values to match the physical robot.
-  
   // the position of the camera lens relative to the center of the robot
   private Position cameraPosition = new Position(DistanceUnit.INCH,
-          0, 0, 0, 0);
+          0, -7.25, 4, 0);
   
   // the orientation of the camera lens relative to the orientation of the robot
   private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-          0, -90, 0, 0);
+          -180, 0, 0, 0);
   
   
   // end of the todo values
@@ -58,7 +56,8 @@ AprilTagSystem {
     // Create the vision portal by using a builder.
     VisionPortal.Builder builder = new VisionPortal.Builder();
     
-    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
+    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+    
     
     builder.addProcessor(aprilTag);
     

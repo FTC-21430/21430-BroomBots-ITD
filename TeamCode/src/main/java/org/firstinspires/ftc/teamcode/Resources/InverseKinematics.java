@@ -50,44 +50,52 @@ public class InverseKinematics {
     //Todo tune these values correctly
     
     // the mechanical limits of the mechanisms so that you cannot pass a value that would break the robot.
-    private final double armExtensionMax  = 1.0, armExtensionMin  = 1.0;
+    private final double armExtensionMax  = 19.5, armExtensionMin  = 0.0;
 
-    private final double armRotationMin   = 1.0, armRotationMax   = 1.0;
+    private final double armRotationMin   = 8.0, armRotationMax   = 180.0;
 
-    private final double elbowRotationMin = 1.0, elbowRotationMax = 1.0;
+    private final double elbowRotationMin = -180.0, elbowRotationMax = 180.0;
 
-    private final double twistMin         = 1.0, twistMax         = 1.0;
-
-
-// the different valid sides of the Submersible that can you go to.
-    private enum sides {
-        redFront, // from red chambers
-        redSide, // from red rungs
-        blueFront, // from blue chambers
-        blueSide // from blue rungs
-    }
-
-    // the current side we are picking up from
-    private sides currentSide;
+    private final double twistMin         = 0, twistMax         = 180.0;
     
-
-
-    //TODO these values are from CAD, tune these more accurate to the real robot
+    //the distance between the center of the robot and the center of the claw on the x axis
+    private final double elbowOffset = 4.0;
     
     // the length in inches of the non-extending shaft.
-    private final double Length = 8.95;
+    private final double elbowLength = 11.18;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double pivotOffset = 5.55;
+    private final double pivotOffset = 2.55;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
-    private final double chassisHeight = 6.31;
+    private final double chassisHeight = 5.73;
+    
+    
+
+    private final double tubeLength = 16.75;
+
+    // how close we can be to a sample and still pick it up without moving back = ~21.5
+    private final double minL = pivotOffset + Math.sqrt(tubeLength*tubeLength- Math.pow(elbowLength + 1.5 - chassisHeight,2));
+    
+    // how far away a sample can be without us breaking the expansion limit
+    private final double maxL = 26; // inches from center the of the robot
+    
     
     // the constructor for this class.... that needs to do nothing.. yup
     public InverseKinematics() {
 
     }
+
+    //TODO: re-comment main code as I did it wrong the first time - Tobin
+
     
+    
+    public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
+        double l = calculateDistance(Tx,Ty,Rx,Ry)-pivotOffset;
+      
+      return !(l + pivotOffset > maxL);
+//        !(l < minL) &&
+    }
     /**
      * The function you call from the main code to calculate the position of the robot.
      * This function decides which side you are trying to grab from then calls the corresponding method
@@ -98,170 +106,53 @@ public class InverseKinematics {
      * @param targetZ how far off the ground should the inside of the claw move to.
      * @param targetAngle the angle of the sample on the z axis, this cannot pickup samples that are not
      *                   laying flat on the floor
+     *      * 1) Adjust robot x,y for elbow offset
+     *      * 2) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
+     *      * 3) Find distance from elbow-offset-adjusted robot to sample
+     *      * 4) Find target Robot xy based on least movement to reach sample
+     *      * 5) Find arm extension, shoulder angle based on distance to sample and target height
+     *      * 6) tbd - Find twist
      */
     public void calculateKinematics(double xCurrent, double yCurrent, double targetX, double targetY, double targetZ, double targetAngle) {
-        //covers any side case to ensure the robot is the correct distance away from the edge of the submersible.
-        // depending on which side one of these will be overridden.
+    // 1) Adjust robot x,y for elbow offset
+
+        //to be continued double adjX = xCurrent * Math.cos(Math.toRadians())
         robotX = xCurrent;
         robotY = yCurrent;
+        double l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
         
-        // just a simple if else tree to identify which side to go to.
-        if (xCurrent <= -25){
-            currentSide = sides.blueFront;
-            blueFront(targetX, targetY, targetZ, targetAngle);
-        } else if (xCurrent >= 25) {
-            currentSide = sides.redFront;
-            redFront(targetX,targetY,targetZ, targetAngle);
-        } else if (yCurrent >= 0) {
-            currentSide = sides.redSide;
-            redSide(targetX,targetY,targetZ, targetAngle);
-        } else{
-            currentSide = sides.blueSide;
-            blueSide(targetX,targetY,targetZ, targetAngle);
+        if (l < minL){
+            double lengthError = minL - l;
+            robotX -= lengthError * (Math.cos(robotAngle));
+            robotY -= lengthError * (Math.sin(robotAngle));
         }
-    }
-    
-    /**
-     * calculates the rotations/positions of everything for the blue front side of the submersible
-     * @param targetX x of the sample, field coordinates and in inches
-     * @param targetY y of the sample, field coordinates and in inches
-     * @param targetZ how far the center of the claw should be from the floor of the field
-     * @param targetAngle the angle of the sample in degrees
-     */
-    private void blueFront(double targetX, double targetY, double targetZ, double targetAngle){
-        // sets how far the robot should be from the edge of the submersible
-        robotX = -33;
-        
-        // calculates how much the robot should be rotated to face the target sample,
-        // this originally returns in radians so we convert it to degrees
-        robotAngle = Math.atan(Math.abs(robotY - targetY) / Math.abs(robotX - targetX)) * (180/Math.PI);
-    
-        /**
-         *   calculates how much the pivot should to rotated from the base of the robot using tan^-1 and
-         *          the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
-         *          this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
-         *          will get converted to degrees once we are done with it in rads.
-         */
-      
-        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset);
         
         
-        // calculates what the distance the arm should extend in inches using the arm rotation
-        armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset;
+        robotAngle = Math.atan2((targetY- yCurrent),(targetX-xCurrent)) * (180/Math.PI) - 90;
+        // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds standards, they should fix theirs
+        // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
         
-        // converts armRotation into degrees
-        armRotation *= (180/Math.PI);
+        robotX -= elbowOffset * (Math.cos(robotAngle));
+        robotY += elbowOffset * (Math.sin(robotAngle));
         
-        // calculates how much the elbow should twist to get all the way aligned with the sample
-        twist = robotAngle - targetAngle;
-        
-        //calculates the elbow rotation to make it perpendicular with the field floor using the rule that
-        // all the angles of a triangle add up to 180.
+        double h = elbowLength - targetZ + chassisHeight;
+        armRotation = Math.atan2(h,l) * (180/Math.PI);
+        armLength = Math.sqrt(l*l + h*h)-tubeLength;
         elbowRotation = 90 - armRotation;
-
-        // ensures that the range of values is legal.
-        armLength = clipRange(armLength, armExtensionMin, armExtensionMax);
-        armRotation = clipRange(armRotation, armRotationMin, armRotationMax);
-        twist = clipRange(twist, twistMin, twistMax);
-        elbowRotation = clipRange(elbowRotation, elbowRotationMin, elbowRotationMax);
+        
+        twist = targetAngle - (-robotAngle);
+        
+        if (armRotation < armRotationMin) armRotation = armRotationMin;
+        if (armRotation > armRotationMax) armRotation = armRotationMax;
+        
+        if (armLength < armExtensionMin) armLength = armExtensionMin;
+        if (armLength > armExtensionMax) armLength = armExtensionMax;
+        
     }
     
-    /**
-     * calculates the rotations/positions of everything for the blue front side of the submersible
-     * @param targetX x of the sample, field coordinates and in inches
-     * @param targetY y of the sample, field coordinates and in inches
-     * @param targetZ how far the center of the claw should be from the floor of the field
-     * @param targetAngle the angle of the sample in degrees
-     */
-    private void redFront(double targetX, double targetY, double targetZ, double targetAngle){
-        // sets how far the robot should be from the edge of the submersible
-        robotX = 33;
-    
-        // calculates how much the robot should be rotated to face the target sample,
-        // this originally returns in radians so we convert it to degrees
-        robotAngle = Math.atan(Math.abs(robotY - targetY) / Math.abs(robotX - targetX)) * (180/Math.PI);
-    
-        //calculates how much the pivot should to rotated from the base of the robot using tan^-1 and
-        // the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
-        // this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
-        // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset) * (180/Math.PI);
-       
-        // calculates what the distance the arm should extend in inches using the arm rotation
-        armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotX-targetX),2) + Math.pow((robotY-targetY), 2)) - pivotOffset;
-    
-        // calculates how much the wrist should twist to get all the way aligned with the sample
-        twist = robotAngle - targetAngle;
-    
-        //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
-        // all the angles of a triangle add up to 180.
-        elbowRotation = 90 - armRotation;
+    public static double calculateDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
-    
-    /**
-     * calculates the rotations/positions of everything for the blue front side of the submersible
-     * @param targetX x of the sample, field coordinates and in inches
-     * @param targetY y of the sample, field coordinates and in inches
-     * @param targetZ how far the center of the claw should be from the floor of the field
-     * @param targetAngle the angle of the sample in degrees
-     */
-    private void redSide(double targetX, double targetY, double targetZ, double targetAngle){
-        // sets how far the robot should be from the edge of the submersible
-        robotX = -25;
-    
-        // calculates how much the robot should be rotated to face the target sample,
-        // this originally returns in radians so we convert it to degrees
-        robotAngle = Math.atan(Math.abs(robotX - targetX) / Math.abs(robotY - targetY)) * (180/Math.PI);
-    
-        //calculates how much the pivot should to rotated from the base of the robot using tan^-1 and
-        // the distance of the the sample from the pivot and the sample along with the wrist length as the opposite length.
-        // this assumes that the wrist will always be perpendicular to the field floor making this a right triangle
-        // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
-    
-        // calculates what the distance the arm should extend in inches using the arm rotation
-        armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
-    
-        // calculates how much the wrist should twist to get all the way aligned with the sample
-        twist = robotAngle - targetAngle;
-    
-        //calculates the wrist rotation to make it perpendicular with the field floor using the rule that
-        // all the angles of a triangle add up to 180.
-        elbowRotation = 90 - armRotation;
-    }
-    
-    /**
-     * calculates the rotations/positions of everything for the blue front side of the submersible
-     * @param targetX x of the sample, field coordinates and in inches
-     * @param targetY y of the sample, field coordinates and in inches
-     * @param targetZ how far the center of the claw should be from the floor of the field
-     * @param targetAngle the angle of the sample in degrees
-     */
-    private void blueSide(double targetX, double targetY, double targetZ, double targetAngle){
-        // sets how far the robot should be from the edge of the submersible
-        robotX = 25;
-    
-        // calculates how much the robot should be rotated to face the target sample,
-        // this originally returns in radians so we convert it to degrees
-        robotAngle = Math.atan(Math.abs(robotX - targetX) / Math.abs(robotY - targetY)) * (180/Math.PI);
-    
-        //calculates how much the pivot should to rotated from the base of the robot using tan^-1 and
-        // the distance of the the sample from the pivot and the sample along with the rod length as the opposite length.
-        // this assumes that the rod will always be perpendicular to the field floor making this a right triangle
-        // will get converted to degrees once we are done with it in rads.
-        armRotation = Math.atan(Math.abs(Length -(chassisHeight - targetZ)) / Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset) * (180/Math.PI);
-    
-        // calculates what the distance the arm should extend in inches using the arm rotation
-        armLength = 1 / Math.cos(armRotation)*Math.sqrt( Math.pow((robotY-targetY),2) + Math.pow((robotX-targetX), 2)) - pivotOffset;
-       
-        // calculates how much the twist should twist to get all the way aligned with the sample
-        twist = robotAngle - targetAngle;
-    
-        //calculates the elbow/rod rotation to make it perpendicular with the field floor using the rule that
-        // all the angles of a triangle add up to 180.
-        elbowRotation = 90 - armRotation;
-    }
-
     // returns how much the arm should be extended
     public double getArmLength() {
         return armLength;

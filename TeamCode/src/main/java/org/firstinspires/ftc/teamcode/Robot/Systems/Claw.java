@@ -40,7 +40,7 @@ public class Claw {
      */
     public void setPosition(ClawPosition position){
         switch (position){
-            //TODO: un-zero these values
+
             //Servo positions for the four claw states
             case open:
                 claw2Servo.setServoPos(70);

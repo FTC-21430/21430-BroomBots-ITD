@@ -5,11 +5,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     
-    
+    private ElapsedTime runtime = null;
     private double elbowAngleOffset = 1029;
     private double shoulderAngleOffset;
     
@@ -28,9 +29,12 @@ public class SpampleArm {
         
     }
     
-    DcMotor shoulderMotor;
+    public DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
+    
+    double elbowTimer =0.0;
+    
     ServoPlus twistServo;
     Claw claw;
 
@@ -45,9 +49,9 @@ public class SpampleArm {
     //Constants for the linear slide
     final double linearSlidePulsesPerRevolution = 1223.08;
     // multiplied by two because of the cascade rigging
-    final double linearSlideRevPerInch = 1/(4.725*2);
+    final double linearSlideRevPerInch = 1/(4.724*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
-    final double linearSlideMaxExtension = 19.625984;
+    final double linearSlideMaxExtension = 19.5;
     
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
@@ -56,7 +60,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
         shoulderMotor.setTargetPosition(0);
@@ -74,7 +78,7 @@ public class SpampleArm {
         linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
-        wristServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
+        elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
                 1650,0,1650);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
@@ -84,6 +88,8 @@ public class SpampleArm {
         
         armPotentiometer = hardwareMap.get(AnalogInput.class, "shoulderAngleP");
         shoulderAngleOffset = getArmAngle();
+        
+        this.runtime = runtime;
     }
 
     
@@ -97,6 +103,21 @@ public class SpampleArm {
      * @param angle Angle for shoulder in degrees
      */
     public void rotateShoulderTo (double angle){
+        
+        // I tried to do some fancy calibration and stuff but it did not work :(
+//        double correctedAngle = angle - (6.33 + 9.66E-03 * angle + -1.12E-03 * Math.pow(angle, 2));
+        double correctedAngle;
+        if (angle <= 30){
+            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
+            correctedAngle = angle + 7.2;
+        }
+        
+        
+        else{
+            correctedAngle = angle;
+        }
+        
+        
         //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
         if (angle < 8.5) {
             angle = 8.5;
@@ -104,7 +125,8 @@ public class SpampleArm {
         if (angle > 169.5) {
             angle = 169.5;
         }
-        shoulderMotor.setTargetPosition((int) ((angle- shoulderAngleOffset) * shoulderTicksPerDegrees));
+        
+        shoulderMotor.setTargetPosition((int) ((correctedAngle- shoulderAngleOffset) * shoulderTicksPerDegrees));
     }
     
     /**
@@ -135,6 +157,7 @@ public class SpampleArm {
 
     public void rotateElbowTo (double angle){
         elbowServo.setServoPos(angle+elbowAngleOffset);
+        elbowTimer = runtime.milliseconds();
     }
 
     /**
@@ -142,7 +165,7 @@ public class SpampleArm {
      * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
-        twistServo.setServoPos(angle+21);
+        twistServo.setServoPos(angle+15);
     }
 
     /**
@@ -177,98 +200,27 @@ public class SpampleArm {
     //High Basket
     //fix variables
     
-    public void switchTo(armPositions state){
-        switch (state){
-            case idle:
-                idle();
-                break;
-            case dropOff:
-                dropOff();
-                break;
-            case lowBasket:
-                lowBasket();
-                break;
-            case highBasket:
-                highBasket();
-                break;
-            case lowChamber:
-                lowChamber();
-                break;
-            case highChamber:
-                highChamber();
-                break;
-        }
-    }
+   
     
     
     
     
     
-    public void highBasket(){
 
-        //PLACEHOLDER VALUES MAYBE
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-        setClawPosition(Claw.ClawPosition.open);
-
+    //TODO: tune the tick values to be the most optimized for our needs.
+    public boolean shoulderAtPosition(){
+        double shoulderErrorThreshold = 5; // in degrees
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(shoulderMotor.getCurrentPosition() - shoulderMotor.getTargetPosition()) < shoulderErrorThreshold * shoulderTicksPerDegrees;
     }
-
-    public void lowBasket(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-        setClawPosition(Claw.ClawPosition.open);
-
+    public boolean extensionAtPosition(){
+        double extensionTargetErrorThreshold = 1; // in inches
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
     }
-
-    public void highChamber(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
+    public boolean elbowAtPosition(){
+        double elbowTimeS = 5;
+        return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
     }
-
-    public void lowChamber(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void idle(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void dropOff(){
-
-        rotateTwistTo(1);
-        rotateElbowTo(1);
-        extendTo(1);
-        rotateShoulderTo(1);
-
-    }
-
-    public void grabSpample(){
-
-    }
-    public void extensionOffset(){
-
-    }
-
-
 
 }
