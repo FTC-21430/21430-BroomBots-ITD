@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import org.firstinspires.ftc.teamcode.OpModes.BaseAuto;
 import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
 
+// TODO Update all of these runto point functions to be the updated AutoMoveTo function in robot.java
+
+
 public class RedRightAutoAxolotl extends BaseAuto {
 
     //None of the values for RunToPoint Functions are correct

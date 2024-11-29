@@ -12,7 +12,4 @@ abstract public class GeneralOpMode extends LinearOpMode {
         robot.Init(hardwareMap,telemetry);
 
     }
-    public void RunToPoint(double TargetX, double TargetY, double Timeout) {
-        RunToPoint(TargetX, TargetY , Timeout);
-    }
 }

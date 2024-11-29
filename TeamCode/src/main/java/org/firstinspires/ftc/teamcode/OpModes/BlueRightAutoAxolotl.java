@@ -4,7 +4,10 @@ public class BlueRightAutoAxolotl extends BaseAuto {
     //None of the values for RunToPoint Functions are correct
     @Override
     public void runOpMode() throws InterruptedException {
-        RunToPoint(48, 12, 0.3);
+        
+        // TODO Update all of these runto point functions to be the updated AutoMoveTo function in robot.java
+        
+        robot.autoMoveTo(48, 12,0,2);
         robot.arm.highChamber();
         RunToPoint(48,12, 0.4);
         robot.arm.grabSpample();

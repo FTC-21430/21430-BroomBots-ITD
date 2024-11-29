@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
 
 public class BlueLeftAutoAxolotl extends BaseAuto {
-
-
-        //None of the values for RunToPoint Functions are correct
+  
+  // TODO Update all of these runtopoint functions to be the updated AutoMoveTo function in robot.java
+  
+  
+  //None of the values for RunToPoint Functions are correct
         @Override
         public void runOpMode() throws InterruptedException {
             AutonomousFunctions.WaitFunction();
