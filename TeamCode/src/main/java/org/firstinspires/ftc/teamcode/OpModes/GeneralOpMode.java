@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.ITDbot;
 // Creates robot object. All OpModes inherit this.
 abstract public class GeneralOpMode extends LinearOpMode {
     public ITDbot robot;
+
     public ElapsedTime runtime = new ElapsedTime();
     
     
@@ -39,9 +40,9 @@ abstract public class GeneralOpMode extends LinearOpMode {
   // normal functions
     
     public void initialize() {
-       robot = new ITDbot();
-       robot.Init(hardwareMap,telemetry);
-        
+        robot = new ITDbot();
+        robot.Init(hardwareMap,telemetry);
+
     }
     
     
