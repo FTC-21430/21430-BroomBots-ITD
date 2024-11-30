@@ -22,7 +22,7 @@ public class MainTeleOp extends BaseTeleOp {
         final double slowSpeedMultiplier = 0.3;
         final double mediumSpeedMultiplier = 0.6;
         initialize();
-        
+        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         kinematics = new InverseKinematics();
         waitForStart();
         while (opModeIsActive()) {
@@ -105,8 +105,10 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.b && !gp2b) {
                     if (currentArmState == armState.highChamber){
                         currentArmState = armState.scoreHighChamber;
+                    } else{
+                        currentArmState = armState.highChamber;
                     }
-                    currentArmState = armState.highChamber;
+                    
                 }
                 if (gamepad2.a){
                     currentArmState = armState.lowChamber;
@@ -138,9 +140,7 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad1.dpad_right){
                     currentArmState = armState.spearHead;
                 }
-                if (gamepad1.dpad_down){
-                    currentArmState = armState.intake;
-                }
+                
                 
                 
                 
@@ -182,7 +182,7 @@ public class MainTeleOp extends BaseTeleOp {
             updateState();
             
             
-            robot.spampleArm.updateSlide();
+            robot.spampleArm.updateArm();
             
             // the old input for the left stick x axis for gamepad 1,
             // updated at the end of the loop so the turning logic works :)

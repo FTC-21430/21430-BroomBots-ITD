@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
@@ -13,7 +14,7 @@ public class ITDbot extends Robot {
  
     public void Init(HardwareMap hardwareMap, Telemetry telemetry){
         super.init(hardwareMap, telemetry,0, 0, 0);
-        arm=new SpampleArm(hardwareMap);
+        spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
 }
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
     @Override

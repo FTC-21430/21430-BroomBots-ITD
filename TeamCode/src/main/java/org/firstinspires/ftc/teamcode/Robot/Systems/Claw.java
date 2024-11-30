@@ -40,23 +40,30 @@ public class Claw {
      */
     public void setPosition(ClawPosition position){
         switch (position){
-            //TODO: un-zero these values
             //Servo positions for the four claw states
+            
+            // on the robot, yellow is 1 and blue is 2
+            
+            // programmed so that you tune from where the center point of the closed position is.
+            
+            // subtract from claw 1
+            // add to claw 2
+            
             case open:
-                claw2Servo.setServoPos(70);
-                claw1Servo.setServoPos(75);
+                claw2Servo.setServoPos(26+50);
+                claw1Servo.setServoPos(108 - 50);
                 break;
             case closed:
-                claw2Servo.setServoPos(20);
-                claw1Servo.setServoPos(120);
+                claw2Servo.setServoPos(26 + 2);
+                claw1Servo.setServoPos(108 - 2);
                 break;
             case grabOutside:
-                claw2Servo.setServoPos(22);
-                claw1Servo.setServoPos(118);
+                claw2Servo.setServoPos(26 + 6);
+                claw1Servo.setServoPos(108 - 6);
                 break;
             case grabInside:
-                claw2Servo.setServoPos(42);
-                claw1Servo.setServoPos(103);
+                claw2Servo.setServoPos(26 + 28);
+                claw1Servo.setServoPos(108 - 28);
                 break;
         }
     }

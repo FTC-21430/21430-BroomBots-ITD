@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
@@ -11,28 +12,25 @@ public class ArmTest extends LinearOpMode {
     SpampleArm spampleArm;
     @Override
     public void runOpMode() throws InterruptedException {
-        spampleArm = new SpampleArm(hardwareMap);
+        spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
         waitForStart();
         while (opModeIsActive()) {
             
-            
-            if(gamepad1.a){
-                spampleArm.rotateShoulderTo(90);
+            if (gamepad1.a){
+                spampleArm.setClawPosition(Claw.ClawPosition.closed);
             }
             if (gamepad1.b){
-                spampleArm.rotateShoulderTo(80);
+                spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
             }
             if (gamepad1.x){
-                spampleArm.rotateShoulderTo(100);
+                spampleArm.setClawPosition(Claw.ClawPosition.open);
+            }
+            if (gamepad1.y){
+                spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
             }
             
-            
+           
             telemetry.addData("arm angle", spampleArm.getArmAngle());
-            
-            
-            
-            spampleArm.updateArm();
-            
             telemetry.update();
         }
     }

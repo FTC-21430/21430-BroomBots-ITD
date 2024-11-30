@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Resources.PIDController;
 //This class is the code foundations for making the robot's arm move.
 public class SpampleArm {
     
+    private ElapsedTime runtime = null;
     
     private double elbowAngleOffset = 1029;
     private double shoulderAngleOffset;
@@ -34,7 +35,7 @@ public class SpampleArm {
     
     PIDController shoulderPID;
     
-    DcMotor shoulderMotor;
+    public DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
     ServoPlus twistServo;
@@ -61,15 +62,18 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
+    
+    private double elbowTimer = 0.0;
+    
     /**
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
         
         
-        shoulderPID = new PIDController(0.02,0.01, new ElapsedTime());
-        
+        shoulderPID = new PIDController(0.04,0.001, new ElapsedTime());
+        shoulderPID.setTarget(90);
         
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
@@ -98,6 +102,9 @@ public class SpampleArm {
         
         armPotentiometer = hardwareMap.get(AnalogInput.class, "shoulderAngleP");
         shoulderAngleOffset = getArmAngle();
+        
+        this.runtime = runtime;
+        
     }
 
     
@@ -127,7 +134,7 @@ public class SpampleArm {
     public void updateArm(){
         shoulderPID.update(getArmAngle());
         shoulderMotor.setPower(shoulderPID.getPower());
-//        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
+        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
     
     
@@ -152,6 +159,7 @@ public class SpampleArm {
 
     public void rotateElbowTo (double angle){
         elbowServo.setServoPos(angle+elbowAngleOffset);
+        elbowTimer = runtime.milliseconds();
     }
 
     /**
@@ -159,7 +167,8 @@ public class SpampleArm {
      * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
-        twistServo.setServoPos(angle+21);
+        // values to ensure the twist goes where we need it to, then rotated by 90 degrees
+        twistServo.setServoPos(angle+16+ 90);
     }
 
     /**
@@ -169,8 +178,25 @@ public class SpampleArm {
     public void setClawPosition (Claw.ClawPosition position){
         claw.setPosition(position);
     }
-
-
+    
+    
+    //TODO: tune the tick values to be the most optimized for our needs.
+    public boolean shoulderAtPosition(){
+        double shoulderErrorThreshold = 5; // in degrees
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(getArmAngle() - shoulderPID.getTarget()) < shoulderErrorThreshold;
+    }
+    public boolean extensionAtPosition(){
+        double extensionTargetErrorThreshold = 1; // in inches
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
+    }
+    public boolean elbowAtPosition(){
+        double elbowTimeS = 5;
+        return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
+    }
+    
+    
 
     // TODO Functions:
     /*
