@@ -54,6 +54,9 @@ while True:
 
         img = cv.imread('ROBOT Photos/testImageOne.jpg')
 
+        # img =cv.imread('Photos/singleSample.jpg')
+        # img = rescaleFrame(img, 0.4)
+
         # img = cv.imread('ROBOT Photos/5.jpg')
 
         # blank = cv.
@@ -161,26 +164,26 @@ while True:
             cv.drawContours(yellow, [approxContour], -1, (0,255,0),3)
             
             # pdb.set_trace()
-            print(f"before {approxContour.size}")
+            # print(f"before {approxContour.size}")
 
             if approxContour.size > 8:
-                finalApproxContour = cv.approxPolyDP(approxContour, cv.arcLength(c, True) / 14, True)
+                finalApproxContour = cv.approxPolyDP(approxContour, cv.arcLength(c, True) / 10, True)
             else:
                 finalApproxContour = approxContour
 
     
-            print(f" after {finalApproxContour.size}")
+            # print(f" after {finalApproxContour.size}")
 
             if finalApproxContour.size == 8:
                  #found this code at https://learnopencv.com/head-pose-estimation-using-opencv-and-dlib/
 
 
                 sample_points = np.array([
-                                        
                                         (-0.75, 1.75, 0.75),     # Left Top point
-                                        (0.75, 1.75, 0.75),      # Right Top point
-                                        (0.75, -1.75, 0.75),     # Right Bottom point
                                         (-0.75, -1.75, 0.75),    # Left Bottom point
+                                        (0.75, -1.75, 0.75),     # Right Bottom point
+                                        (0.75, 1.75, 0.75),      # Right Top point
+                                        
                                     ])
 
                 # Camera internals
@@ -188,20 +191,32 @@ while True:
                 focal_length = size[1]
                 center = (size[1]/2, size[0]/2)
                 camera_matrix = np.array(
-                                    [[focal_length, 0, center[0]],
-                                    [0, focal_length, center[1]],
+                                    [[600.01851744*.2, 0, 906.817157357*.2],
+                                    [0, 600.01851744*.2, 516.73047402*.2],
                                     [0, 0, 1]], dtype = "double"
                                     )
+                # camera_matrix = np.array(
+                #                     [[focal_length, 0, center[0]],
+                #                     [0, focal_length, center[1]],
+                #                     [0, 0, 1]], dtype = "double"
+                #                     )
                 finalApproxContour=np.array(finalApproxContour, dtype=np.float32)
                         
-                dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
-                
+                dist_coeffs = np.zeros((5,1)) # Assuming no lens distortion
+                dist_coeffs[0] = 0.0115588983608
+                dist_coeffs[1] = -0.0313357203804
+                dist_coeffs[2] = 0.00013459478315
+                dist_coeffs[3] = 0.000897741867319
+                dist_coeffs[4] = 0.00542752872672
 
                 (success, rotation_vector, translation_vector) = cv.solvePnP(sample_points, finalApproxContour, camera_matrix, dist_coeffs, flags = cv.SOLVEPNP_ITERATIVE)
+                rotMat,_ = cv.Rodrigues(rotation_vector)
 
                 if success:
                     points, _ = cv.projectPoints(sample_points, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
-
+                    print(f"transform{translation_vector}")
+                    print(f"rotaiton{rotation_vector}")
+                    print("rot matrix\n", rotMat)
                 averagePoint = (0,0)
 
                 for p in points:
