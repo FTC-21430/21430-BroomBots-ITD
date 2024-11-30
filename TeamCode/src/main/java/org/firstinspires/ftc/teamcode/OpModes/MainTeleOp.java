@@ -15,6 +15,7 @@ public class MainTeleOp extends BaseTeleOp {
     InverseKinematics kinematics;
     boolean gp1xJoy = false;
     boolean gp2b = false;
+    public double LastLoopTime;
     
     @Override
     public void runOpMode() throws InterruptedException {
@@ -22,6 +23,7 @@ public class MainTeleOp extends BaseTeleOp {
         final double slowSpeedMultiplier = 0.3;
         final double mediumSpeedMultiplier = 0.6;
         initialize();
+        telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         kinematics = new InverseKinematics();
         waitForStart();
@@ -84,21 +86,43 @@ public class MainTeleOp extends BaseTeleOp {
                 
                 //  claw Positions
                 
+//                if (gamepad1.a){
+//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+//                }
+//                if (gamepad1.b){
+//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
+//                }
+//                if (gamepad1.y){
+//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
+//                }
+//                if (gamepad1.x){
+//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+//                }
                 if (gamepad1.a){
-                    robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
-                }
-                if (gamepad1.b){
-                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
-                }
-                if (gamepad1.y){
-                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
+                    robot.spampleArm.rotateShoulderTo(90);
                 }
                 if (gamepad1.x){
-                    robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+                    robot.spampleArm.rotateShoulderTo(30);
                 }
-                
+                if (gamepad1.y){
+                    robot.spampleArm.rotateShoulderTo(70);
+                }
+                if (gamepad1.b){
+                    robot.spampleArm.rotateShoulderTo(150);
+                }
                 // arm positions
-                
+                if (gamepad1.dpad_up){
+                    robot.spampleArm.extendTo(0);
+                }
+                if (gamepad1.dpad_left){
+                    robot.spampleArm.extendTo(19);
+                }
+                if (gamepad1.dpad_right){
+                    robot.spampleArm.extendTo(6);
+                }
+                if (gamepad1.dpad_down){
+                    robot.spampleArm.extendTo(12);
+                }
                 if (gamepad2.y){
                     currentArmState = armState.highBasket;
                 }
@@ -108,8 +132,8 @@ public class MainTeleOp extends BaseTeleOp {
                     } else{
                         currentArmState = armState.highChamber;
                     }
-                    
                 }
+                gp2b = gamepad2.b;
                 if (gamepad2.a){
                     currentArmState = armState.lowChamber;
                 }
@@ -134,12 +158,15 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.dpad_right){
                     currentArmState = armState.climberReady;
                 }
-                if (gamepad1.dpad_left){
-                    currentArmState = armState.grabSample;
-                }
-                if (gamepad1.dpad_right){
-                    currentArmState = armState.spearHead;
-                }
+//                if (gamepad1.dpad_left){
+//                    currentArmState = armState.grabSample;
+//                }
+//                if (gamepad1.dpad_up){
+//                    currentArmState= armState.grabSample2;
+//                }
+//                if (gamepad1.dpad_right){
+//                    currentArmState = armState.spearHead;
+//                }
                 
                 
                 
@@ -187,7 +214,7 @@ public class MainTeleOp extends BaseTeleOp {
             // the old input for the left stick x axis for gamepad 1,
             // updated at the end of the loop so the turning logic works :)
             gp1xJoy = gamepad1.left_stick_x > 0.1;
-            gp2b = gamepad2.b;
+
             
             
             // Telemetry for testing/debug purposes
@@ -198,6 +225,11 @@ public class MainTeleOp extends BaseTeleOp {
             telemetry.addData("arm angle", robot.spampleArm.getArmAngle());
             telemetry.addData("Robot X", robot.odometry.getRobotX());
             telemetry.addData("Robot Y", robot.odometry.getRobotY());
+            telemetry.addData("Potemeter", robot.spampleArm.getArmAngle());
+            double currentlooptime= getRuntime();
+            telemetry.addData("Runtime", currentlooptime-LastLoopTime);
+            LastLoopTime=currentlooptime;
+            telemetry.addData("MoterPower", robot.spampleArm.shoulderMotor.getPower());
             telemetry.update();
             
             

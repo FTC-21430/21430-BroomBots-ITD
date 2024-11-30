@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class PIDController {
   
   // The constants that you need to tune specifically for each system
-  private double pConstant, dConstant;
+  private double pConstant,iConstant, dConstant;
+  private double iSum=0;
   
   // The motor power (-1.0 ~ 1.0) the PD controller outputs
   private double power;
@@ -32,12 +33,14 @@ public class PIDController {
   /**
    * This is the constructor for this class, this just assigns the constants from the specific mechanism.
    * @param pConstant - Proportional Constant - used for tuning the Proportional factor.
+   * @param iConstant - Integel Constant- used for tuning the Intergal factor
    * @param dConstant - Derivative Constant - used for tuning the Derivative factor
    * @param runtime - The runtime instance from the main op-mode
    */
-  public PIDController(double pConstant, double dConstant, ElapsedTime runtime) {
+  public PIDController(double pConstant,double iConstant, double dConstant, ElapsedTime runtime) {
     this.pConstant = pConstant;
     this.dConstant = dConstant;
+    this.iConstant = iConstant;
     this.runtime = runtime;
     
     // to ensure lastTime is correct for the first iteration of update.
@@ -54,12 +57,13 @@ public class PIDController {
     // added wrap to the error equation
     double error = currentPosition - target;
     error = Utlities.wrap(error);
+    iSum += error * (runtime.time()-lastTime);
     
     // The derivative factor scales down the Proportional factor so that we don't over shoot our target.
     double derivative = (error - lastError) / (runtime.time() - lastTime);
     
     // the proportional factor affected by the derivative factor to get our output
-    power = -error * pConstant + (-dConstant * derivative);
+    power = -error * pConstant +(iSum * iConstant) + (-dConstant * derivative);
     
     // to ensure that power is always within our range of -1 - 1
     // if power is - 5 then it is divided by 5 to give us -1

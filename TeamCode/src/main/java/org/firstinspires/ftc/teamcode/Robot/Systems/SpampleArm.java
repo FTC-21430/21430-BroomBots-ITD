@@ -72,7 +72,7 @@ public class SpampleArm {
     public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
         
         
-        shoulderPID = new PIDController(0.04,0.001, new ElapsedTime());
+        shoulderPID = new PIDController(0.04, 0,0.001, new ElapsedTime());
         shoulderPID.setTarget(90);
         
         //Mapping/initializing motors

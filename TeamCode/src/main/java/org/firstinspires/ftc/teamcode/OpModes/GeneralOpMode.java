@@ -23,6 +23,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
         idle,
         grabSpecimen,
         grabSample,
+        grabSample2,
         climberReady,
         level1Assent,
         dropSample,
@@ -62,11 +63,11 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 extensionMoved = false;
                 break;
             case highBasket:
-                robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
+                //robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
                 robot.spampleArm.rotateTwistTo(90);
-                robot.spampleArm.rotateElbowTo(-180);
+                robot.spampleArm.rotateElbowTo(-147);
                 robot.spampleArm.extendTo(19.5);
-                robot.spampleArm.rotateShoulderTo(110);
+                robot.spampleArm.rotateShoulderTo(92);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
@@ -74,56 +75,68 @@ abstract public class GeneralOpMode extends LinearOpMode {
             case idle:
                 robot.spampleArm.rotateTwistTo(0);
                 robot.spampleArm.rotateElbowTo(0);
-                robot.spampleArm.extendTo(0);
-                robot.spampleArm.rotateShoulderTo(90);
+                //robot.spampleArm.extendTo(0);
+                //robot.spampleArm.rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
                 break;
             case lowBasket:
-                robot.spampleArm.rotateTwistTo(0);
-                robot.spampleArm.rotateElbowTo(0);
+                robot.spampleArm.rotateTwistTo(90);
+                robot.spampleArm.rotateElbowTo(-175);
                 robot.spampleArm.extendTo(0);
-                robot.spampleArm.rotateShoulderTo(90);
+                robot.spampleArm.rotateShoulderTo(100);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
                 break;
             case dropSample:
-                robot.spampleArm.rotateTwistTo(0);
-                robot.spampleArm.rotateElbowTo(0);
+                robot.spampleArm.rotateTwistTo(90);
+                robot.spampleArm.rotateElbowTo(-45);
                 robot.spampleArm.extendTo(0);
-                robot.spampleArm.rotateShoulderTo(90);
+                robot.spampleArm.rotateShoulderTo(135);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
                 break;
             case grabSample:
-                robot.spampleArm.rotateTwistTo(90);
-                robot.spampleArm.rotateElbowTo(65);
-                if (!robot.spampleArm.shoulderAtPosition() || !shoulderMoved){
-                    if (!shoulderMoved) {
-                        robot.spampleArm.rotateShoulderTo(26);
-                        shoulderMoved = true;
-                    }
-                } else if (!robot.spampleArm.extensionAtPosition() || !extensionMoved) {
-                    if (!extensionMoved) {
-                        robot.spampleArm.extendTo(5);
-                        extensionMoved = true;
-                    }
-                } else {
-                    shoulderMoved = false;
-                    elbowMoved = false;
-                    extensionMoved = false;
+                robot.spampleArm.rotateTwistTo(-90);
+                robot.spampleArm.rotateShoulderTo(35);
+                if (robot.spampleArm.shoulderAtPosition()){
+                    robot.spampleArm.rotateElbowTo(65);
                 }
                 break;
+            case grabSample2:
+                robot.spampleArm.rotateTwistTo(-90);
+                robot.spampleArm.rotateShoulderTo(25);
+                robot.spampleArm.rotateElbowTo(65);
+                break;
+
+
+
+//                if (!robot.spampleArm.shoulderAtPosition() || !shoulderMoved){
+//                    if (!shoulderMoved) {
+//                        robot.spampleArm.rotateShoulderTo(22);
+//                        shoulderMoved = true;
+//                    }
+//                } else if (!robot.spampleArm.extensionAtPosition() || !extensionMoved) {
+//                    if (!extensionMoved) {
+//                        robot.spampleArm.extendTo(5);
+//                        extensionMoved = true;
+//                    }
+//                } else {
+//                    shoulderMoved = false;
+//                    elbowMoved = false;
+//                    extensionMoved = false;
+//                }
+
             case highChamber:
                 robot.spampleArm.rotateTwistTo(-90);
-                robot.spampleArm.rotateElbowTo(10);
-                robot.spampleArm.rotateShoulderTo(86);
+                robot.spampleArm.rotateElbowTo(5);
+                robot.spampleArm.rotateShoulderTo(90);
                 
                 if (robot.spampleArm.shoulderAtPosition()) {
-                   robot.spampleArm.extendTo(18);
+                   robot.spampleArm.extendTo(17);
                 }
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -145,8 +158,8 @@ abstract public class GeneralOpMode extends LinearOpMode {
                         robot.spampleArm.rotateElbowTo(-40);
                         elbowMoved=true;
                     }else {
-                        robot.spampleArm.extendTo(2);
-                        robot.spampleArm.rotateShoulderTo(115);
+                        robot.spampleArm.extendTo(5);
+                        robot.spampleArm.rotateShoulderTo(118);
                         elbowMoved=false;
                         shoulderMoved=false;
                         extensionMoved=false;
@@ -206,10 +219,10 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 }
                 break;
             case scoreHighChamber:
-                robot.spampleArm.rotateTwistTo(-90);
-                robot.spampleArm.rotateElbowTo(10);
-                robot.spampleArm.extendTo(15);
-                robot.spampleArm.rotateShoulderTo(86);
+               // robot.spampleArm.rotateTwistTo(-90);
+                //robot.spampleArm.rotateElbowTo(10);
+                robot.spampleArm.extendTo(13);
+                //robot.spampleArm.rotateShoulderTo(86);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
