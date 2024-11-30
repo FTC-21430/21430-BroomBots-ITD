@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import math
-
+import pdb 
 
 
 
@@ -32,8 +32,8 @@ cv.createTrackbar("SL", "input", 119, 255, foo)
 cv.createTrackbar("SH", "input", 255, 255, foo)
 cv.createTrackbar("VL", "input", 160, 255, foo)
 cv.createTrackbar("VH", "input", 255, 255, foo)
-cv.createTrackbar("CannyHigh","input", 401,2000,foo)
-cv.createTrackbar("CannyLow","input",5,1000,foo)
+cv.createTrackbar("CannyHigh","input", 180,2000,foo)
+cv.createTrackbar("CannyLow","input",288,1000,foo)
 cv.createTrackbar("rho", "input", 1,5,foo)
 cv.createTrackbar("theta", "input", 50,200,foo)
 cv.createTrackbar("threshhold", "input", 25,200,foo)
@@ -52,24 +52,9 @@ while True:
         cannyLower = cv.getTrackbarPos("CannyLow", "input")
         cannyHigher = cv.getTrackbarPos("CannyHigh", "input")
 
-        img = cv.imread('ROBOT Photos/4.jpg')
+        img = cv.imread('ROBOT Photos/testImageOne.jpg')
 
-        # img = cv.imread('Photos/singleSample2.jpg')
-
-        # img = cv.imread('Photos/doubleSample.jpg')
-
-        # img = cv.imread('Photos/tSample.jpg')
-
-        # img = cv.imread('Photos/blueBelowYellow.jpg')
-
-        # img = cv.imread('Photos/topDown.jpg')
-
-        # img = cv.imread('Photos/cornerTouch.jpg')
-
-        # img = cv.imread('Photos/offsetSideBySide.jpg')
-
-        # img = cv.imread('Photos/offToTheSide.jpg')
-
+        # img = cv.imread('ROBOT Photos/5.jpg')
 
         # blank = cv.
 
@@ -80,7 +65,25 @@ while True:
         
         img = cv.GaussianBlur(img, (3,3), 5)
 
-        hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+       
+
+        # cropping time
+
+        # pdb.set_trace()
+
+        scaleX = img.shape[0]
+        scaleY = img.shape[1]
+
+        croppingFactor = 3
+
+        cropScaleX = scaleX // croppingFactor // 2
+        cropScaleY = scaleY // croppingFactor // 2 
+
+        cropped = img[cropScaleX:scaleX-cropScaleX, cropScaleY:scaleY-cropScaleY]
+
+        cv.imshow("crop", cropped)
+
+        hsv = cv.cvtColor(cropped, cv.COLOR_BGR2HSV)
 
         redLowerBound = (1,1,1)
         redHighBound = (255,255,255)
@@ -103,7 +106,9 @@ while True:
         kernel = np.ones((55,55),np.uint8)
         eroded = cv.erode(mask, kernel)
 
-        yellow = cv.bitwise_and(img, img,mask=yellow)
+        yellow = cv.bitwise_and(cropped, cropped,mask=yellow)
+
+        cv.imshow("yellow before", yellow)
 
         # new_image = np.zeros(yellow.shape, yellow.dtype)
 
@@ -121,24 +126,19 @@ while True:
 
         seperationCanny = cv.Canny(yellow, cannyLower, cannyHigher)
 
-        seperationCanny = cv.dilate(seperationCanny, (3333,3333), 0)
-
-        seperationCanny = cv.GaussianBlur(seperationCanny, (1,1), 0)
-        # seperationCanny =cv.erode(seperationCanny, (3333,3333), 0)
-
+        seperationCanny = cv.dilate(seperationCanny, np.ones((5,5)), 2)
+    
         seperatedYellow = cv.subtract(mask, seperationCanny)
 
         Canny = cv.Canny(seperatedYellow, 5,10)
-
-        Canny = cv.dilate(Canny, (333,333),3)
-        Canny = cv.erode(Canny, (3,3), 3)
+        
 
         Canny = cv.GaussianBlur(Canny,(3,3), 3)
 
         cv.imshow("after Canny",Canny)
 
 
-        contours, hierarchy = cv.findContours(seperationCanny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv.findContours(Canny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
         # largestContour = contours[0]
 
@@ -146,13 +146,13 @@ while True:
         #      if cv.arcLength(largestContour, True) < cv.arcLength(contours[i], True):
         #          largestContour = contours[i]
             
-            # rediculusly bad sample position that any sample is better than this, I need to give a a value soo yeah
+            # rediculusly bad sample position that any sample is better than this, I need to give it a value soo yeah
         bestSample = (10000,10000)
 
         for c in contours:
-            if cv.arcLength(c,True) < 100:
+            if cv.arcLength(c,True) < 95:
                 continue
-            if cv.arcLength(c, True) > 700:
+            if cv.arcLength(c, True) > 200:
                 continue
 
             cv.drawContours(yellow, [c], -1, (0,0,255), 5)
@@ -160,7 +160,18 @@ while True:
             approxContour = cv.approxPolyDP(c, cv.arcLength(c, True) / 22, True)
             cv.drawContours(yellow, [approxContour], -1, (0,255,0),3)
             
-            if approxContour.size == 8:
+            # pdb.set_trace()
+            print(f"before {approxContour.size}")
+
+            if approxContour.size > 8:
+                finalApproxContour = cv.approxPolyDP(approxContour, cv.arcLength(c, True) / 14, True)
+            else:
+                finalApproxContour = approxContour
+
+    
+            print(f" after {finalApproxContour.size}")
+
+            if finalApproxContour.size == 8:
                  #found this code at https://learnopencv.com/head-pose-estimation-using-opencv-and-dlib/
 
 
@@ -181,12 +192,12 @@ while True:
                                     [0, focal_length, center[1]],
                                     [0, 0, 1]], dtype = "double"
                                     )
-                approxContour=np.array(approxContour, dtype=np.float32)
+                finalApproxContour=np.array(finalApproxContour, dtype=np.float32)
                         
                 dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
                 
 
-                (success, rotation_vector, translation_vector) = cv.solvePnP(sample_points, approxContour, camera_matrix, dist_coeffs, flags = cv.SOLVEPNP_ITERATIVE)
+                (success, rotation_vector, translation_vector) = cv.solvePnP(sample_points, finalApproxContour, camera_matrix, dist_coeffs, flags = cv.SOLVEPNP_ITERATIVE)
 
                 if success:
                     points, _ = cv.projectPoints(sample_points, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
@@ -197,7 +208,7 @@ while True:
 
                     averagePoint += p
 
-                    cv.circle(yellow,tuple(p.reshape(2).astype(int).tolist()),4,(255,0,0),5)
+                    cv.circle(yellow,tuple(p.reshape(2).astype(int).tolist()),4,(255,0,0),2)
 
                 averagePoint /= 4
 
