@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Resources.InverseKinematics;
 import org.firstinspires.ftc.teamcode.Resources.Utlities;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
-import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 //This is the teleop we run during competitions.
 @TeleOp
@@ -53,14 +52,14 @@ public class MainTeleOp extends BaseTeleOp {
 //
 //                    robot.spampleArm.rotateElbowTo(kinematics.getElbowRotation());
 //                    robot.spampleArm.rotateShoulderTo(kinematics.getArmRotation());
-//                    robot.spampleArm.extendTo(kinematics.getArmLength());
+//                    robot.spampleArm.extendTo(kinematics.getArmExtension());
 //                    robot.pathFollowing.setTargetPosition(kinematics.getRobotX(),kinematics.getRobotY());
 //                    robot.anglePID.setTarget(kinematics.getRobotAngle());
 //                          }
                 telemetry.addData("kinematics X", kinematics.getRobotX());
                 telemetry.addData("kinematics Y", kinematics.getRobotY());
                 telemetry.addData("kinematics arm", kinematics.getArmRotation());
-                telemetry.addData("kinematics extension", kinematics.getArmLength());
+                telemetry.addData("kinematics extension", kinematics.getArmExtension());
                 telemetry.addData("kinematics elbow", kinematics.getElbowRotation());
                 
                 
