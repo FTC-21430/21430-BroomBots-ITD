@@ -17,10 +17,13 @@ public class PIDController {
   
   // The motor power (-1.0 ~ 1.0) the PD controller outputs
   private double power;
+  public double powerProportional;
+  public double powerIntegral;
+  public double powerDerivative;
   
   // The target number, NOTE this could be encoder ticks, degrees of rotation, or even inches on the field.
   // This is just a number without a specified unit.
-  private double target;
+  public double target;
   
   // Some data from the last iteration of the control loop.
   private double lastTime, lastError;
@@ -46,7 +49,13 @@ public class PIDController {
     // to ensure lastTime is correct for the first iteration of update.
     lastTime = runtime.time();
   }
-  
+
+  public void updateConstants (double pConstant,double iConstant, double dConstant){
+    this.pConstant = pConstant;
+    this.dConstant = dConstant;
+    this.iConstant = iConstant;
+  }
+
   /**
    * This updates the output of the PID controller.
    * @param currentPosition the current number from the motor,
@@ -63,7 +72,10 @@ public class PIDController {
     double derivative = (error - lastError) / (runtime.time() - lastTime);
     
     // the proportional factor affected by the derivative factor to get our output
-    power = -error * pConstant +(iSum * iConstant) + (-dConstant * derivative);
+    power = -error * pConstant +(-iSum * iConstant) + (-dConstant * derivative);
+    powerProportional= -error * pConstant;
+    powerIntegral= (-iSum * iConstant);
+    powerDerivative= (-dConstant * derivative);
     
     // to ensure that power is always within our range of -1 - 1
     // if power is - 5 then it is divided by 5 to give us -1

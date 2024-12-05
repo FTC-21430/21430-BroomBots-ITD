@@ -230,9 +230,21 @@ public class MainTeleOp extends BaseTeleOp {
             telemetry.addData("Runtime", currentlooptime-LastLoopTime);
             LastLoopTime=currentlooptime;
             telemetry.addData("MoterPower", robot.spampleArm.shoulderMotor.getPower());
+
+
+
+
+            telemetry.addData("UpperGraph", 100);
+            telemetry.addData("LowerGraph", 0);
+            telemetry.addData("TargetAngle", robot.spampleArm.shoulderPID.target);
+            telemetry.addData("MeasuedAngle", robot.spampleArm.getArmAngle());
+            telemetry.addData("Power", robot.spampleArm.shoulderMotor.getPower());
+            telemetry.addData("PowerProportional", robot.spampleArm.shoulderPID.powerProportional);
+            telemetry.addData("PowerIntegral", robot.spampleArm.shoulderPID.powerIntegral);
+            telemetry.addData("PowerDerivative", robot.spampleArm.shoulderPID.powerDerivative);
             telemetry.update();
-            
-            
+
+
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
 
 //This class is the code foundations for making the robot's arm move.
+@Config
 public class SpampleArm {
     
     private ElapsedTime runtime = null;
@@ -33,7 +35,7 @@ public class SpampleArm {
     }
     
     
-    PIDController shoulderPID;
+    public PIDController shoulderPID;
     
     public DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
@@ -62,7 +64,9 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
-    
+    public static double pConstant = 0.04;
+    public static double iConstant = 0;
+    public static double dConstant =0.001;
     private double elbowTimer = 0.0;
     
     /**
@@ -72,7 +76,7 @@ public class SpampleArm {
     public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
         
         
-        shoulderPID = new PIDController(0.04, 0,0.001, new ElapsedTime());
+        shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
         shoulderPID.setTarget(90);
         
         //Mapping/initializing motors
@@ -132,6 +136,7 @@ public class SpampleArm {
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
     public void updateArm(){
+        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
         shoulderPID.update(getArmAngle());
         shoulderMotor.setPower(shoulderPID.getPower());
         linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
