@@ -196,7 +196,7 @@ public class MainTeleOp extends BaseTeleOp {
                  */
                 targetAngle = Utlities.wrap(robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
                 
-                if (gamepad1.left_stick_x > 0.1 == false && gp1xJoy == true) {
+                if (Math.abs(gamepad1.left_stick_x) < 0.1 == false && gp1xJoy == true) {
                     targetAngle = robot.odometry.getRobotAngle();
                 }
                 
