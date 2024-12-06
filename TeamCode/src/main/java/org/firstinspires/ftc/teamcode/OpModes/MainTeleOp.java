@@ -168,7 +168,9 @@ public class MainTeleOp extends BaseTeleOp {
 //                    currentArmState = armState.spearHead;
 //                }
                 
-                
+                if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90){
+                    robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
+                }
                 
                 
                 // Sets slow mode if right bumper is pressed.

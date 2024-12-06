@@ -176,6 +176,10 @@ public class SpampleArm {
         twistServo.setServoPos(angle+16+ 90);
     }
 
+    public double getTwist(){
+        return twistServo.getServoPos() - 16 - 90;
+    }
+
     /**
      * Controls the four positions of the claw
      * @param position Must be one of the values from {@link org.firstinspires.ftc.teamcode.Robot.Systems.Claw.ClawPosition}
