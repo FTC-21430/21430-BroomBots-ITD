@@ -65,10 +65,12 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
-    public static double pConstant = 0.03;
+    public static double pConstant = 0.028;
     public static double iConstant = 0.06;
-    public static double dConstant =0;
+    public static double dConstant =0.0005;
     private double elbowTimer = 0.0;
+
+    private double shoulderTimer = 0.0;
     
     /**
      * Arm constructor
@@ -117,7 +119,11 @@ public class SpampleArm {
     public double getArmAngle(){
         return 38.412 * Math.pow(armPotentiometer.getVoltage(),2) - 232.78 * armPotentiometer.getVoltage() + 299.5 - robotTilt;
     }
-    
+
+    public double getArmExtension(){
+        return linearSlideMotor.getCurrentPosition() / linearSlideTicksPerInch;
+    }
+
     /**
      * Controls the shoulder motor
      * @param angle Angle for shoulder in degrees
@@ -137,7 +143,14 @@ public class SpampleArm {
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
     public void updateArm(){
-        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
+
+        if (getArmExtension() >= 7){
+            shoulderPID.setIntegralMode(false);
+        }else{
+            shoulderPID.setIntegralMode(true);
+        }
+
+//        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
         shoulderPID.update(getArmAngle());
         shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() *Math.PI/180)*0.12);
         linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
@@ -188,9 +201,10 @@ public class SpampleArm {
     
     //TODO: tune the tick values to be the most optimized for our needs.
     public boolean shoulderAtPosition(){
-        double shoulderErrorThreshold = 5; // in degrees
+        double shoulderTimeS = 1;
+        double shoulderErrorThreshold = 3; // in degrees
         // returns true if where we are is within 20 ticks of where we want to be.
-        return Math.abs(getArmAngle() - shoulderPID.getTarget()) < shoulderErrorThreshold;
+        return Math.abs(getArmAngle() - shoulderPID.getTarget()) < shoulderErrorThreshold && runtime.seconds() - shoulderTimer > shoulderTimeS;
     }
     public boolean extensionAtPosition(){
         double extensionTargetErrorThreshold = 1; // in inches
@@ -199,10 +213,12 @@ public class SpampleArm {
     }
     public boolean elbowAtPosition(){
         double elbowTimeS = 5;
-        return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
+        return runtime.seconds()-elbowTimer > elbowTimeS;
     }
     
-    
+    public void saveShoulderTime(){
+        shoulderTimer = runtime.seconds();
+    }
 
     // TODO Functions:
     /*

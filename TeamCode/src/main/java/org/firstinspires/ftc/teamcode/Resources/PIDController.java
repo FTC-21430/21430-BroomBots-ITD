@@ -14,6 +14,8 @@ public class PIDController {
   // The constants that you need to tune specifically for each system
   private double pConstant,iConstant, dConstant;
   private double iSum=0;
+
+  private double iNormal;
   
   // The motor power (-1.0 ~ 1.0) the PD controller outputs
   private double power;
@@ -45,7 +47,9 @@ public class PIDController {
     this.dConstant = dConstant;
     this.iConstant = iConstant;
     this.runtime = runtime;
-    
+
+    iNormal = iConstant;
+
     // to ensure lastTime is correct for the first iteration of update.
     lastTime = runtime.time();
   }
@@ -113,7 +117,18 @@ public class PIDController {
     minWrap = min;
     maxWrap = max;
   }
-  
+
+  public void setIntegralMode(boolean mode){
+    if(mode){
+      if (iConstant == 0){
+        iSum = 0;
+      }
+      iConstant = iNormal;
+    }else{
+      iConstant = 0;
+    }
+  }
+
   /**
    * used to get the power output from the update function.
    * @return type double which is the power of the motor, range of -1.0 ~ 1.0

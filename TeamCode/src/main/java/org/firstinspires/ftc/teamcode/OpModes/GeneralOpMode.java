@@ -47,7 +47,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new ITDbot();
-        robot.Init(hardwareMap,telemetry);
+        robot.Init(hardwareMap,telemetry,runtime);
         
     }
     
@@ -78,8 +78,8 @@ abstract public class GeneralOpMode extends LinearOpMode {
             case idle:
                 robot.spampleArm.rotateTwistTo(0);
                 robot.spampleArm.rotateElbowTo(0);
-                //robot.spampleArm.extendTo(0);
-                //robot.spampleArm.rotateShoulderTo(90);
+                robot.spampleArm.extendTo(0);
+                robot.spampleArm.rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
@@ -104,14 +104,15 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 break;
             case grabSample:
                 robot.spampleArm.rotateTwistTo(-90);
-                robot.spampleArm.rotateShoulderTo(35);
+                robot.spampleArm.rotateShoulderTo(31);
+
                 if (robot.spampleArm.shoulderAtPosition()){
                     robot.spampleArm.rotateElbowTo(65);
                 }
                 break;
             case grabSample2:
                 robot.spampleArm.rotateTwistTo(-90);
-                robot.spampleArm.rotateShoulderTo(25);
+                robot.spampleArm.rotateShoulderTo(21);
                 robot.spampleArm.rotateElbowTo(65);
                 break;
 

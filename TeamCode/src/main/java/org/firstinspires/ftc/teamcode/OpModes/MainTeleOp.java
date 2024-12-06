@@ -86,43 +86,49 @@ public class MainTeleOp extends BaseTeleOp {
                 
                 //  claw Positions
                 
-//                if (gamepad1.a){
-//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
-//                }
-//                if (gamepad1.b){
-//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
-//                }
-//                if (gamepad1.y){
-//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
-//                }
-//                if (gamepad1.x){
-//                    robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
-//                }
                 if (gamepad1.a){
-                    robot.spampleArm.rotateShoulderTo(90);
-                }
-                if (gamepad1.x){
-                    robot.spampleArm.rotateShoulderTo(30);
-                }
-                if (gamepad1.y){
-                    robot.spampleArm.rotateShoulderTo(70);
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
                 }
                 if (gamepad1.b){
-                    robot.spampleArm.rotateShoulderTo(150);
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
                 }
+                if (gamepad1.y){
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
+                }
+                if (gamepad1.x){
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+                }
+
+                // angles for testing only
+
+//                if (gamepad1.a){
+//                    robot.spampleArm.rotateShoulderTo(90);
+//                }
+//                if (gamepad1.x){
+//                    robot.spampleArm.rotateShoulderTo(30);
+//                }
+//                if (gamepad1.y){
+//                    robot.spampleArm.rotateShoulderTo(70);
+//                }
+//                if (gamepad1.b){
+//                    robot.spampleArm.rotateShoulderTo(150);
+//                }
+                // lengths for testing only
+//                if (gamepad1.dpad_up){
+//                    robot.spampleArm.extendTo(0);
+//                }
+//                if (gamepad1.dpad_left){
+//                    robot.spampleArm.extendTo(19);
+//                }
+//                if (gamepad1.dpad_right){
+//                    robot.spampleArm.extendTo(6);
+//                }
+//                if (gamepad1.dpad_down){
+//                    robot.spampleArm.extendTo(12);
+//                }
+
+
                 // arm positions
-                if (gamepad1.dpad_up){
-                    robot.spampleArm.extendTo(0);
-                }
-                if (gamepad1.dpad_left){
-                    robot.spampleArm.extendTo(19);
-                }
-                if (gamepad1.dpad_right){
-                    robot.spampleArm.extendTo(6);
-                }
-                if (gamepad1.dpad_down){
-                    robot.spampleArm.extendTo(12);
-                }
                 if (gamepad2.y){
                     currentArmState = armState.highBasket;
                 }
@@ -158,15 +164,16 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.dpad_right){
                     currentArmState = armState.climberReady;
                 }
-//                if (gamepad1.dpad_left){
-//                    currentArmState = armState.grabSample;
-//                }
-//                if (gamepad1.dpad_up){
-//                    currentArmState= armState.grabSample2;
-//                }
-//                if (gamepad1.dpad_right){
-//                    currentArmState = armState.spearHead;
-//                }
+                if (gamepad1.dpad_left){
+                    robot.spampleArm.saveShoulderTime();
+                    currentArmState = armState.grabSample;
+                }
+                if (gamepad1.dpad_up){
+                    currentArmState= armState.grabSample2;
+                }
+                if (gamepad1.dpad_right){
+                    currentArmState = armState.spearHead;
+                }
                 
                 
                 
@@ -180,7 +187,9 @@ public class MainTeleOp extends BaseTeleOp {
                     robot.driveTrain.setSpeedMultiplier(1);
                 }
                 
-                
+
+
+
                 /** Target angle gives the angle from -180 to 180 that the robot wants to be at
                  *
                  * Wrap makes the angle reset at -180 or 180 when we make a full rotation
@@ -200,7 +209,7 @@ public class MainTeleOp extends BaseTeleOp {
                 
                 // These call functions and pass the relevant parameters
                 robot.anglePID.setTarget(targetAngle);
-                robot.anglePID.update(robot.odometry.getRobotAngle());
+//                robot.anglePID.update(robot.odometry.getRobotAngle());
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
                 
             }
@@ -218,6 +227,9 @@ public class MainTeleOp extends BaseTeleOp {
             
             
             // Telemetry for testing/debug purposes
+
+            telemetry.addData("arm extension", robot.spampleArm.getArmExtension());
+
             telemetry.addData("current Speed", robot.driveTrain.getSpeedMultiplier());
             telemetry.addData("currentState", currentArmState);
             telemetry.addData("Robot Angle",robot.odometry.getRobotAngle());

@@ -12,10 +12,11 @@ public class ITDbot extends Robot {
     public static double proportionalConstantAngleDef = 0.02;
     public SpampleArm arm;
  
-    public void Init(HardwareMap hardwareMap, Telemetry telemetry){
+    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime){
         super.init(hardwareMap, telemetry,0, 0, 0);
-        spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
+        spampleArm = new SpampleArm(hardwareMap, runtime);
 }
+
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
     @Override
     public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle){
