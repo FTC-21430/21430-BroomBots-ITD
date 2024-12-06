@@ -62,27 +62,34 @@ public class PIDController {
    *                        this is a sensor output that is used to calculate the new error
    */
   public void update(double currentPosition) {
+     double deltaTime = (runtime.time()-lastTime);
     // the error of how far you are from where you want to be
     // added wrap to the error equation
     double error = currentPosition - target;
     error = Utlities.wrap(error);
-    iSum += error * (runtime.time()-lastTime);
+    iSum += error *deltaTime;
+
     
     // The derivative factor scales down the Proportional factor so that we don't over shoot our target.
-    double derivative = (error - lastError) / (runtime.time() - lastTime);
+    double derivative = (error - lastError) / deltaTime;
     
     // the proportional factor affected by the derivative factor to get our output
     power = -error * pConstant +(-iSum * iConstant) + (-dConstant * derivative);
+
+    if (Math.abs(power) >1){
+      iSum -= error * deltaTime;
+      power = -error * pConstant  + (-dConstant * derivative);
+    }
+
     powerProportional= -error * pConstant;
     powerIntegral= (-iSum * iConstant);
     powerDerivative= (-dConstant * derivative);
-    
     // to ensure that power is always within our range of -1 - 1
     // if power is - 5 then it is divided by 5 to give us -1
     if (power > 1 || power < -1) power /= Math.abs(power);
     
     // updates the last variables that we need for the next iteration of the loop.
-    lastTime = runtime.time();
+    lastTime+= deltaTime;
     lastError = error;
   }
   

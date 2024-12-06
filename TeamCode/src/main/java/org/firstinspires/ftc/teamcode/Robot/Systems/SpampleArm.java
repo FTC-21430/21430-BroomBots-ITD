@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Resources.PIDController;
 //This class is the code foundations for making the robot's arm move.
 @Config
 public class SpampleArm {
+
     
     private ElapsedTime runtime = null;
     
@@ -64,9 +65,9 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
-    public static double pConstant = 0.04;
-    public static double iConstant = 0;
-    public static double dConstant =0.001;
+    public static double pConstant = 0.03;
+    public static double iConstant = 0.06;
+    public static double dConstant =0;
     private double elbowTimer = 0.0;
     
     /**
@@ -138,7 +139,7 @@ public class SpampleArm {
     public void updateArm(){
         shoulderPID.updateConstants(pConstant, iConstant, dConstant);
         shoulderPID.update(getArmAngle());
-        shoulderMotor.setPower(shoulderPID.getPower());
+        shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() *Math.PI/180)*0.12);
         linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
     
