@@ -88,7 +88,6 @@ public class InverseKinematics {
     }
 
     public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
-        //l is equal to h-pivot offset
         double h = Math.hypot(Tx-Rx,Ty-Ry);
 
       return h <= MAX_H;
