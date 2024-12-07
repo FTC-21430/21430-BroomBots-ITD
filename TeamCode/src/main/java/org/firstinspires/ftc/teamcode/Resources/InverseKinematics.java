@@ -29,7 +29,7 @@ package org.firstinspires.ftc.teamcode.Resources;
 public class InverseKinematics {
 
     // how much the arm extension should be out
-    private double armLength;
+    private double armExtension;
     
     // the target rotation of the arm pivot
     private double armRotation;
@@ -50,112 +50,126 @@ public class InverseKinematics {
     //Todo tune these values correctly
     
     // the mechanical limits of the mechanisms so that you cannot pass a value that would break the robot.
-    private final double armExtensionMax  = 19.5, armExtensionMin  = 0.0;
+    private final double ARM_EXTENSION_MIN = 0.0, ARM_EXTENSION_MAX = 19.5;
 
-    private final double armRotationMin   = 8.0, armRotationMax   = 180.0;
+    private final double ARM_ROTATION_MIN = 8.0, ARM_ROTATION_MAX = 180.0;
 
-    private final double elbowRotationMin = -180.0, elbowRotationMax = 180.0;
+    private final double ELBOW_ROTATION_MIN = -180.0, ELBOW_ROTATION_MAX = 180.0;
 
-    private final double twistMin         = 0, twistMax         = 180.0;
+    private final double TWIST_MIN = 0, TWIST_MAX = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    private final double elbowOffset = 4.0;
+    private final double ELBOW_OFFSET = 4.0;
     
     // the length in inches of the non-extending shaft.
-    private final double elbowLength = 11.18;
+    private final double ELBOW_LENGTH = 11.18;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double pivotOffset = 2.55;
+    private final double PIVOT_OFFSET = 2.55;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
-    private final double chassisHeight = 5.73;
-    
-    
+    private final double CHASSIS_HEIGHT = 5.73;
 
-    private final double tubeLength = 16.75;
+    private final double TUBE_LENGTH = 16.75;
 
     // how close we can be to a sample and still pick it up without moving back = ~21.5
-    private final double minL = pivotOffset + Math.sqrt(tubeLength*tubeLength- Math.pow(elbowLength + 1.5 - chassisHeight,2));
+    private final double MIN_H = PIVOT_OFFSET + Math.hypot(TUBE_LENGTH, ELBOW_LENGTH + 1.5 - CHASSIS_HEIGHT);
     
     // how far away a sample can be without us breaking the expansion limit
-    private final double maxL = 26; // inches from center the of the robot
+    private final double MAX_H = 26; // inches from center the of the robot
     
     
     // the constructor for this class.... that needs to do nothing.. yup
     public InverseKinematics() {
-
+        /* Suggestion: Have constructor take robot position and sample position as arguments
+        move the calculate kinematics functionality to the constructor.
+        (But not the twist)
+         */
     }
 
-    //TODO: re-comment main code as I did it wrong the first time - Tobin
-
-    
-    
     public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
-        double l = calculateDistance(Tx,Ty,Rx,Ry)-pivotOffset;
-      
-      return !(l + pivotOffset > maxL);
-//        !(l < minL) &&
+        double h = Math.hypot(Tx-Rx,Ty-Ry);
+
+      return h <= MAX_H;
+
     }
     /**
-     * The function you call from the main code to calculate the position of the robot.
-     * This function decides which side you are trying to grab from then calls the corresponding method
-     * @param xCurrent the current robot x position used to figure out the side.
-     * @param yCurrent the current robot Y position used to figure out the side.
-     * @param targetX the x position of the sample in field coordinates
-     * @param targetY the y position of the sample in field coordinates
+     * @param currentX the current robot x position used to figure out the side.
+     * @param currentY the current robot Y position used to figure out the side.
+     * @param sampleX the x position of the sample in field coordinates
+     * @param sampleY the y position of the sample in field coordinates
      * @param targetZ how far off the ground should the inside of the claw move to.
-     * @param targetAngle the angle of the sample on the z axis, this cannot pickup samples that are not
+     * @param sampleAngle the angle of the sample on the z axis, this cannot pickup samples that are not
      *                   laying flat on the floor
-     *      * 1) Adjust robot x,y for elbow offset
-     *      * 2) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
-     *      * 3) Find distance from elbow-offset-adjusted robot to sample
-     *      * 4) Find target Robot xy based on least movement to reach sample
-     *      * 5) Find arm extension, shoulder angle based on distance to sample and target height
-     *      * 6) tbd - Find twist
+     *      * 1) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
+     *      * 2) Adjust robot x,y for elbow offset
+     *      * 3) Find target Robot xy based on least movement to reach sample
+     *      * 4) Find arm arm rotation and arm extension, based on distance to sample and target height
+     *      * 5) tbd - Find twist
      */
-    public void calculateKinematics(double xCurrent, double yCurrent, double targetX, double targetY, double targetZ, double targetAngle) {
-    // 1) Adjust robot x,y for elbow offset
+    public void calculateKinematics(double currentX, double currentY, double sampleX, double sampleY, double targetZ, double sampleAngle) {
+   // 1) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
+        final double COORDINATE_ADJUSTMENT = 90.0;
 
-        //to be continued double adjX = xCurrent * Math.cos(Math.toRadians())
-        robotX = xCurrent;
-        robotY = yCurrent;
-        double l = calculateDistance(targetX,targetY,xCurrent,yCurrent)-pivotOffset;
-        
-        if (l < minL){
-            double lengthError = minL - l;
-            robotX -= lengthError * (Math.cos(robotAngle));
-            robotY -= lengthError * (Math.sin(robotAngle));
-        }
-        
-        
-        robotAngle = Math.atan2((targetY- yCurrent),(targetX-xCurrent)) * (180/Math.PI) - 90;
-        // subtracted by 90 degrees because of the weird definition of our coordinate system compared to the worlds standards, they should fix theirs
+        double a = sampleY - currentY; // adjacent side
+        double o = sampleX - currentX; // opposite side
+
         // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
+        robotAngle = Math.toDegrees(Math.atan2(a,o))-COORDINATE_ADJUSTMENT;
+
+     // 2) Adjust robot x,y for elbow offset
+        robotX = currentX - ELBOW_OFFSET * Math.cos(Math.toRadians(robotAngle));
+        robotY = currentY - ELBOW_OFFSET * Math.sin(Math.toRadians(robotAngle));
+
+     // 3) Find target Robot xy based on least movement to reach sample
+        double h = Math.hypot(sampleX-robotX,sampleY-robotY);
         
-        robotX -= elbowOffset * (Math.cos(robotAngle));
-        robotY += elbowOffset * (Math.sin(robotAngle));
-        
-        double h = elbowLength - targetZ + chassisHeight;
-        armRotation = Math.atan2(h,l) * (180/Math.PI);
-        armLength = Math.sqrt(l*l + h*h)-tubeLength;
+        if (h < MIN_H){
+            double lengthError = MIN_H - h;
+            robotX -= lengthError * Math.cos(robotAngle);
+            robotY -= lengthError * Math.sin(robotAngle);
+            h=MIN_H;
+        }
+
+        if (h > MAX_H){
+            double lengthError = h - MAX_H;
+            robotX += lengthError * Math.cos(robotAngle);
+            robotY += lengthError * Math.sin(robotAngle);
+            h=MAX_H;
+        }
+
+    // 4) Find arm arm rotation and arm extension, based on distance to sample and target height
+        // adjacent: horizontal distance from pivot to target
+        double elbowA = h - PIVOT_OFFSET;
+        // opposite: vertical distance from chassis to elbow height
+        double elbowO = ELBOW_LENGTH + targetZ - CHASSIS_HEIGHT;
+
+        armRotation = Math.toDegrees(Math.atan2(elbowO,elbowA));
+        // because we've already checked that distance from robot to sample
+        // is >= MIN_H and <=MAX_H, armRotation and armExtension should be in range
+        // but just in case ...
+        armRotation = Math.max(armRotation,ARM_ROTATION_MIN);
+        armRotation = Math.min(armRotation, ARM_ROTATION_MAX);
+
+        armExtension = Math.hypot(elbowO,elbowA)- TUBE_LENGTH;
+        armExtension = Math.max(armExtension, ARM_EXTENSION_MIN);
+        armExtension = Math.min(armExtension, ARM_EXTENSION_MAX);
+
+        // elbow rotation and arm rotation are complementary angles
         elbowRotation = 90 - armRotation;
-        
-        twist = targetAngle - (-robotAngle);
-        
-        if (armRotation < armRotationMin) armRotation = armRotationMin;
-        if (armRotation > armRotationMax) armRotation = armRotationMax;
-        
-        if (armLength < armExtensionMin) armLength = armExtensionMin;
-        if (armLength > armExtensionMax) armLength = armExtensionMax;
-        
+
+        // 5) Find twist
+        /* Seems like this could be separate from inverse kinematics,
+        as you might have multiple options for gripping a sample
+        once the claw is above the sample.
+         */
+
+        twist = sampleAngle - (-robotAngle);
     }
-    
-    public static double calculateDistance(double x1, double y1, double x2, double y2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    }
+
     // returns how much the arm should be extended
-    public double getArmLength() {
-        return armLength;
+    public double getArmExtension() {
+        return armExtension;
     }
 
     // returns how much the arm should be rotated
@@ -187,12 +201,4 @@ public class InverseKinematics {
     public double getTwist(){
         return twist;
     }
-    
-    // clips the values so the mechanisms do not exceed the mechanical limits
-    private double clipRange(double input, double min, double max){
-        if (input < min) input = min;
-        if (input > max) input = max;
-        return input;
-    }
-
 }
