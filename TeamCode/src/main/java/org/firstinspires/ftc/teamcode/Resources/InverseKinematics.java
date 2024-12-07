@@ -95,8 +95,6 @@ public class InverseKinematics {
 
     }
     /**
-     * The function you call from the main code to calculate the position of the robot.
-     * This function decides which side you are trying to grab from then calls the corresponding method
      * @param currentX the current robot x position used to figure out the side.
      * @param currentY the current robot Y position used to figure out the side.
      * @param sampleX the x position of the sample in field coordinates
