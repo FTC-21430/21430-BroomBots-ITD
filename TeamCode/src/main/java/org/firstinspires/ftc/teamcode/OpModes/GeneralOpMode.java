@@ -105,7 +105,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 extensionMoved = false;
                 break;
             case grabSample:
-                robot.spampleArm.rotateTwistTo(-90);
+
                 robot.spampleArm.rotateShoulderTo(31);
 
                 if (robot.spampleArm.shoulderAtPosition()){
@@ -113,7 +113,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 }
                 break;
             case grabSample2:
-                robot.spampleArm.rotateTwistTo(-90);
+
                 robot.spampleArm.rotateShoulderTo(21);
                 robot.spampleArm.rotateElbowTo(65);
                 break;

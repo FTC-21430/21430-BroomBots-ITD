@@ -32,6 +32,9 @@ public class MainTeleOp extends BaseTeleOp {
         kinematics = new InverseKinematics();
         waitForStart();
         while (opModeIsActive()) {
+
+            robot.updateLoopTime();
+
             // get and update functions
             robot.odometry.updateOdometry();
             
@@ -150,9 +153,6 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.x){
                     currentArmState = armState.lowBasket;
                 }
-                if (gamepad2.dpad_up){
-                    currentArmState = armState.dropSample;
-                }
                 if (gamepad2.dpad_left){
                     currentArmState = armState.grabSpecimen;
                 }
@@ -207,11 +207,11 @@ public class MainTeleOp extends BaseTeleOp {
                  *
                  * We multiply the variables by each other and add it to our current angle to determine our new target angle
                  */
-                targetAngle = Utlities.wrap(robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
+                targetAngle = (robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
 
-                if (Math.abs(gamepad1.left_stick_x) < 0.1 == false && gp1xJoy == true) {
-                    targetAngle = robot.odometry.getRobotAngle();
-                }
+//                if (Math.abs(gamepad1.right_stick_x) < 0.1 == false && gp1xJoy == true) {
+//                    targetAngle = robot.odometry.getRobotAngle();
+//                }
                 
                 // These call functions and pass the relevant parameters
                 robot.anglePID.setTarget(targetAngle);
@@ -230,7 +230,7 @@ public class MainTeleOp extends BaseTeleOp {
             
             // the old input for the left stick x axis for gamepad 1,
             // updated at the end of the loop so the turning logic works :)
-            gp1xJoy = gamepad1.left_stick_x > 0.1;
+            gp1xJoy = gamepad1.right_stick_x > 0.1;
 
             
             

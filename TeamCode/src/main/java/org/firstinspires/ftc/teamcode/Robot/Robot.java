@@ -88,12 +88,16 @@ public class Robot {
   
   public double getDeltaTime() {
     double deltaTime;
-    currentLoopTime = runtime.seconds();
     deltaTime = currentLoopTime - previousLoopTime;
-    previousLoopTime = currentLoopTime;
     return deltaTime;
   }
-  
+
+  public void updateLoopTime() {
+    previousLoopTime = currentLoopTime;
+    currentLoopTime = runtime.seconds();
+
+  }
+
   public void IMUReset() {
     odometry.overridePosition(odometry.getRobotX(),odometry.getRobotY(),0);
     anglePID.setTarget(0);
