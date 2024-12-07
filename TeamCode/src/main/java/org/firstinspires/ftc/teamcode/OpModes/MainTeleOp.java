@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Resources.Utlities;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
+
 //This is the teleop we run during competitions.
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
@@ -16,6 +17,7 @@ public class MainTeleOp extends BaseTeleOp {
     boolean gp1xJoy = false;
     boolean gp2b = false;
     public double LastLoopTime;
+
     
     @Override
     public void runOpMode() throws InterruptedException {
@@ -23,8 +25,10 @@ public class MainTeleOp extends BaseTeleOp {
         final double slowSpeedMultiplier = 0.3;
         final double mediumSpeedMultiplier = 0.6;
         initialize();
+
         telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+
         kinematics = new InverseKinematics();
         waitForStart();
         while (opModeIsActive()) {
@@ -62,19 +66,17 @@ public class MainTeleOp extends BaseTeleOp {
                 telemetry.addData("kinematics X", kinematics.getRobotX());
                 telemetry.addData("kinematics Y", kinematics.getRobotY());
                 telemetry.addData("kinematics arm", kinematics.getArmRotation());
-                telemetry.addData("kinematics extension", kinematics.getArmLength());
+                telemetry.addData("kinematics extension", kinematics.getArmExtension());
                 telemetry.addData("kinematics elbow", kinematics.getElbowRotation());
                 
                 
-                
+
                 
                 robot.anglePID.update(robot.odometry.getRobotAngle());
                 robot.pathFollowing.followPath(robot.odometry.getRobotX(), robot.odometry.getRobotY(), robot.odometry.getRobotAngle());
                 robot.driveTrain.setDrivePower(robot.pathFollowing.getPowerF(), robot.pathFollowing.getPowerS(), robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
 
-//
-//
             
             } else {
                 
@@ -129,6 +131,7 @@ public class MainTeleOp extends BaseTeleOp {
 
 
                 // arm positions
+
                 if (gamepad2.y){
                     currentArmState = armState.highBasket;
                 }
@@ -140,6 +143,7 @@ public class MainTeleOp extends BaseTeleOp {
                     }
                 }
                 gp2b = gamepad2.b;
+
                 if (gamepad2.a){
                     currentArmState = armState.lowChamber;
                 }
@@ -165,6 +169,7 @@ public class MainTeleOp extends BaseTeleOp {
                     currentArmState = armState.climberReady;
                 }
                 if (gamepad1.dpad_left){
+
                     robot.spampleArm.saveShoulderTime();
                     currentArmState = armState.grabSample;
                 }
@@ -180,6 +185,7 @@ public class MainTeleOp extends BaseTeleOp {
                 }
                 
                 
+
                 // Sets slow mode if right bumper is pressed.
                 if (gamepad1.right_bumper) {
                     robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
@@ -189,8 +195,6 @@ public class MainTeleOp extends BaseTeleOp {
                     robot.driveTrain.setSpeedMultiplier(1);
                 }
                 
-
-
 
                 /** Target angle gives the angle from -180 to 180 that the robot wants to be at
                  *
@@ -204,21 +208,23 @@ public class MainTeleOp extends BaseTeleOp {
                  * We multiply the variables by each other and add it to our current angle to determine our new target angle
                  */
                 targetAngle = Utlities.wrap(robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
-                
+
                 if (Math.abs(gamepad1.left_stick_x) < 0.1 == false && gp1xJoy == true) {
                     targetAngle = robot.odometry.getRobotAngle();
                 }
                 
                 // These call functions and pass the relevant parameters
                 robot.anglePID.setTarget(targetAngle);
-//                robot.anglePID.update(robot.odometry.getRobotAngle());
+
+
+                robot.anglePID.update(robot.odometry.getRobotAngle());
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
                 
             }
             
             
             updateState();
-            
+
             
             robot.spampleArm.updateArm();
             

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import org.firstinspires.ftc.teamcode.Resources.Odometry;
+import org.firstinspires.ftc.teamcode.Resources.AprilTagSystem;
+import org.firstinspires.ftc.teamcode.Resources.OdometryOTOS;
 import org.firstinspires.ftc.teamcode.Robot.Systems.MecanumDriveTrain;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -20,8 +21,8 @@ public class Robot {
   
   //used for how fast the turning input is used.
   // the number for maxTurnDegPerSecond is how much the robot can turn for one degree
-  public static double maxTurnDegPerSecond = 500;
-  public static double pCon = 0.017;
+  public static double maxTurnDegPerSecond = 280;
+  public static double pCon = 0.025;
   public static double dCon = 0;
   
   private double drive;
@@ -30,14 +31,15 @@ public class Robot {
   //TODO Make more permanent system to detect turning
   public boolean turningBoolean;
   public MecanumDriveTrain driveTrain;
-  public Odometry odometry;
+  public OdometryOTOS odometry;
   
-  public SpampleArm spampleArm;
+
   
   private ElapsedTime runtime = new ElapsedTime();
   //TODO Tune the pConstant and d Constant numbers, these are place holders.
   public PIDController anglePID = new PIDController(pCon, 0, dCon, runtime);
   
+  public SpampleArm spampleArm;
   FtcDashboard dashboard;
   private double robotHeading;
   private double lastTimeAngle;
@@ -57,22 +59,30 @@ public class Robot {
   private boolean IsProgramAutonomous;
   public PathFollowing pathFollowing;
  
-  
+  public AprilTagSystem aprilTags;
   public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle) {
     
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
-    odometry = new Odometry(robotX, robotY, robotAngle, telemetry, hardwareMap);;
+
+    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap);
     //TODO These numbers are placeholders
-    pathFollowing = new PathFollowing(1, 1, 1, 1, runtime);
+    pathFollowing = new PathFollowing(0.12, 0.17, 0.01, 0.01, runtime);
+    spampleArm = new SpampleArm(hardwareMap, runtime);
+    aprilTags = new AprilTagSystem(hardwareMap);
   }
   
   // you call this function in a main auto opMode to make the robot move somewhere.
   // This is the foundation that every robot should need but you should more season specific things in the bot class.
   public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle) {
     while (distanceCircle(targetX, targetY) > targetCircle && opModeActive) {
+      pathFollowing.setTargetPosition(targetX,targetY);
+      anglePID.setTarget(robotAngle);
       //put all control things that teleop has in here
+      anglePID.update(odometry.getRobotAngle());
       pathFollowing.followPath(odometry.getRobotX(), odometry.getRobotY(), odometry.getRobotAngle());
       driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
+      
+      spampleArm.updateArm();
     }
   }
   
@@ -85,7 +95,7 @@ public class Robot {
   }
   
   public void IMUReset() {
-    odometry.IMUReset();
+    odometry.overridePosition(odometry.getRobotX(),odometry.getRobotY(),0);
     anglePID.setTarget(0);
   }
   

@@ -11,11 +11,12 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 // Creates robot object. All OpModes inherit this.
 abstract public class GeneralOpMode extends LinearOpMode {
     public ITDbot robot;
-    
+
     public ElapsedTime runtime = new ElapsedTime();
     
     
     // variables for state machine logic
+
     
     public enum armState {
         highBasket,
@@ -51,10 +52,11 @@ abstract public class GeneralOpMode extends LinearOpMode {
         
     }
     
-    
+
     // Arm state machine logic is here because all Op-modes need to use it.
     
     public void updateState(){
+
         switch (currentArmState){
             case lowChamber:
                 robot.spampleArm.rotateTwistTo(0);
@@ -243,6 +245,7 @@ abstract public class GeneralOpMode extends LinearOpMode {
                 elbowMoved = false;
                 extensionMoved = false;
         }
+
     }
     
 }
