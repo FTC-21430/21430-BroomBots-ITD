@@ -1,34 +1,38 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.Resources.PIDController;
+
 
 //This class is the code foundations for making the robot's arm move.
+@Config
 public class SpampleArm {
+
     
     private ElapsedTime runtime = null;
     private double elbowAngleOffset = 1029;
     private double shoulderAngleOffset;
-    
+
+    public boolean extensionMoved = false;
+    public boolean shoulderMoved = false;
+    public boolean elbowMoved = false;
+
+    public armState currentArmState = armState.idle;
+
     //Arm sensors
     public AnalogInput armPotentiometer = null;
     
     //Actuators for the arm
+
     
-    enum armPositions{
-        highBasket,
-        lowBasket,
-        highChamber,
-        lowChamber,
-        dropOff,
-        idle,
-        
-    }
-    
+    public PIDController shoulderPID;
+
     public DcMotor shoulderMotor;
     DcMotor linearSlideMotor;
     ServoPlus elbowServo;
@@ -37,7 +41,10 @@ public class SpampleArm {
     
     ServoPlus twistServo;
     Claw claw;
-
+// the robot pitch from the field floor... odd...
+    
+    double robotTilt = 1.0;
+    
     double targetExtension = 0;
     
     //TODO: replace with correct value; calibrated for 312 RPM motor
@@ -56,18 +63,30 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
+    public static double pConstant = 0.028;
+    public static double iConstant = 0.06;
+    public static double dConstant =0.0005;
+
+
+    private double shoulderTimer = 0.0;
+    
     /**
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
     public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
+
+        
+        shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
+        shoulderPID.setTarget(90);
+
         //Mapping/initializing motors
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
-        shoulderMotor.setTargetPosition(0);
+        
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shoulderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // you need to set how fast the motor moves before it will move at all.
-        shoulderMotor.setPower(1);
+        
         shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
@@ -90,14 +109,19 @@ public class SpampleArm {
         shoulderAngleOffset = getArmAngle();
         
         this.runtime = runtime;
+
     }
 
     
     
     public double getArmAngle(){
-        return -143.12* armPotentiometer.getVoltage()+248.72;
+        return 38.412 * Math.pow(armPotentiometer.getVoltage(),2) - 232.78 * armPotentiometer.getVoltage() + 299.5 - robotTilt;
     }
-    
+
+    public double getArmExtension(){
+        return linearSlideMotor.getCurrentPosition() / linearSlideTicksPerInch;
+    }
+
     /**
      * Controls the shoulder motor
      * @param angle Angle for shoulder in degrees
@@ -122,19 +146,32 @@ public class SpampleArm {
         if (angle < 8.5) {
             angle = 8.5;
         }
-        if (angle > 169.5) {
-            angle = 169.5;
+        if (angle > 178) {
+            angle = 178;
         }
-        
-        shoulderMotor.setTargetPosition((int) ((correctedAngle- shoulderAngleOffset) * shoulderTicksPerDegrees));
+
+        shoulderPID.setTarget(angle);
+
+
     }
     
     /**
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
-    public void updateSlide(){
+    public void updateArm(){
+        updateState();
+        if (getArmExtension() >= 7){
+            shoulderPID.setIntegralMode(false);
+        }else{
+            shoulderPID.setIntegralMode(true);
+        }
+
+//        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
+        shoulderPID.update(getArmAngle());
+        shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() *Math.PI/180)*0.12);
         linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
     }
+    
     
     /**
      * Controls the linear slide
@@ -165,7 +202,13 @@ public class SpampleArm {
      * @param angle Angle for twist in degrees
      */
     public void rotateTwistTo (double angle){
-        twistServo.setServoPos(angle+15);
+        // values to ensure the twist goes where we need it to, then rotated by 90 degrees
+        twistServo.setServoPos(angle+16+ 90);
+    }
+
+    public double getTwist(){
+        return twistServo.getServoPos() - 16 - 90;
+
     }
 
     /**
@@ -175,8 +218,28 @@ public class SpampleArm {
     public void setClawPosition (Claw.ClawPosition position){
         claw.setPosition(position);
     }
-
-
+    
+    
+    //TODO: tune the tick values to be the most optimized for our needs.
+    public boolean shoulderAtPosition(){
+        double shoulderTimeS = 1.5;
+        double shoulderErrorThreshold = 3; // in degrees
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(getArmAngle() - shoulderPID.getTarget()) < shoulderErrorThreshold && runtime.seconds() - shoulderTimer > shoulderTimeS;
+    }
+    public boolean extensionAtPosition(){
+        double extensionTargetErrorThreshold = 1; // in inches
+        // returns true if where we are is within 20 ticks of where we want to be.
+        return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
+    }
+    public boolean elbowAtPosition(){
+        double elbowTimeS = 5;
+        return runtime.seconds()-elbowTimer > elbowTimeS;
+    }
+    
+    public void saveShoulderTime(){
+        shoulderTimer = runtime.seconds();
+    }
 
     // TODO Functions:
     /*
@@ -199,28 +262,244 @@ public class SpampleArm {
 
     //High Basket
     //fix variables
-    
-   
+
+    public enum armState {
+        highBasket,
+        lowBasket,
+        highChamber,
+        lowChamber,
+        idle,
+        grabSpecimen,
+        grabSample,
+        grabSample2,
+        climberReady,
+        level1Assent,
+        dropSample,
+        specimenIdle,
+        sampleIdle,
+        scoreHighChamber,
+        spearHead,
+        intake,
+        init
+    }
+
+    public void updateState(){
+
+        switch (currentArmState){
+            case lowChamber:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case highBasket:
+
+                //setClawPosition(Claw.ClawPosition.grabOutside);
+                rotateTwistTo(90);
+                rotateElbowTo(-147);
+                extendTo(19.5);
+                rotateShoulderTo(92);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case idle:
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case lowBasket:
+
+                rotateTwistTo(90);
+                rotateElbowTo(-175);
+                extendTo(0);
+                rotateShoulderTo(100);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case dropSample:
+
+                rotateTwistTo(90);
+                rotateElbowTo(-45);
+                extendTo(0);
+                rotateShoulderTo(135);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case grabSample:
+
+                rotateShoulderTo(31);
+
+                if (shoulderAtPosition()){
+                    rotateElbowTo(65);
+                }
+                break;
+            case grabSample2:
+
+                rotateShoulderTo(21);
+                rotateElbowTo(65);
+                break;
+
+
+
+//                if (!shoulderAtPosition() || !shoulderMoved){
+//                    if (!shoulderMoved) {
+//                        rotateShoulderTo(22);
+//                        shoulderMoved = true;
+//                    }
+//                } else if (!extensionAtPosition() || !extensionMoved) {
+//                    if (!extensionMoved) {
+//                        extendTo(5);
+//                        extensionMoved = true;
+//                    }
+//                } else {
+//                    shoulderMoved = false;
+//                    elbowMoved = false;
+//                    extensionMoved = false;
+//                }
+
+            case highChamber:
+
+                rotateTwistTo(-90);
+                rotateElbowTo(5);
+                rotateShoulderTo(90);
+
+                if (shoulderAtPosition()) {
+                    extendTo(17);
+                }
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case climberReady:
+
+                rotateTwistTo(0);
+                rotateElbowTo(1);
+                extendTo(1);
+                rotateShoulderTo(1);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case grabSpecimen:
+
+                rotateTwistTo(90);
+                if (!elbowAtPosition() || !elbowMoved){
+                    if(!elbowMoved) {
+                        rotateElbowTo(-40);
+                        elbowMoved=true;
+                    }else {
+                        extendTo(5);
+                        rotateShoulderTo(118);
+                        elbowMoved=false;
+                        shoulderMoved=false;
+                        extensionMoved=false;
+                    }
+                }
+
+                break;
+            case level1Assent:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(83);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case specimenIdle:
+
+                rotateTwistTo(0);
+                if (!shoulderAtPosition() || !shoulderMoved) {
+                    if (!shoulderMoved) {
+                        rotateShoulderTo(0);
+                        shoulderMoved = true;
+                    }
+                }else {
+                    extendTo(1);
+                    rotateElbowTo(1);
+                    elbowMoved=true;
+                    rotateTwistTo(1);
+                    elbowMoved=false;
+                    shoulderMoved=false;
+                    extensionMoved=false;
+                }
+
+                break;
+            case sampleIdle:
+
+                rotateTwistTo(1);
+                if (!elbowAtPosition() || !elbowMoved) {
+                    if (!elbowMoved) {
+                        rotateElbowTo(1);
+                        elbowMoved = true;
+                    }
+                } else if (!extensionAtPosition() || !extensionMoved) {
+                    if (!extensionMoved) {
+                        extendTo(1);
+                        extensionMoved = true;
+                    }
+                } else if (!shoulderAtPosition() || !shoulderMoved) {
+                    if (!shoulderMoved) {
+                        rotateShoulderTo(1);
+                        shoulderMoved = true;
+                    }
+                }
+                else{
+                    elbowMoved=false;
+                    shoulderMoved=false;
+                    extensionMoved=false;
+                }
+                break;
+            case scoreHighChamber:
+
+                // rotateTwistTo(-90);
+                //rotateElbowTo(10);
+                extendTo(13);
+                //rotateShoulderTo(86);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case intake:
+                rotateShoulderTo(30);
+                break;
+            case spearHead:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(10);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+            case init:
+                setClawPosition(Claw.ClawPosition.closed);
+                extendTo(0);
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                rotateShoulderTo(137.5);
+                break;
+        }
+
+    }
     
     
     
     
     
 
-    //TODO: tune the tick values to be the most optimized for our needs.
-    public boolean shoulderAtPosition(){
-        double shoulderErrorThreshold = 5; // in degrees
-        // returns true if where we are is within 20 ticks of where we want to be.
-        return Math.abs(shoulderMotor.getCurrentPosition() - shoulderMotor.getTargetPosition()) < shoulderErrorThreshold * shoulderTicksPerDegrees;
-    }
-    public boolean extensionAtPosition(){
-        double extensionTargetErrorThreshold = 1; // in inches
-        // returns true if where we are is within 20 ticks of where we want to be.
-        return Math.abs(linearSlideMotor.getCurrentPosition() - linearSlideMotor.getTargetPosition()) < extensionTargetErrorThreshold*linearSlideTicksPerInch;
-    }
-    public boolean elbowAtPosition(){
-        double elbowTimeS = 5;
-        return runtime.milliseconds()-elbowTimer > elbowTimeS *1000;
-    }
+
 
 }
