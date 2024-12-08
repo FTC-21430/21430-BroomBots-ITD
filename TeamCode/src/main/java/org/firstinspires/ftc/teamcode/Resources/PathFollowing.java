@@ -38,8 +38,8 @@ public class PathFollowing {
    dXConstant = dX;
    dYConstant = dY;
   
-    xPID = new PIDController(pXConstant, 0, dXConstant, runtime);
-    yPID = new PIDController(pYConstant, 0, dYConstant, runtime);
+    xPID = new PIDController(pXConstant, 0.2, dXConstant, runtime);
+    yPID = new PIDController(pYConstant, 0.2, dYConstant, runtime);
   }
   
   

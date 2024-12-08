@@ -14,6 +14,7 @@ public class MecanumDriveTrain {
     DcMotor motorBL;
     DcMotor motorBR;
 
+    public final double mediumSpeedMultiplier = 0.6;
     double speedMultiplier = 1;
     public boolean fieldCentricDriving = true;
     private Telemetry telemetry;
@@ -76,6 +77,10 @@ public class MecanumDriveTrain {
             motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         }
+    }
+
+    public void setFieldCentricDriving(boolean fcd){
+        fieldCentricDriving = fcd;
     }
 
     /**
