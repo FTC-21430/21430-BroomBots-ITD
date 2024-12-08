@@ -9,48 +9,41 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
-public class ArmTest extends LinearOpMode {
+public class ArmTest extends BaseTeleOp {
     
-    
-    
-    
-    double targetAngle = 90;
-    boolean aOLd = false;
-    boolean bOld = false;SpampleArm spampleArm;
+
     @Override
     public void runOpMode() throws InterruptedException {
-
-        spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
+        initialize();
         waitForStart();
         while (opModeIsActive()) {
-            
+
+            robot.driveTrain.setSpeedMultiplier(0.4);
+
+            robot.updateLoopTime();
+
+            robot.odometry.updateOdometry();
+
+//            robot.spampleArm.currentArmState = robot.spampleArm.armState.idle;
             if (gamepad1.a){
-                spampleArm.setClawPosition(Claw.ClawPosition.closed);
+                robot.autoMoveTo(0,23.75, 0, 1);
             }
             if (gamepad1.b){
-                spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
+                robot.autoMoveTo(0,0,0,1);
             }
-            if (gamepad1.x){
-                spampleArm.setClawPosition(Claw.ClawPosition.open);
-            }
-            if (gamepad1.y){
-                spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
-            }
-            double offsetAmount = 5;
-            if (gamepad1.a && !aOLd) targetAngle += offsetAmount;
-            if (gamepad1.b && !bOld) targetAngle -= offsetAmount;
 
 
-            aOLd = gamepad1.a;
-            bOld = gamepad1.b;
 
-            spampleArm.rotateShoulderTo(targetAngle);
-            spampleArm.updateArm();
-            telemetry.addData("arm angle", spampleArm.getArmAngle());
-            telemetry.addData("arm encoder", spampleArm.shoulderMotor.getCurrentPosition());
-            telemetry.addData("targetAngle", targetAngle);
+            robot.driveTrain.setDrivePower(0,0,0,robot.odometry.getRobotAngle());
+            robot.updateRobot(true, true);
+
+
+            robot.spampleArm.updateArm();
+            telemetry.addData("X",robot.odometry.getRobotX());
+            telemetry.addData("Y", robot.odometry.getRobotY());
+            telemetry.addData("Angle", robot.odometry.getRobotAngle());
             telemetry.update();
-            
+
         }
     }
 }
