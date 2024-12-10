@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
 import org.firstinspires.ftc.teamcode.Resources.PathFollowing;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
+import org.firstinspires.ftc.teamcode.Robot.Systems.Climber;
 
 @Config
 public class Robot {
@@ -64,6 +65,8 @@ public class Robot {
  
   public AprilTagSystem aprilTags;
 
+  public Climber climber;
+
   public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde) {
 
     this.opMode = opMpde;
@@ -77,6 +80,8 @@ public class Robot {
     pathFollowing = new PathFollowing(0.12, 0.17, 0.01, 0.01, runtime);
     spampleArm = new SpampleArm(hardwareMap, runtime);
     aprilTags = new AprilTagSystem(hardwareMap);
+
+    climber = new Climber(hardwareMap, telemetry);
   }
   
   // you call this function in a main auto opMode to make the robot move somewhere.
