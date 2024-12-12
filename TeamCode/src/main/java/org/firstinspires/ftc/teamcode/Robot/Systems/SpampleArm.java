@@ -16,7 +16,7 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 1029;
+    private double elbowAngleOffset = 189;
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
@@ -67,6 +67,8 @@ public class SpampleArm {
     public static double iConstant = 0.06;
     public static double dConstant =0.0005;
 
+    private final double ELBOWCONSTANT = 0.956;
+
 
     private double shoulderTimer = 0.0;
     
@@ -98,7 +100,7 @@ public class SpampleArm {
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                1650,0,1650);
+                290,0,290 * ELBOWCONSTANT);
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 260,0,260);
@@ -193,8 +195,8 @@ public class SpampleArm {
      */
 
     public void rotateElbowTo (double angle){
-        //TODO: recalibrate the replacement servo that broke 12/9
-        angle *= 1.15;
+
+//        angle = angle / ELBOWCONSTANT;
 
         elbowServo.setServoPos(angle+elbowAngleOffset);
         elbowTimer = runtime.milliseconds();

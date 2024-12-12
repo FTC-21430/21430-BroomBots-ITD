@@ -30,6 +30,15 @@ public class ArmTest extends BaseTeleOp {
             if (gamepad1.y){
                 robot.spampleArm.rotateElbowTo(60);
             }
+            if (gamepad1.dpad_up){
+                robot.spampleArm.rotateElbowTo(-90);
+            }
+            if (gamepad1.dpad_right) {
+                robot.spampleArm.rotateElbowTo(-120);
+            }
+            if (gamepad1.dpad_down){
+                robot.spampleArm.rotateElbowTo(95);
+            }
             robot.updateRobot(false, false);
             telemetry.update();
 
