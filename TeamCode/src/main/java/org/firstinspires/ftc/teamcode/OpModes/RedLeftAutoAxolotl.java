@@ -38,11 +38,11 @@ public class RedLeftAutoAxolotl extends BaseAuto {
             telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
             telemetry.update();
         }
-        robot.odometry.overridePosition(-40,-63,0);
+        robot.odometry.overridePosition(-40,-63,-90);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
 
-
+        robot.autoMoveTo(-40,-50,-90,2);
         robot.autoMoveTo(-62,-46,0,2);
 
         robot.driveTrain.setSpeedMultiplier(speedMultplierSlow);
@@ -87,7 +87,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
         //grabs the sample
         robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
         robot.chill(2, true);
-        robot.autoMoveTo(-49,-48.5,0,1);
+        robot.autoMoveTo(-48,-47.5,0,0.5);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSample2;
 
@@ -129,9 +129,9 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
 
-        robot.autoMoveTo(-24,-12,-90,2);
+        robot.autoMoveTo(-26.5,-12,-90,2);
 
-        robot.chill(10, true);
+
 
 
 
