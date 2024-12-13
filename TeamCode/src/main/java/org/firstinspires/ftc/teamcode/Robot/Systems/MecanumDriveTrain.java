@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class MecanumDriveTrain {
 
+    public double mediumSpeed = 0.6;
+
     DcMotor motorFL;
     DcMotor motorFR;
     DcMotor motorBL;
