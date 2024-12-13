@@ -16,7 +16,7 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 189;
+    private double elbowAngleOffset = 161;
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
@@ -67,7 +67,7 @@ public class SpampleArm {
     public static double iConstant = 0.06;
     public static double dConstant =0.0005;
 
-    private final double ELBOWCONSTANT = 0.956;
+
 
 
     private double shoulderTimer = 0.0;
@@ -100,7 +100,7 @@ public class SpampleArm {
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                290,0,290 * ELBOWCONSTANT);
+                250,0,290 );
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 260,0,260);
@@ -325,7 +325,7 @@ public class SpampleArm {
             case lowBasket:
 
                 rotateTwistTo(90);
-                rotateElbowTo(-175);
+                rotateElbowTo(-130);
                 extendTo(0);
                 rotateShoulderTo(100);
                 shoulderMoved = false;
@@ -344,7 +344,7 @@ public class SpampleArm {
                 break;
             case grabSample:
 
-                rotateShoulderTo(31);
+                rotateShoulderTo(35);
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);
@@ -352,7 +352,7 @@ public class SpampleArm {
                 break;
             case grabSample2:
 
-                rotateShoulderTo(16);
+                rotateShoulderTo(22);
                 rotateElbowTo(65);
                 break;
 
@@ -381,7 +381,7 @@ public class SpampleArm {
                 rotateShoulderTo(80);
 
                 if (shoulderAtPosition()) {
-                    extendTo(17);
+                    extendTo(18);
                 }
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -402,10 +402,10 @@ public class SpampleArm {
                 rotateTwistTo(90);
                 if (!elbowAtPosition() || !elbowMoved){
                     if(!elbowMoved) {
-                        rotateElbowTo(-45);
+                        rotateElbowTo(-30);
                         elbowMoved=true;
                     }else {
-                        extendTo(2);
+                        extendTo(5.5);
                         rotateShoulderTo(120.5);
                         elbowMoved=false;
                         shoulderMoved=false;
@@ -472,7 +472,7 @@ public class SpampleArm {
 
                 // rotateTwistTo(-90);
                 //rotateElbowTo(10);
-                extendTo(12.5);
+                extendTo(14.5);
                 //rotateShoulderTo(86);
                 shoulderMoved = false;
                 elbowMoved = false;
