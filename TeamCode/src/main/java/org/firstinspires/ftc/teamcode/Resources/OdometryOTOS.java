@@ -32,6 +32,8 @@ public class OdometryOTOS {
     configureOtos();
     robotX = initX;
     robotY = initY;
+    OTOS.setLinearScalar(1.011);
+    OTOS.setAngularScalar(0.993);
     this.robotAngle = robotAngle;
     overridePosition(robotX,robotY,robotAngle);
   }
