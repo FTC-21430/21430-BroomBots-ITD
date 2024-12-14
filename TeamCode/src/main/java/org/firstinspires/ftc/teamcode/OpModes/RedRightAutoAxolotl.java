@@ -38,11 +38,13 @@ public class RedRightAutoAxolotl extends BaseAuto {
             telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
             telemetry.update();
         }
-        robot.odometry.overridePosition(-9,-63,90);
+        robot.odometry.overridePosition(9,-63,90);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
 
-        robot.autoMoveTo(-9,-50,0,2);
+        robot.autoMoveTo(9,-40,0,1);
+
+        robot.chill(2,true);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
 
@@ -50,7 +52,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.chill(1.4, true);
 
-        robot.autoMoveTo(-9,-40,0,2);
+        robot.autoMoveTo(9,-33.4,0,1.5);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
 
@@ -60,13 +62,15 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.chill(1,true);
 
-        robot.autoMoveTo(-9,-50,0,2);
+        robot.autoMoveTo(9,-50,0,2);
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-        setAutoSpeedFast();
+//        setAutoSpeedFast();
 
-        robot.autoMoveTo(18,-36,0,1);
+//        robot.autoMoveTo(18,-36,0,1);
+
+        robot.chill(1,true);
 
 //        // push all of the red samples into observation zone
 //        robot.autoMoveTo(34,-39,0,2);
@@ -130,7 +134,8 @@ public class RedRightAutoAxolotl extends BaseAuto {
 //
 //        // park in observation zone
 //
-//        robot.autoMoveTo(53,-59,0,2);
+        robot.autoMoveTo(30,-59,0,0.7);
+        robot.chill(4,true);
 
 
 
