@@ -42,7 +42,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
 
-        robot.autoMoveTo(-9,-50,90,2);
+        robot.autoMoveTo(-9,-50,0,2);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
 
@@ -66,71 +66,71 @@ public class RedRightAutoAxolotl extends BaseAuto {
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
         setAutoSpeedFast();
 
-        robot.autoMoveTo(7,-34,0,1);
+        robot.autoMoveTo(18,-36,0,1);
 
-        // push all of the red samples into observation zone
-        robot.autoMoveTo(34,-39,0,2);
-        robot.autoMoveTo(35,-11,0,2);
-        robot.autoMoveTo(46,-10,0,2);
-        robot.autoMoveTo(45,-56,0,2);
-        robot.autoMoveTo(47,-9,0,2);
-        robot.autoMoveTo(58,-10,0,2);
-        robot.autoMoveTo(60,-55,0,2);
-        robot.autoMoveTo(57,-10,0,2);
-        robot.autoMoveTo(64,-9,0,2);
-        robot.autoMoveTo(64,-53,0,2);
-
-        // ends in the observation zone
-
-
-        // from here, grab a specimen from human player
-        robot.autoMoveTo(47,-48,0,2);
-        robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
-        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
-        setAutoSpeedSlow();
-        robot.chill(3, true);
+//        // push all of the red samples into observation zone
+//        robot.autoMoveTo(34,-39,0,2);
+//        robot.autoMoveTo(35,-11,0,2);
+//        robot.autoMoveTo(46,-10,0,2);
+//        robot.autoMoveTo(45,-56,0,2);
+//        robot.autoMoveTo(47,-9,0,2);
+//        robot.autoMoveTo(58,-10,0,2);
+//        robot.autoMoveTo(60,-55,0,2);
+//        robot.autoMoveTo(57,-10,0,2);
+//        robot.autoMoveTo(64,-9,0,2);
+//        robot.autoMoveTo(64,-53,0,2);
+//
+//        // ends in the observation zone
 
 
-        robot.autoMoveTo(47,-63,0,1);
-
-        robot.chill(4,true);
-
-        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
-
-        robot.chill(1, true);
-
-        robot.autoMoveTo(47,-48,0,2);
-
-        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-
-        // now scoring a specimen using the same code from the start of this auto
-
-        robot.autoMoveTo(-9,-50,90,2);
-
-        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
-
-        setAutoSpeedSlow();
-
-        robot.chill(1.4, true);
-
-        robot.autoMoveTo(-9,-40,0,2);
-
-        robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
-
-        robot.chill(1,false);
-
-        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
-
-        robot.chill(1,true);
-
-        robot.autoMoveTo(-9,-50,0,2);
-
-        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-        setAutoSpeedFast();
-
-        // park in observation zone
-
-        robot.autoMoveTo(53,-59,0,2);
+//        // from here, grab a specimen from human player
+//        robot.autoMoveTo(47,-48,0,2);
+//        robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+//        setAutoSpeedSlow();
+//        robot.chill(3, true);
+//
+//
+//        robot.autoMoveTo(47,-63,0,1);
+//
+//        robot.chill(4,true);
+//
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+//
+//        robot.chill(1, true);
+//
+//        robot.autoMoveTo(47,-48,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+//
+//        // now scoring a specimen using the same code from the start of this auto
+//
+//        robot.autoMoveTo(-3,-50,90,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+//
+//        setAutoSpeedSlow();
+//
+//        robot.chill(1.4, true);
+//
+//        robot.autoMoveTo(-3,-40,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
+//
+//        robot.chill(1,false);
+//
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+//
+//        robot.chill(1,true);
+//
+//        robot.autoMoveTo(-4,-50,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+//        setAutoSpeedFast();
+//
+//        // park in observation zone
+//
+//        robot.autoMoveTo(53,-59,0,2);
 
 
 
