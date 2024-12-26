@@ -35,10 +35,13 @@ cv.createTrackbar("HL", "input", 12, 180, foo)
 cv.createTrackbar("HH", "input", 61, 180, foo)
 cv.createTrackbar("SL", "input", 119, 255, foo)
 cv.createTrackbar("SH", "input", 255, 255, foo)
-cv.createTrackbar("VL", "input", 160, 255, foo)
+cv.createTrackbar("VL", "input", 186, 255, foo)
 cv.createTrackbar("VH", "input", 255, 255, foo)
 cv.createTrackbar("CannyHigh","input", 27,2000,foo)
-cv.createTrackbar("CannyLow","input",250,1000,foo)
+cv.createTrackbar("CannyLow","input",205,1000,foo)
+cv.createTrackbar("LengthMin","input", 58, 500, foo)
+cv.createTrackbar("LengthMax","input", 135, 1500, foo)
+cv.createTrackbar("minDistance", "input", 13,100,foo)
 
 while True:
     if update:
@@ -50,16 +53,19 @@ while True:
         upper = (cv.getTrackbarPos("HH", 'input'), cv.getTrackbarPos("SH", 'input'), cv.getTrackbarPos("VH", 'input'))
         cannyLower = cv.getTrackbarPos("CannyLow", "input")
         cannyHigher = cv.getTrackbarPos("CannyHigh", "input")
+        lengthMin = cv.getTrackbarPos("LengthMin", 'input')
+        lengthMax = cv.getTrackbarPos("LengthMax", 'input')
+        minDistance = cv.getTrackbarPos("minDistance",'input')
 
         # img = cv.imread('ROBOT Photos/testImageOne.jpg')
 # 
-        img =cv.imread('Photos/singleSample.jpg')
+        # img =cv.imread('Photos/singleSample.jpg')
         
         # img = cv.imread('Photos/cornerTouch.jpg')
         
         # img = rescaleFrame(img, 0.4)
 
-        # img = cv.imread('ROBOT Photos/5.jpg')
+        img = cv.imread('ROBOT Photos/9.jpg')
 
         # blank = cv.
 
@@ -131,7 +137,7 @@ while True:
 
         seperationCanny = cv.Canny(yellow, cannyLower, cannyHigher)
 
-        seperationCanny = cv.dilate(seperationCanny, np.ones((5,5)), 2)
+        seperationCanny = cv.dilate(seperationCanny, np.ones((4,4)), 2)
         
         cv.imshow("seperationCanny", seperationCanny)
     
@@ -148,9 +154,9 @@ while True:
         contours, hierarchy = cv.findContours(Canny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         
         for c in contours:
-            if cv.arcLength(c,True) < 95:
+            if cv.arcLength(c,True) < lengthMin:
                 continue
-            if cv.arcLength(c, True) > 1000:
+            if cv.arcLength(c, True) > lengthMax:
                 continue
 
             # cv.drawContours(yellow, [c], -1, (0,0,255), 5)
@@ -184,13 +190,13 @@ while True:
             originalPos = True
             
             for s in foundSamplePosiitons:
-                if math.dist(centorPos, s) < 30:
+                if math.dist(centorPos, s) < minDistance:
                     originalPos = False
             
             if originalPos:
                 cv.drawContours(yellow, [approxContour], -1, (0,255,0),3)
                 foundSamplePosiitons.append(centorPos)
-                cv.circle(yellow, centorPos ,20,(255,0,0), 3)
+                cv.circle(yellow, centorPos ,10,(255,0,0), 3)
                 
                 bestDistance = 0
                 bestI = 0
@@ -226,6 +232,8 @@ while True:
                 anglepos1 = ()
                 anglepos2 = ()
                 
+            
+                
                 if pos1[0] < pos2[0]:
                     anglepos1 = pos1
                     anglepos2 = pos2
@@ -234,10 +242,13 @@ while True:
                     anglepos2 = pos1
                 
                 
+                
+                
                 difX = anglepos2[0] - anglepos1[0]
                 difY = anglepos2[1] - anglepos1[1]
                 
                 sampleAngle = math.atan2(difX,difY) * (180/math.pi)
+                sampleAngle -= 180
                 
                 print(sampleAngle)
               
@@ -245,7 +256,7 @@ while True:
                 
             
             
-                
+        yellow = rescaleFrame(yellow, 3)
         cv.imshow("final yellow", yellow)
         print(foundSamplePosiitons)
         
