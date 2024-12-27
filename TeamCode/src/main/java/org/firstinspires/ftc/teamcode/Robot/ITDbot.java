@@ -50,7 +50,7 @@ public class ITDbot extends Robot {
             if (spampleArm.currentArmState == SpampleArm.armState.idle) {
                 driveTrain.setSpeedMultiplier(1);
             } else {
-                driveTrain.setSpeedMultiplier(driveTrain.mediumSpeedMultiplier);
+                driveTrain.setSpeedMultiplier(driveTrain.mediumSpeed);
             }
         }
         if (holdPosition){

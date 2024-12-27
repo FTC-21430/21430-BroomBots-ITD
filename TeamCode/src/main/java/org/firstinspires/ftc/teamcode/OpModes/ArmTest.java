@@ -17,32 +17,31 @@ public class ArmTest extends BaseTeleOp {
         initialize();
         waitForStart();
         while (opModeIsActive()) {
-
-            robot.driveTrain.setSpeedMultiplier(0.4);
-
-            robot.updateLoopTime();
-
-            robot.odometry.updateOdometry();
-
-//            robot.spampleArm.currentArmState = robot.spampleArm.armState.idle;
+            robot.spampleArm.currentArmState = SpampleArm.armState.test;
             if (gamepad1.a){
-                robot.autoMoveTo(0,23.75, 0, 1);
+                robot.spampleArm.rotateElbowTo(0);
             }
             if (gamepad1.b){
-                robot.autoMoveTo(0,0,0,1);
+                robot.spampleArm.rotateElbowTo(90);
             }
-
-
-
-            robot.driveTrain.setDrivePower(0,0,0,robot.odometry.getRobotAngle());
-            robot.updateRobot(true, true);
-
-
-            robot.spampleArm.updateArm();
-            telemetry.addData("X",robot.odometry.getRobotX());
-            telemetry.addData("Y", robot.odometry.getRobotY());
-            telemetry.addData("Angle", robot.odometry.getRobotAngle());
+            if (gamepad1.x){
+                robot.spampleArm.rotateElbowTo(30);
+            }
+            if (gamepad1.y){
+                robot.spampleArm.rotateElbowTo(60);
+            }
+            if (gamepad1.dpad_up){
+                robot.spampleArm.rotateElbowTo(-90);
+            }
+            if (gamepad1.dpad_right) {
+                robot.spampleArm.rotateElbowTo(-120);
+            }
+            if (gamepad1.dpad_down){
+                robot.spampleArm.rotateElbowTo(95);
+            }
+            robot.updateRobot(false, false);
             telemetry.update();
+
 
         }
     }

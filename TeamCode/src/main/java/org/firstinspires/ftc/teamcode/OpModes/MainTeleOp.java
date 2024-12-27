@@ -160,9 +160,7 @@ public class MainTeleOp extends BaseTeleOp {
             }
 
 
-            if (gamepad1.right_bumper) {
-                robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
-            }
+
 
 
             /** Target angle gives the angle from -180 to 180 that the robot wants to be at
@@ -212,10 +210,12 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.climber.startingPosition();
             }
 
-            robot.updateRobot(false, false);
-
-
             robot.spampleArm.updateArm();
+
+            robot.updateRobot(false, true);
+            if (gamepad1.right_bumper) {
+                robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
+            }
 
             // the old input for the left stick x axis for gamepad 1,
             // updated at the end of the loop so the turning logic works :)
