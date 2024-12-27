@@ -90,7 +90,7 @@ public class Robot {
       pathFollowing.setTargetPosition(targetX,targetY);
       anglePID.setTarget(robotAngle);
       //put all control things that teleop has in here
-      anglePID.update(odometry.getRobotAngle());
+      anglePID.angleUpdate(odometry.getRobotAngle());
       pathFollowing.followPath(odometry.getRobotX(), odometry.getRobotY(), odometry.getRobotAngle());
       driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
       

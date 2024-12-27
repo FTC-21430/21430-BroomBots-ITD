@@ -55,7 +55,7 @@ public class ITDbot extends Robot {
         }
         if (holdPosition){
             odometry.updateOdometry();
-            anglePID.update(odometry.getRobotAngle());
+            anglePID.angleUpdate(odometry.getRobotAngle());
             pathFollowing.followPath(odometry.getRobotX(),odometry.getRobotY(),odometry.getRobotAngle());
             driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
         }
