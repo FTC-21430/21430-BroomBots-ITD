@@ -131,7 +131,7 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.currentArmState = SpampleArm.armState.idle;
             }
             if (gamepad2.dpad_right) {
-                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
+//                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
             }
             if (gamepad2.right_bumper) {
 
@@ -204,11 +204,11 @@ public class MainTeleOp extends BaseTeleOp {
             }
 
 
-            if (gamepad1.right_trigger >= 0.5){
-                robot.climber.extendTo(12.50);
-            }else{
-                robot.climber.startingPosition();
-            }
+//            if (gamepad1.right_trigger >= 0.5){
+//                robot.climber.extendTo(12.50);
+//            }else{
+//                robot.climber.startingPosition();
+//            }
 
             robot.spampleArm.updateArm();
 

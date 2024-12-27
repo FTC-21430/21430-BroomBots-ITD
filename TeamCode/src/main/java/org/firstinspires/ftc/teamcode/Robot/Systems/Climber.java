@@ -46,6 +46,9 @@ public class Climber {
         leftClimberMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightClimberMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        leftClimberMotor.setTargetPosition(0);
+        rightClimberMotor.setTargetPosition(0);
+
         leftClimberMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightClimberMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
