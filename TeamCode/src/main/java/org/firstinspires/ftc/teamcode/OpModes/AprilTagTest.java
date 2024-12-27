@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Resources.AprilTagSystem;
 
-@Disabled
+//@Disabled
 @TeleOp
 public class AprilTagTest extends BaseTeleOp {
   private AprilTagSystem aprilTagSystem;

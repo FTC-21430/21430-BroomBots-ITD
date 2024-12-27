@@ -9,39 +9,40 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
-public class ArmTest extends LinearOpMode {
+public class ArmTest extends BaseTeleOp {
     
-    
-    
-    
-    double targetAngle = 90;
-    boolean aOLd = false;
-    boolean bOld = false;SpampleArm spampleArm;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        
-        spampleArm = new SpampleArm(hardwareMap, new ElapsedTime());
+        initialize();
         waitForStart();
         while (opModeIsActive()) {
-            double offsetAmount = 5;
-            if (gamepad1.a && !aOLd) targetAngle += offsetAmount;
-            if (gamepad1.b && !bOld) targetAngle -= offsetAmount;
-            
-            
-            aOLd = gamepad1.a;
-            bOld = gamepad1.b;
-            
-            spampleArm.rotateShoulderTo(targetAngle);
-            
-            telemetry.addData("arm angle", spampleArm.getArmAngle());
-            telemetry.addData("arm encoder", spampleArm.shoulderMotor.getCurrentPosition());
-            telemetry.addData("targetAngle", targetAngle);
-            
-            
-            spampleArm.updateSlide();
-            
+            robot.spampleArm.currentArmState = SpampleArm.armState.test;
+            if (gamepad1.a){
+                robot.spampleArm.rotateElbowTo(0);
+            }
+            if (gamepad1.b){
+                robot.spampleArm.rotateElbowTo(90);
+            }
+            if (gamepad1.x){
+                robot.spampleArm.rotateElbowTo(30);
+            }
+            if (gamepad1.y){
+                robot.spampleArm.rotateElbowTo(60);
+            }
+            if (gamepad1.dpad_up){
+                robot.spampleArm.rotateElbowTo(-90);
+            }
+            if (gamepad1.dpad_right) {
+                robot.spampleArm.rotateElbowTo(-120);
+            }
+            if (gamepad1.dpad_down){
+                robot.spampleArm.rotateElbowTo(95);
+            }
+            robot.updateRobot(false, false);
             telemetry.update();
-            
+
+
         }
     }
 }
