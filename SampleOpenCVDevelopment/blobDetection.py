@@ -71,6 +71,32 @@ while True:
 
         # img = cv.imread('Photos/stackedSamples.jpg')
 
+                
+        # Refining the camera matrix using parameters obtained by calibration
+        
+        camera_matrix = np.array(
+                                    [[600.01851744*.2, 0, 906.817157357*.2],
+                                    [0, 600.01851744*.2, 516.73047402*.2],
+                                    [0, 0, 1]], dtype = "double"
+                                    )
+
+        dist_coeffs = np.zeros((5,1)) # Assuming no lens distortion
+        dist_coeffs[0] = 0.0115588983608
+        dist_coeffs[1] = -0.0313357203804
+        dist_coeffs[2] = 0.00013459478315
+        dist_coeffs[3] = 0.000897741867319
+        dist_coeffs[4] = 0.00542752872672
+        
+        
+        dist_coeffs = np.array([0.0115588983608,-0.0313357203804,0.00013459478315,0.000897741867319,0.00542752872672])
+
+        # Method 1 to undistort the image
+        dst = cv.undistort(img, camera_matrix, dist_coeffs)
+
+        cv.imshow("raw", img)
+        cv.imshow("undisorted", dst)
+        
+       
 
         img = rescaleFrame(img, 0.2)
         
@@ -165,7 +191,7 @@ while True:
             
             
             # pdb.set_trace()
-            # print(f"before {approxContour.size}")
+          
 
             if approxContour.size > 8:
                 finalApproxContour = cv.approxPolyDP(approxContour, cv.arcLength(c, True) / 10, True)
@@ -227,7 +253,7 @@ while True:
                     lastPos = pos
                     i += 1
                 
-                print((pos1,pos2))
+                
                 
                 anglepos1 = ()
                 anglepos2 = ()
@@ -250,7 +276,12 @@ while True:
                 sampleAngle = math.atan2(difX,difY) * (180/math.pi)
                 sampleAngle -= 180
                 
-                print(sampleAngle)
+                distance = math.sqrt(math.pow(difX,2)+math.pow(difY,2))
+                
+                print(anglepos1)
+                print(anglepos2)
+                print(distance)
+                print("------------")
               
                     
                 
@@ -258,7 +289,7 @@ while True:
             
         yellow = rescaleFrame(yellow, 3)
         cv.imshow("final yellow", yellow)
-        print(foundSamplePosiitons)
+        
         
     key = cv.waitKey(1)
     if key == 27:
