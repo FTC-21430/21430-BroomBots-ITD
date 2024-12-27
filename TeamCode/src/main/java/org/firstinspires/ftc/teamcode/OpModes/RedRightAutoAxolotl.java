@@ -1,29 +1,143 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import org.firstinspires.ftc.teamcode.OpModes.BaseAuto;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.teamcode.Resources.Utlities;
 import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
+import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
+import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
-// TODO Update all of these runto point functions to be the updated AutoMoveTo function in robot.java
 
-
+@Autonomous
 public class RedRightAutoAxolotl extends BaseAuto {
+
+    Utlities utlities;
 
     //None of the values for RunToPoint Functions are correct
     @Override
     public void runOpMode() throws InterruptedException {
-//        RunToPoint(48, 12, 0.3);
-//        robot.arm.highChamber();
-//        RunToPoint(48,12, 0.4);
-//        robot.arm.grabSpample();
-//        RunToPoint(48, 8, 0.3);
-//        robot.arm.dropOff();
-//        RunToPoint(50, 12, 0.3);
-//        robot.arm.grabSpample();
-//        RunToPoint(48,8,0.3);
-//        robot.arm.dropOff();
-//        //add grab spicement
-//        RunToPoint(42,24, 0.2);
-//        robot.arm.highChamber();
-//        RunToPoint(28,-10,0.2);
+
+        utlities = new Utlities();
+
+        initialize();
+
+        robot.driveTrain.setFieldCentricDriving(false);
+
+        robot.spampleArm.currentArmState = SpampleArm.armState.init;
+
+
+        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
+        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
+        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+
+        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+
+//        waitForStart();
+        while (opModeInInit()){
+            robot.updateRobot(false, false);
+            telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
+            telemetry.update();
+        }
+        robot.odometry.overridePosition(9,-63,90);
+
+        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+
+        robot.autoMoveTo(9,-40,0,1);
+
+        robot.chill(2,true);
+
+        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+
+        setAutoSpeedSlow();
+
+        robot.chill(1.4, true);
+
+        robot.autoMoveTo(9,-33.4,0,1.5);
+
+        robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
+
+        robot.chill(1,false);
+
+        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+
+        robot.chill(1,true);
+
+        robot.autoMoveTo(9,-50,0,2);
+
+        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+//        setAutoSpeedFast();
+
+//        robot.autoMoveTo(18,-36,0,1);
+
+        robot.chill(1,true);
+
+//        // push all of the red samples into observation zone
+//        robot.autoMoveTo(34,-39,0,2);
+//        robot.autoMoveTo(35,-11,0,2);
+//        robot.autoMoveTo(46,-10,0,2);
+//        robot.autoMoveTo(45,-56,0,2);
+//        robot.autoMoveTo(47,-9,0,2);
+//        robot.autoMoveTo(58,-10,0,2);
+//        robot.autoMoveTo(60,-55,0,2);
+//        robot.autoMoveTo(57,-10,0,2);
+//        robot.autoMoveTo(64,-9,0,2);
+//        robot.autoMoveTo(64,-53,0,2);
+//
+//        // ends in the observation zone
+
+
+//        // from here, grab a specimen from human player
+//        robot.autoMoveTo(47,-48,0,2);
+//        robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+//        setAutoSpeedSlow();
+//        robot.chill(3, true);
+//
+//
+//        robot.autoMoveTo(47,-63,0,1);
+//
+//        robot.chill(4,true);
+//
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+//
+//        robot.chill(1, true);
+//
+//        robot.autoMoveTo(47,-48,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+//
+//        // now scoring a specimen using the same code from the start of this auto
+//
+//        robot.autoMoveTo(-3,-50,90,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+//
+//        setAutoSpeedSlow();
+//
+//        robot.chill(1.4, true);
+//
+//        robot.autoMoveTo(-3,-40,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
+//
+//        robot.chill(1,false);
+//
+//        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+//
+//        robot.chill(1,true);
+//
+//        robot.autoMoveTo(-4,-50,0,2);
+//
+//        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+//        setAutoSpeedFast();
+//
+//        // park in observation zone
+//
+        robot.autoMoveTo(30,-59,0,0.7);
+        robot.chill(4,true);
+
+
+
     }
 }

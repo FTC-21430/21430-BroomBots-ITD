@@ -10,6 +10,4 @@ import org.firstinspires.ftc.teamcode.Resources.Utlities;
 
 //import org.firstinspires.
 public class AutonomousFunctions {
-public static void WaitFunction() {
-    Utlities.sleep(5);
-}}
+}

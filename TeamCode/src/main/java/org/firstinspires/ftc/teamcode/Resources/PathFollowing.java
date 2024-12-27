@@ -11,8 +11,8 @@ public class PathFollowing {
   
   // these are the PID controllers for both the x and y axis relative to the field.
   // these powers get converted over to relative to the robot later on
-  private PIDController xPID;
-  private PIDController yPID;
+  public PIDController xPID;
+  public PIDController yPID;
   
   // these are the tuning variables for both PID controllers.
   private double pXConstant, pYConstant;
@@ -38,8 +38,8 @@ public class PathFollowing {
    dXConstant = dX;
    dYConstant = dY;
   
-    xPID = new PIDController(pXConstant, 0, dXConstant, runtime);
-    yPID = new PIDController(pYConstant, 0, dYConstant, runtime);
+    xPID = new PIDController(pXConstant, 0.2, dXConstant, runtime);
+    yPID = new PIDController(pYConstant, 0.2, dYConstant, runtime);
   }
   
   
