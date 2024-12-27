@@ -57,8 +57,11 @@ public class PathFollowing {
     // takes the output powers from the X and Y PID controllers and rotates them to be the robots X and Y movement.
     // here we also affect these powers with follow speed. when programming auto routes you should use
     // the setter for follow speed instead of changing the speed for the drivetrain
-    powerS = xPID.getPower() * Math.cos(Math.toRadians(-robotAngle)) - yPID.getPower() * Math.sin(Math.toRadians(-robotAngle)) * followSpeed;
-    powerF = xPID.getPower() * Math.sin(Math.toRadians(-robotAngle)) + yPID.getPower() * Math.cos(Math.toRadians(-robotAngle)) * followSpeed;
+    powerS = xPID.getPower() * Math.cos(Math.toRadians(-robotAngle)) - yPID.getPower() * Math.sin(Math.toRadians(-robotAngle));
+    powerF = xPID.getPower() * Math.sin(Math.toRadians(-robotAngle)) + yPID.getPower() * Math.cos(Math.toRadians(-robotAngle));
+
+    powerS *= followSpeed;
+    powerF *= followSpeed;
   }
   
   // returns Power S after you run the followPath method
