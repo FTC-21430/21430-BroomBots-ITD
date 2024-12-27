@@ -62,7 +62,7 @@ public class InverseKinematics {
     private final double ELBOW_OFFSET = 4.0;
     
     // the length in inches of the non-extending shaft.
-    private final double ELBOW_LENGTH = 11.18;
+    private final double FOREARM_LENGTH = 11.18;
 
     // how far the pivot point of the arm is away from the center of the robot.
     private final double PIVOT_OFFSET = 2.55;
@@ -73,7 +73,7 @@ public class InverseKinematics {
     private final double TUBE_LENGTH = 16.75;
 
     // how close we can be to a sample and still pick it up without moving back = ~21.5
-    private final double MIN_H = PIVOT_OFFSET + Math.hypot(TUBE_LENGTH, ELBOW_LENGTH + 1.5 - CHASSIS_HEIGHT);
+    private final double MIN_H = PIVOT_OFFSET + Math.hypot(TUBE_LENGTH, FOREARM_LENGTH + 1.5 - CHASSIS_HEIGHT);
     
     // how far away a sample can be without us breaking the expansion limit
     private final double MAX_H = 26; // inches from center the of the robot
@@ -145,7 +145,7 @@ public class InverseKinematics {
         // adjacent: horizontal distance from pivot to target
         double elbowA = h - PIVOT_OFFSET;
         // opposite: vertical distance from chassis to elbow height
-        double elbowO = ELBOW_LENGTH + targetZ - CHASSIS_HEIGHT;
+        double elbowO = FOREARM_LENGTH + targetZ - CHASSIS_HEIGHT;
 
         armRotation = Math.toDegrees(Math.atan2(elbowO,elbowA));
         // because we've already checked that distance from robot to sample
