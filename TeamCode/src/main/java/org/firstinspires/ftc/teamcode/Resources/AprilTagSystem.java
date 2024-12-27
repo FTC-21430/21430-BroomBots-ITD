@@ -56,7 +56,7 @@ AprilTagSystem {
     // Create the vision portal by using a builder.
     VisionPortal.Builder builder = new VisionPortal.Builder();
     
-    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
     
     
     builder.addProcessor(aprilTag);
