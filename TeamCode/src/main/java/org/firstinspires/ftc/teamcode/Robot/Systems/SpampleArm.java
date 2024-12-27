@@ -246,25 +246,6 @@ public class SpampleArm {
         shoulderTimer = runtime.seconds();
     }
 
-    // TODO Functions:
-    /*
-  X Dropoff             -D-pad up
-  X Grab Specimen       -D-pad left
-  X Idle                -D-pad down
-  X Extension Offset    -Joystick left
-    Twist (beware)      -Joystick right
-  X High Basket         -Y
-  X Low Basket          -X
-  X High Chamber        -B
-  X Low Chamber         -A
-
-     */
-    //shoulder
-    //extensor
-    //elbow
-    //twist
-    //pinchy
-
     //High Basket
     //fix variables
 
@@ -500,15 +481,5 @@ public class SpampleArm {
             case test:
                 break;
         }
-
-
     }
-    
-    
-    
-    
-    
-
-
-
 }

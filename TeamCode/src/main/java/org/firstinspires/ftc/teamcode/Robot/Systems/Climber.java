@@ -60,16 +60,12 @@ public class Climber {
 
         startingPosition();
 
-
         //TODO: tune the range of motion for these new servos
         leftLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchL"), 180, 0, 180);
         rightLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchR"), 180, 0, 180);
 
         limitL = hardwareMap.get(DigitalChannel.class, "limitSwitchL");
         limitR = hardwareMap.get(DigitalChannel.class, "limitSwitchR");
-
-
-
 
         this.telemetry = telemetry;
     }
