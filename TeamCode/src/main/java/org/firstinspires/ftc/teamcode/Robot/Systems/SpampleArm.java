@@ -16,7 +16,7 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 161;
+    private double elbowAngleOffset = 176;
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
@@ -208,7 +208,7 @@ public class SpampleArm {
      */
     public void rotateTwistTo (double angle){
         // values to ensure the twist goes where we need it to, then rotated by 90 degrees
-        twistServo.setServoPos(angle+16+ 90);
+        twistServo.setServoPos(angle+10+ 90);
     }
 
     public double getTwist(){
@@ -377,11 +377,11 @@ public class SpampleArm {
             case highChamber:
 
                 rotateTwistTo(-90);
-                rotateElbowTo(8);
-                rotateShoulderTo(80);
+                rotateElbowTo(90);
+                rotateShoulderTo(90);
 
                 if (shoulderAtPosition()) {
-                    extendTo(18);
+                    extendTo(1.5);
                 }
                 shoulderMoved = false;
                 elbowMoved = false;
