@@ -392,7 +392,7 @@ public class SpampleArm {
                 rotateTwistTo(0);
                 rotateElbowTo(1);
                 extendTo(1);
-                rotateShoulderTo(1);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
