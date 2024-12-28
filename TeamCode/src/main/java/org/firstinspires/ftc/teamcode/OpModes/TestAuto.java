@@ -35,6 +35,18 @@ public static double Pconstant= 0.5;
             if (gamepad1.b){
                 robot.autoMoveTo(23.75,0,0,2,3);
             }
+            if (gamepad1.x){
+                robot.autoMoveTo(0, 0, 0, 2, 3);
+            }
+            if (gamepad1.y){
+                robot.autoMoveTo(0,23.75,0,2,3);
+            }
+            if (gamepad1.dpad_down){
+                robot.spampleArm.currentArmState= SpampleArm.armState.idle;
+            }
+            if(gamepad1.dpad_up){
+                robot.spampleArm.currentArmState= SpampleArm.armState.highBasket;
+            }
             robot.updateRobot(true, false);
 
             telemetry.addData("X",robot.odometry.getRobotX());

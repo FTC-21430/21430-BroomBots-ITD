@@ -84,19 +84,21 @@ public class ITDbot extends Robot {
     }
     public void ScoreSampleInHighBasket(){
         // Drives over to the high basket
-        autoMoveTo(-40,-50,-90,2,0.2);
-        autoMoveTo(-62,-46,0,2,0.2);
-
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
-
         spampleArm.currentArmState = SpampleArm.armState.highBasket;
+        autoMoveTo(-55,-54,-40,2,3);
 
-        chill(1.5, true);
+
+
+
+
+        chill(.5, true);
 
         //Drives directly above high basket
-        autoMoveTo(-63,-56,0,0.5,0.2);
+        autoMoveTo(-56,-56,-40,2,2);
+
 
         //Drops sample
         spampleArm.setClawPosition(Claw.ClawPosition.open);
@@ -108,7 +110,7 @@ public class ITDbot extends Robot {
         spampleArm.rotateTwistTo(0);
 
         // Drive slightly back from the high basket
-        autoMoveTo(-62,-46,0,2,0.2);
+        autoMoveTo(-55,-46,0,2,0.5);
 
         // Shoulder back to normal position
         spampleArm.currentArmState = SpampleArm.armState.idle;
