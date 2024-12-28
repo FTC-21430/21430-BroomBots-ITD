@@ -30,10 +30,10 @@ public static double Pconstant= 0.5;
             robot.pathFollowing.xPID.updateConstants(Pconstant, Iconstant, DConstant);
             robot.pathFollowing.yPID.updateConstants(Pconstant, Iconstant, DConstant);
             if (gamepad1.a){
-                robot.autoMoveTo(0,0,0,2);
+                robot.autoMoveTo(0,0,0,2,3);
             }
             if (gamepad1.b){
-                robot.autoMoveTo(23.75,0,0,2);
+                robot.autoMoveTo(23.75,0,0,2,3);
             }
             robot.updateRobot(true, false);
 

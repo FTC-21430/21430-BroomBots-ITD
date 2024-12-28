@@ -23,9 +23,10 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.init;
 
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+//        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
+//        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
+//        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        setAutoSpeedSlow();
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 
@@ -40,9 +41,9 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
        robot.ScoreSampleInHighBasket();
 
-       robot.GrabRightSample();
-
-       robot.ScoreSampleInHighBasket();
+//       robot.GrabRightSample();
+//
+//       robot.ScoreSampleInHighBasket();
 
 //       robot.GrabMiddleSample();
 //

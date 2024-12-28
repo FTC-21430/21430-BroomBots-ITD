@@ -29,10 +29,7 @@ public class ITDbot extends Robot {
 }
 
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
-    //@Override
-    public void autoMoveTo(double targetX, double targetY, double Timeout){
-        autoMoveTo(targetX, targetY,0.3);
-    }
+    @Override
     public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle,double Timeout ){
         telemetry.addData("distanceCircle", distanceCircle(targetX,targetY));
         telemetry.addData("active", opMode.opModeIsActive());
