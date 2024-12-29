@@ -97,13 +97,14 @@ public class ITDbot extends Robot {
         chill(.5, true);
 
         //Drives directly above high basket
-        autoMoveTo(-56,-56,-40,2,2);
+        autoMoveTo(-57,-57,-40,2,2);
+        chill(.5, true);
 
 
         //Drops sample
         spampleArm.setClawPosition(Claw.ClawPosition.open);
 
-        chill(0.5, true);
+        chill(0.6, true);
 
         // Brings claw and twist to regular position
         spampleArm.setClawPosition(Claw.ClawPosition.closed);

@@ -40,9 +40,9 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
        robot.ScoreSampleInHighBasket();
 
-//      robot.GrabRightSample();
+      robot.GrabRightSample();
 //
-//      robot.ScoreSampleInHighBasket();
+      robot.ScoreSampleInHighBasket();
 
      //robot.GrabMiddleSample();
 
