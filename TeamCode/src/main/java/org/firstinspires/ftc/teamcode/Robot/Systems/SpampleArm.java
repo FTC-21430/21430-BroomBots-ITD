@@ -306,8 +306,8 @@ public class SpampleArm {
 
                 //setClawPosition(Claw.ClawPosition.grabOutside);
                 rotateTwistTo(90);
-                rotateElbowTo(-130);
-                extendTo(19.5);
+                rotateElbowTo(-125);
+                extendTo(19);
                 rotateShoulderTo(94);
                 shoulderMoved = false;
                 elbowMoved = false;
