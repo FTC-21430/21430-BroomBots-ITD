@@ -118,7 +118,7 @@ public class ITDbot extends Robot {
         // Shoulder back to normal position
         spampleArm.currentArmState = SpampleArm.armState.idle;
 
-        chill(0.8, true);
+        chill(0.5, true);
 
     }
     public void GrabRightSample(){
@@ -156,7 +156,7 @@ public class ITDbot extends Robot {
         spampleArm.currentArmState = SpampleArm.armState.idle;
 
 
-        chill(0.6, true);
+        chill(0.4, true);
     }
     public void GrabMiddleSample(){
         driveTrain.setSpeedMultiplier(speedMultplierFast);
@@ -171,7 +171,7 @@ public class ITDbot extends Robot {
         spampleArm.setClawPosition(Claw.ClawPosition.open);
 
         //Goes to the drive position for picking up sample
-        autoMoveTo(-57.5,-46,0,1,0.2);
+        autoMoveTo(-55.7,-46.5,0,1,0.2);
 
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
@@ -180,7 +180,7 @@ public class ITDbot extends Robot {
 
 
         chill(0.5, true);
-        autoMoveTo(-57.2,-45.5,0,1,0.2);
+        autoMoveTo(-55.7,-47,0,1,0.2);
 
 
         //actually grabs the sample
@@ -193,22 +193,23 @@ public class ITDbot extends Robot {
         spampleArm.currentArmState = SpampleArm.armState.idle;
 
 
-        chill(0.6, true);
+        chill(0.4, true);
     }
     public void GrabLeftSample() {
+        autoMoveTo(-54.5,-45,30,2,0.2);
         driveTrain.setSpeedMultiplier(speedMultplierFast);
         pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
         pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
 
         spampleArm.rotateShoulderTo(64);
-        chill(0.8,true);
+        chill(1,true);
         //  goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample;
-        spampleArm.rotateTwistTo(-60);
+        spampleArm.rotateTwistTo(-90);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
 
         //Goes to the drive position for picking up sample
-        autoMoveTo(-55.5,-45,30,1,0.2);
+        autoMoveTo(-56.5,-45,30,1,0.2);
 
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
@@ -218,14 +219,14 @@ public class ITDbot extends Robot {
 
         chill(0.5, true);
 
-        autoMoveTo(-56,-44.5,30,1,0.2);
+        autoMoveTo(-57,-44.5,30,1,0.2);
 
 
         //actually grabs the sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
-        chill(0.6, true);
+        chill(0.4, true);
 
         //back to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
