@@ -5,6 +5,8 @@ import pdb
 
 update = True
 
+PIXELS2INCHES = 3/40
+
 def foo(bar): 
     global update
     update = True
@@ -38,7 +40,7 @@ cv.createTrackbar("SH", "input", 255, 255, foo)
 cv.createTrackbar("VL", "input", 186, 255, foo)
 cv.createTrackbar("VH", "input", 255, 255, foo)
 cv.createTrackbar("CannyHigh","input", 27,2000,foo)
-cv.createTrackbar("CannyLow","input",205,1000,foo)
+cv.createTrackbar("CannyLow","input",272,1000,foo)
 cv.createTrackbar("LengthMin","input", 58, 500, foo)
 cv.createTrackbar("LengthMax","input", 135, 1500, foo)
 cv.createTrackbar("minDistance", "input", 13,100,foo)
@@ -65,7 +67,7 @@ while True:
         
         # img = rescaleFrame(img, 0.4)
 
-        img = cv.imread('ROBOT Photos/9.jpg')
+        img = cv.imread('ROBOT Photos/8.jpg')
 
         # blank = cv.
 
@@ -111,10 +113,12 @@ while True:
         scaleX = img.shape[0]
         scaleY = img.shape[1]
 
-        croppingFactor = 3
+        croppingFactor = 2
 
-        cropScaleX = scaleX // croppingFactor // 2
-        cropScaleY = scaleY // croppingFactor // 2 
+        cropScaleX = scaleX // croppingFactor //2
+        cropScaleY = scaleY // croppingFactor //2 
+        cropScaleX += 5
+        cropScaleY += 40
 
         cropped = img[cropScaleX:scaleX-cropScaleX, cropScaleY:scaleY-cropScaleY]
 
@@ -278,9 +282,21 @@ while True:
                 
                 distance = math.sqrt(math.pow(difX,2)+math.pow(difY,2))
                 
-                print(anglepos1)
-                print(anglepos2)
+                # print(anglepos1)
+                # print(anglepos2)
                 print(distance)
+                
+                
+                image_center_x = yellow.shape[0] // 2
+                image_center_y = yellow.shape[1] // 2
+                
+                
+                
+                inch_position_x = (centorPos[0] - image_center_x) * PIXELS2INCHES
+                inch_position_y = (centorPos[1] - image_center_y) * PIXELS2INCHES
+                
+                print(inch_position_x, inch_position_y)
+                
                 print("------------")
               
                     
