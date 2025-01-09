@@ -7,33 +7,36 @@ public class Camera {
     private double cameraYRobot;
     private double cameraZRobot;
     private double cameraDistance;
+    private double cameraYawRobot;
     private final double PIVOT_OFFSET = 2.55;
     private final double TUBE_LENGTH = 16.75;
-    SpampleArm spampleArm;
-    public Camera(SpampleArm spampleArm, double shoulderAngle, double extension, double shoulderOffset) {
-       spampleArm = this spampleArm;
-    }
-//    private double findCameraXRobot() {
-//        cameraXRobot = ;
-//        return cameraXRobot;
-//    }
+    private final double CAMERA_OFFSET = 1.00; //need to check value (also possibly negative)
+    private final double CHASSIS_HEIGHT = 5.73;
 
-    private double findCameraXRobot(double CAMERA_OFFSET){
-        cameraXRobot = CAMERA_OFFSET;
+    public Camera(double shoulderAngle, double extension) {
+       cameraXRobot = CAMERA_OFFSET;
+       cameraYRobot = Math.cos(shoulderAngle) * (TUBE_LENGTH + extension) - PIVOT_OFFSET;
+       cameraZRobot = CHASSIS_HEIGHT + (TUBE_LENGTH+extension) * Math.sin(shoulderAngle);
+       cameraDistance = Math.hypot(cameraXRobot, cameraYRobot);
+       cameraYawRobot = Math.atan2(cameraYRobot,cameraXRobot);
+    }
+
+    private double getCameraXRobot(){
         return cameraXRobot;
     }
-    private double findCameraYRobot(double shoulderAngle, double extension) {
-        cameraYRobot = Math.cos(shoulderAngle) * (TUBE_LENGTH + extension) - PIVOT_OFFSET;
+    private double getCameraYRobot() {
         return cameraYRobot;
     }
 
-    private double findCameraZRobot(double shoulderAngle, double extension){
-        cameraZRobot = (TUBE_LENGTH+extension) * Math.sin(shoulderAngle);
+    private double getCameraZRobot(double shoulderAngle, double extension){
         return cameraZRobot;
     }
 
-    private double findCameraDistance(){
-        cameraDistance = Math.hypot(cameraXRobot, cameraYRobot);
+    private double getCameraDistance(){
         return cameraDistance;
+    }
+
+    private double getCameraYawRobot(){
+        return cameraYawRobot;
     }
 }
