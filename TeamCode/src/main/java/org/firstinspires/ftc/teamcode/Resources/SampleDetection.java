@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Resources;
 
 import android.media.Image;
 
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -67,7 +68,42 @@ private double foundSamplePositionYaw = 0;
     public void processImage(Mat img){
         foundSample = false;
 
-        Mat cameraMatrix = new Mat()
+        Mat corrected = undistortImage(img);
+        
+
+    }
+
+    private Mat undistortImage(Mat src){
+        Mat cameraMatrix = new Mat(3,3,0);
+
+        //These are the values gotten from the camera calibration we did
+
+        // assign the values to the matrix... I could not find a better way through the documentation
+        cameraMatrix.put(0,0, 600.01851744);
+        cameraMatrix.put(0,1,0);
+        cameraMatrix.put(0,2, 906.817157357);
+        cameraMatrix.put(1,0,0);
+        cameraMatrix.put(1,1,600.01851744);
+        cameraMatrix.put(1,2,516.73047402);
+        cameraMatrix.put(2,0,0);
+        cameraMatrix.put(2,1,0);
+        cameraMatrix.put(2,2,1);
+
+        // assigning values to the camera distortion coefficients... the only way I know how
+        Mat dist_coeffs = new Mat(1,5,0);
+
+        dist_coeffs.put(0,0,0.0115588983608);
+        dist_coeffs.put(0,1,-0.0313347203804);
+        dist_coeffs.put(0,2,0.00013459478315);
+        dist_coeffs.put(0,3,0.000897741867319);
+        dist_coeffs.put(0,4,0.00542752872672);
+
+        // create the destination for the undistorted image
+        Mat unDistorted = null;
+
+        // un distort
+        Calib3d.undistort(src, unDistorted, cameraMatrix, dist_coeffs);
+        return unDistorted;
     }
 
     private Mat rescaleFrame(Mat frame, double scale){
