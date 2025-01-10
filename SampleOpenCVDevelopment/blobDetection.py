@@ -41,9 +41,9 @@ cv.createTrackbar("VL", "input", 186, 255, foo)
 cv.createTrackbar("VH", "input", 255, 255, foo)
 cv.createTrackbar("CannyHigh","input", 27,2000,foo)
 cv.createTrackbar("CannyLow","input",272,1000,foo)
-cv.createTrackbar("LengthMin","input", 58, 500, foo)
-cv.createTrackbar("LengthMax","input", 135, 1500, foo)
-cv.createTrackbar("minDistance", "input", 13,100,foo)
+cv.createTrackbar("LengthMin","input", 290, 500, foo)
+cv.createTrackbar("LengthMax","input", 675, 1500, foo)
+cv.createTrackbar("minDistance", "input", 65,100,foo)
 
 while True:
     if update:
@@ -100,7 +100,7 @@ while True:
         
         img = dst
 
-        img = rescaleFrame(img, 0.2)
+        # img = rescaleFrame(img, 0.2)
         
         img = cv.GaussianBlur(img, (3,3), 5)
 
