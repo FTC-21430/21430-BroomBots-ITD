@@ -77,8 +77,8 @@ while True:
         # Refining the camera matrix using parameters obtained by calibration
         
         camera_matrix = np.array(
-                                    [[600.01851744*.2, 0, 906.817157357*.2],
-                                    [0, 600.01851744*.2, 516.73047402*.2],
+                                    [[600.01851744, 0, 906.817157357],
+                                    [0, 600.01851744, 516.73047402],
                                     [0, 0, 1]], dtype = "double"
                                     )
 
@@ -98,7 +98,7 @@ while True:
         cv.imshow("raw", img)
         cv.imshow("undisorted", dst)
         
-       
+        img = dst
 
         img = rescaleFrame(img, 0.2)
         
