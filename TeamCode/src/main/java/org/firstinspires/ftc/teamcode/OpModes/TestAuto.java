@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
@@ -14,10 +15,7 @@ public class TestAuto extends BaseAuto{
 // public static double Iconstant= 0.1;
 // public static double DConstant= 0.02;
 // public static double speedMultplier=1;
-public static double Pconstant= 0.5;
-    public static double Iconstant= 1;
-    public static double DConstant= 0.02;
-    public static double speedMultplier=0.3;
+
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
@@ -26,9 +24,7 @@ public static double Pconstant= 0.5;
 
         waitForStart();
         while (opModeIsActive()) {
-            robot.driveTrain.setSpeedMultiplier(speedMultplier);
-            robot.pathFollowing.xPID.updateConstants(Pconstant, Iconstant, DConstant);
-            robot.pathFollowing.yPID.updateConstants(Pconstant, Iconstant, DConstant);
+            robot.setRobotSpeed(Robot.Speed.SLOW);
             if (gamepad1.a){
                 robot.autoMoveTo(0,0,0,2,3);
             }
@@ -53,7 +49,6 @@ public static double Pconstant= 0.5;
             telemetry.addData("Y", robot.odometry.getRobotY());
             telemetry.addData("Angle", robot.odometry.getRobotAngle());
             telemetry.update();
-
 
         }
     }
