@@ -3,9 +3,16 @@ package org.firstinspires.ftc.teamcode.Resources;
 import android.media.Image;
 
 import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is designed for you to use it an image from the camera on the end of the arm and
@@ -53,10 +60,18 @@ private double foundSamplePositionYaw = 0;
 
 // Contour filtering constants
 
-    final int minContourLength = 58;
-    final int maxContourLength = 135;
-    final double minDistance = 13;
+    final int minContourLength = 290;
+    final int maxContourLength = 675;
+    final double minDistance = 65;
 
+// unit conversions
+    final double PIX2INCHES = 4/200;
+
+// Other constants
+
+    final double CROPPING_FACTOR = 2;
+    final double EXTRA_CROPPING_X = 25;
+    final double EXTRA_CROPPING_Y = 200;
 
 // true only if we found a sample the last time we checked
     private boolean foundSample = false;
@@ -65,12 +80,157 @@ private double foundSamplePositionYaw = 0;
 
     }
 
-    public void processImage(Mat img){
+    public void findYellowSamples(Mat img){
         foundSample = false;
 
         Mat corrected = undistortImage(img);
-        
 
+        Mat blurred = null;
+
+        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
+
+        Mat cropped = crop(blurred);
+
+        Mat hsv = convertColorSpace(cropped);
+        Mat thresholded = thresholdImage(hsv, 0);
+
+
+        Mat kernel = Mat.ones(55,55,0);
+        Mat eroded = null;
+        Imgproc.erode(thresholded, eroded, kernel);
+
+        Mat baseImage = null;
+
+        Core.subtract(hsv, eroded, baseImage);
+
+        Mat seperationCanny = null;
+
+        Imgproc.Canny(baseImage, seperationCanny, 5, 10);
+
+        Mat dilatedSeperationCanny = null;
+
+        Mat dilationKernal = Mat.ones(4, 4, CvType.CV_32F);
+
+        Imgproc.dilate(seperationCanny, dilatedSeperationCanny, dilationKernal);
+
+        Mat blurredCanny = null;
+
+        Imgproc.GaussianBlur(seperationCanny, blurredCanny, new Size(3,3), 3);
+
+        Mat seperated = null;
+
+        Core.subtract(baseImage, blurredCanny, seperated);
+
+        Mat outlineCanny = null;
+
+        Imgproc.Canny(seperated, outlineCanny, 5, 10);
+
+        Mat outlineBlurred = null;
+
+        Imgproc.GaussianBlur(outlineCanny, outlineBlurred, new Size(3,3), 3);
+
+        List contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(outlineBlurred, contours, hierarchy,Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+
+
+    }
+
+    public void findRedSamples(Mat img){
+        foundSample = false;
+
+        Mat corrected = undistortImage(img);
+
+        Mat blurred = null;
+
+        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
+
+        Mat cropped = crop(blurred);
+
+        Mat hsv = convertColorSpace(cropped);
+
+        Mat thresholded = thresholdImage(hsv, 1);
+    }
+
+    public void findBlueSamples(Mat img){
+        foundSample = false;
+
+        Mat corrected = undistortImage(img);
+
+        Mat blurred = null;
+
+        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
+
+        Mat cropped = crop(blurred);
+
+        Mat hsv = convertColorSpace(cropped);
+
+        Mat thresholded = thresholdImage(hsv, 2);
+    }
+
+    private Mat thresholdImage(Mat src, int mode){
+        Scalar lowerBound = null;
+        Scalar upperBound = null;
+
+        Mat dst = null;
+
+        if (mode == 0){
+            // yellow
+
+            // create the yellow thresholds
+            lowerBound = new Scalar(YellowHL,YellowSL,YellowVL);
+            upperBound = new Scalar(YellowHH,YellowSH,YellowVH);
+
+            // threshold the image!
+            Core.inRange(src, lowerBound, upperBound, dst);
+
+        }else if(mode == 1){
+            //red
+
+            // create the yellow thresholds
+            lowerBound = new Scalar(RedHL,RedSL,RedVL);
+            upperBound = new Scalar(RedHH,RedSH,RedVH);
+
+            // threshold the image!
+            Core.inRange(src, lowerBound, upperBound, dst);
+
+        }else if(mode == 2){
+            //blue
+
+            // create the yellow thresholds
+            lowerBound = new Scalar(BlueHL,BlueSL,BlueVL);
+            upperBound = new Scalar(BlueHH,BlueSH,BlueVH);
+
+            // threshold the image!
+            Core.inRange(src, lowerBound, upperBound, dst);
+
+        }
+        return dst;
+    }
+
+    private Mat crop(Mat src){
+        int scaleX = src.cols();
+        int scaleY = src.rows();
+
+        int cropScaleX = (int) (scaleX / CROPPING_FACTOR / 2);
+        int cropScaleY = (int) (scaleY / CROPPING_FACTOR / 2);
+
+        cropScaleY += EXTRA_CROPPING_Y;
+        cropScaleX += EXTRA_CROPPING_X;
+
+        // calculating the part of the image we want to remain
+        Rect roi = new Rect(cropScaleX, cropScaleY, (scaleX - cropScaleX) - cropScaleX, (scaleY - cropScaleY)  - cropScaleY);
+
+        Mat cropped = new Mat(src, roi);
+
+        return cropped;
+    }
+
+    private Mat convertColorSpace(Mat src){
+        Mat hsv = null;
+        Imgproc.cvtColor(src, hsv, Imgproc.COLOR_BGR2HSV);
+        return hsv;
     }
 
     private Mat undistortImage(Mat src){
