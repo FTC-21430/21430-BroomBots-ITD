@@ -97,8 +97,7 @@ public class SpampleArm {
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shoulderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // you need to set how fast the motor moves before it will move at all.
-        
-//        shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);

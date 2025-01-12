@@ -69,35 +69,6 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
             }
 
-            // angles for testing only
-
-//                if (gamepad1.cross){
-//                    robot.spampleArm.rotateShoulderTo(90);
-//                }
-//                if (gamepad1.square){
-//                    robot.spampleArm.rotateShoulderTo(30);
-//                }
-//                if (gamepad1.triangle){
-//                    robot.spampleArm.rotateShoulderTo(70);
-//                }
-//                if (gamepad1.circle){
-//                    robot.spampleArm.rotateShoulderTo(150);
-//                }
-            // lengths for testing only
-//                if (gamepad1.dpad_up){
-//                    robot.spampleArm.extendTo(0);
-//                }
-//                if (gamepad1.dpad_left){
-//                    robot.spampleArm.extendTo(19);
-//                }
-//                if (gamepad1.dpad_right){
-//                    robot.spampleArm.extendTo(6);
-//                }
-//                if (gamepad1.dpad_down){
-//                    robot.spampleArm.extendTo(12);
-//                }
-
-
             // arm positions
 
             if (gamepad2.dpad_up) {
@@ -105,8 +76,7 @@ public class MainTeleOp extends BaseTeleOp {
             }
             if (gamepad2.triangle && !gp2tri) {
                 if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
-//                    robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
-                } else {
+                     } else {
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
                 }
             }
