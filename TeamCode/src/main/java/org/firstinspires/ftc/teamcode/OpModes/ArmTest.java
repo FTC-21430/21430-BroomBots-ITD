@@ -18,28 +18,41 @@ public class ArmTest extends BaseTeleOp {
         waitForStart();
         while (opModeIsActive()) {
             robot.spampleArm.currentArmState = SpampleArm.armState.test;
+
+            if (gamepad1.left_trigger > 0.6){
+                robot.spampleArm.updateShoulderConstants();
+            }
+
+
+            if (gamepad1.dpad_up){
+                robot.spampleArm.extendTo(10);
+            } else if (gamepad1.dpad_down) {
+                robot.spampleArm.extendTo(0);
+            } else if (gamepad1.dpad_right) {
+                robot.spampleArm.extendTo(18.5);
+            }
+
+
             if (gamepad1.a){
-                robot.spampleArm.rotateElbowTo(0);
+                robot.spampleArm.rotateShoulderTo(90);
             }
             if (gamepad1.b){
-                robot.spampleArm.rotateElbowTo(90);
+                robot.spampleArm.rotateShoulderTo(110);
             }
             if (gamepad1.x){
-                robot.spampleArm.rotateElbowTo(30);
+                robot.spampleArm.rotateShoulderTo(70);
             }
-            if (gamepad1.y){
-                robot.spampleArm.rotateElbowTo(60);
+
+            if (gamepad1.right_trigger > 0.6){
+                robot.updateRobot(false, false);
+            }else{
+                robot.spampleArm.shoulderMotor.setPower(0);
             }
-            if (gamepad1.dpad_up){
-                robot.spampleArm.rotateElbowTo(-90);
-            }
-            if (gamepad1.dpad_right) {
-                robot.spampleArm.rotateElbowTo(-120);
-            }
-            if (gamepad1.dpad_down){
-                robot.spampleArm.rotateElbowTo(95);
-            }
-            robot.updateRobot(false, false);
+            telemetry.addData("arm angle", robot.spampleArm.getArmAngle());
+            telemetry.addData("pid power", robot.spampleArm.shoulderPID.getPower());
+
+            telemetry.addData("pid target", robot.spampleArm.shoulderPID.getTarget());
+
             telemetry.update();
 
 
