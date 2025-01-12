@@ -105,7 +105,7 @@ public class MainTeleOp extends BaseTeleOp {
             }
             if (gamepad2.triangle && !gp2tri) {
                 if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
+//                    robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
                 } else {
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
                 }
