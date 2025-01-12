@@ -63,10 +63,19 @@ public class SpampleArm {
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
+
+//    shoulder constants
+//    should be able to be changed by ftc dashboard
     public static double pConstant = 0.028;
     public static double iConstant = 0.06;
     public static double dConstant =0.0005;
 
+//    the shoulder constants for when the arm is up high without the integrator
+
+    private double pConstantHigh = 0.035;
+    private double dConstantHigh = 0.0023;
+
+    private double dConstantGrab = 0.0018;
 
 
 
@@ -173,8 +182,12 @@ public class SpampleArm {
     public void updateArm(){
         updateState();
         if (getArmExtension() >= 7){
+            shoulderPID.updateConstants(pConstantHigh,iConstant,dConstantHigh);
             shoulderPID.setIntegralMode(false);
+        }else if(currentArmState == armState.grabSample2){
+            shoulderPID.updateConstants(pConstant, iConstant, dConstantGrab);
         }else{
+            shoulderPID.updateConstants(pConstant,iConstant,dConstant);
             shoulderPID.setIntegralMode(true);
         }
 
@@ -255,6 +268,11 @@ public class SpampleArm {
     public void saveShoulderTime(){
         shoulderTimer = runtime.seconds();
     }
+
+    public void updateShoulderConstants(){
+        shoulderPID.updateConstants(pConstant,iConstant,dConstant);
+    }
+
 
     // TODO Functions:
     /*
@@ -363,7 +381,7 @@ public class SpampleArm {
             case grabSample2:
 
                 rotateShoulderTo(22);
-                rotateElbowTo(65);
+                rotateElbowTo(66);
                 break;
 
 

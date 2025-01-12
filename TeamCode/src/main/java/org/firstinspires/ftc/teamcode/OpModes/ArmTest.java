@@ -19,6 +19,11 @@ public class ArmTest extends BaseTeleOp {
         while (opModeIsActive()) {
             robot.spampleArm.currentArmState = SpampleArm.armState.test;
 
+            if (gamepad1.left_trigger > 0.6){
+                robot.spampleArm.updateShoulderConstants();
+            }
+
+
             if (gamepad1.dpad_up){
                 robot.spampleArm.extendTo(10);
             } else if (gamepad1.dpad_down) {
