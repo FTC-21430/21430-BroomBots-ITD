@@ -51,15 +51,18 @@ public class RedLeftAutoBarnacle extends BaseAuto {
     robot.GrabLeftSample();
 
         robot.ScoreSampleInHighBasket();
-//        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-//        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-//        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
-//        robot.autoMoveTo(-36,-12,-90,2);
+        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
+        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
+        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+
 //
 //        robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
 //
 //        robot.autoMoveTo(-26.5,-12,-90,2);
-        robot.chill(1, true);
+        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+        robot.chill(0.4, true);
+        robot.autoMoveTo(-38,-12, -90, 2, 3);
+        robot.autoMoveTo(-26,-12, -90, 2, 3);
     }
 
 

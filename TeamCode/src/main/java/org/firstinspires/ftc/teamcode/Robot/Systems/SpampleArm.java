@@ -75,7 +75,7 @@ public class SpampleArm {
     private double pConstantHigh = 0.035;
     private double dConstantHigh = 0.0023;
 
-    private double dConstantGrab = 0.0018;
+    private double dConstantGrab = 0.0025;
 
 
 
@@ -426,13 +426,13 @@ public class SpampleArm {
                 break;
             case grabSpecimen:
 
-                rotateTwistTo(90);
+                rotateTwistTo(83);
                 if (!elbowAtPosition() || !elbowMoved){
                     if(!elbowMoved) {
                         rotateElbowTo(-30);
                         elbowMoved=true;
                     }else {
-                        extendTo(5.5);
+                        extendTo(5.9);
                         rotateShoulderTo(120.5);
                         elbowMoved=false;
                         shoulderMoved=false;

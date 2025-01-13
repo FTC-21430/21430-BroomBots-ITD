@@ -98,15 +98,15 @@ public class ITDbot extends Robot {
 
         //Drives directly above high basket
         driveTrain.setSpeedMultiplier(0.35);
-        autoMoveTo(-57.5,-57.5,-40,1.5,2);
-        chill(0.5, true);
+        autoMoveTo(-59.5,-59.5,-40,1.5,2);
+        chill(0.2, true);
         driveTrain.setSpeedMultiplier(0.4);
 
 
         //Drops sample
         spampleArm.setClawPosition(Claw.ClawPosition.open);
 
-        chill(0.6, true);
+        chill(0.3, true);
 
         // Brings claw and twist to regular position
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
@@ -115,42 +115,51 @@ public class ITDbot extends Robot {
         // Drive slightly back from the high basket
         autoMoveTo(-55,-46,0,2,0.5);
 
+        spampleArm.currentArmState = SpampleArm.armState.test;
         // Shoulder back to normal position
-        spampleArm.currentArmState = SpampleArm.armState.idle;
+        spampleArm.rotateTwistTo(0);
+        spampleArm.rotateElbowTo(65);
+        spampleArm.extendTo(0);
+        spampleArm.rotateShoulderTo(90);
 
-        chill(0.5, true);
+        chill(0.3, true);
 
     }
     public void GrabRightSample(){
+        spampleArm.rotateElbowTo(65);
+        spampleArm.rotateTwistTo(-90);
+
+        spampleArm.setClawPosition(Claw.ClawPosition.open);
         driveTrain.setSpeedMultiplier(speedMultplierFast);
         pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
         pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
 
-        spampleArm.rotateShoulderTo(64);
-        chill(0.4,true);
-        //  goes to position for hovering over sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample;
-        spampleArm.rotateTwistTo(-90);
-        spampleArm.setClawPosition(Claw.ClawPosition.open);
-
         //Goes to the drive position for picking up sample
-        autoMoveTo(-48,-47,0,1,0.2);
+        autoMoveTo(-48,-48,0,1,0.2);
 
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        spampleArm.rotateShoulderTo(68);
+
+        chill(0.6,true);
+        //  goes to position for hovering over sample
+        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
 
 
 
-        chill(0.5, true);
-        autoMoveTo(-47.2,-46.2,0,1,0.2);
+
+
+
+
+        chill(.5, true);
+        autoMoveTo(-47.2,-47.7,0,1,0.2);
 
 
         //actually grabs the sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
-        chill(0.3, true);
+
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
-        chill(0.6, true);
+        chill(0.3, true);
 
         //back to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
@@ -159,35 +168,39 @@ public class ITDbot extends Robot {
         chill(0.4, true);
     }
     public void GrabMiddleSample(){
+        spampleArm.rotateElbowTo(65);
+        spampleArm.rotateTwistTo(-90);
+        spampleArm.setClawPosition(Claw.ClawPosition.open);
         driveTrain.setSpeedMultiplier(speedMultplierFast);
         pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
         pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
 
         spampleArm.rotateShoulderTo(64);
-        chill(0.4,true);
-        //  goes to position for hovering over sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample;
-        spampleArm.rotateTwistTo(-90);
-        spampleArm.setClawPosition(Claw.ClawPosition.open);
-
+        spampleArm.rotateElbowTo(65);
         //Goes to the drive position for picking up sample
-        autoMoveTo(-55.7,-46.5,0,1,0.2);
+        autoMoveTo(-57.4,-47.5,0,1,0.2);
 
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
 
+        chill(0.4,true);
+        //  goes to position for hovering over sample
+        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
 
 
-        chill(0.5, true);
-        autoMoveTo(-55.7,-47,0,1,0.2);
+
+
+
+        chill(0.7, true);
+        autoMoveTo(-57.4,-47,0,1,0.2);
 
 
         //actually grabs the sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
-        chill(0.6, true);
+        chill(0.3, true);
 
         //back to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
@@ -196,20 +209,21 @@ public class ITDbot extends Robot {
         chill(0.4, true);
     }
     public void GrabLeftSample() {
-        autoMoveTo(-54.5,-45,30,2,0.2);
+        spampleArm.rotateElbowTo(65);
+
+        spampleArm.rotateTwistTo(50);
+
+        spampleArm.setClawPosition(Claw.ClawPosition.open);
+        autoMoveTo(-54.5,-42.2,30,2,0.2);
         driveTrain.setSpeedMultiplier(speedMultplierFast);
         pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
         pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
 
-        spampleArm.rotateShoulderTo(64);
-        chill(1,true);
-        //  goes to position for hovering over sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample;
-        spampleArm.rotateTwistTo(-90);
-        spampleArm.setClawPosition(Claw.ClawPosition.open);
+
+
 
         //Goes to the drive position for picking up sample
-        autoMoveTo(-56.5,-45,30,1,0.2);
+        autoMoveTo(-54.5,-42.5,30,1,0.4);
 
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
@@ -217,16 +231,23 @@ public class ITDbot extends Robot {
 
 
 
-        chill(0.5, true);
+        chill(0.3,true);
+        //  goes to position for hovering over sample
+        spampleArm.currentArmState = SpampleArm.armState.grabSample;
 
-        autoMoveTo(-57,-44.5,30,1,0.2);
 
+        chill(0.4, true);
+
+        autoMoveTo(-57,-42.4,30,1,0.2);
+
+
+        chill(0.4, true);
 
         //actually grabs the sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
-        chill(0.4, true);
+        chill(0.3, true);
 
         //back to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
