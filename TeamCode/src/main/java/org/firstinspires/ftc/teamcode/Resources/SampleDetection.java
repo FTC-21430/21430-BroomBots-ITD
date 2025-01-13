@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.Resources;
 
 import android.media.Image;
+import android.provider.ContactsContract;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -22,9 +26,9 @@ import java.util.List;
 public class SampleDetection {
 
     // The position data about where the sample we want to grab is RELATIVE TO CAMERA
-private double foundSamplePositionX = 0;
-private double foundSamplePositionY = 0;
-private double foundSamplePositionYaw = 0;
+    private double foundSamplePositionX = 0;
+    private double foundSamplePositionY = 0;
+    private double foundSamplePositionYaw = 0;
 
 // Thresholding values for Yellow Samples
 
@@ -37,35 +41,42 @@ private double foundSamplePositionYaw = 0;
 
 // Thresholding values for the Red Samples
 
-    final double RedHL = 0;
-    final double RedHH = 0;
-    final double RedSL = 0;
-    final double RedSH = 0;
-    final double RedVL = 0;
-    final double RedVH = 0;
+    final double Red1HL = 160;
+    final double Red1HH = 180;
+    final double Red1SL = 100;
+    final double Red1SH = 255;
+    final double Red1VL = 147;
+    final double Red1VH = 255;
+
+    final double Red2HL = 0;
+    final double Red2HH = 6;
+    final double Red2SL = 100;
+    final double Red2SH = 255;
+    final double Red2VL = 147;
+    final double Red2VH = 255;
 
 // Thresholding values for the Blue Samples
 
-    final double BlueHL = 0;
-    final double BlueHH = 0;
-    final double BlueSL = 0;
-    final double BlueSH = 0;
-    final double BlueVL = 0;
-    final double BlueVH = 0;
+    final double BlueHL = 84;
+    final double BlueHH = 141;
+    final double BlueSL = 128;
+    final double BlueSH = 255;
+    final double BlueVL = 56;
+    final double BlueVH = 255;
 
 // Edge detection constants
 
-    final double CannyLow = 272;
-    final double CannyHigh = 27;
+    final double CANNY_LOW = 272;
+    final double CANNY_HIGH = 27;
 
 // Contour filtering constants
 
-    final int minContourLength = 290;
-    final int maxContourLength = 675;
-    final double minDistance = 65;
+    final int MIN_CONTOUR_LENGTH = 290;
+    final int MAX_CONTOUR_LENGTH = 675;
+    final double MIN_DISTANCE = 65;
 
-// unit conversions
-    final double PIX2INCHES = 4/200;
+    // unit conversions
+    final double PIX2INCHES = 4 / 200;
 
 // Other constants
 
@@ -73,21 +84,21 @@ private double foundSamplePositionYaw = 0;
     final double EXTRA_CROPPING_X = 25;
     final double EXTRA_CROPPING_Y = 200;
 
-// true only if we found a sample the last time we checked
+    // true only if we found a sample the last time we checked
     private boolean foundSample = false;
 
-    public SampleDetection(){
+    public SampleDetection() {
 
     }
 
-    public void findYellowSamples(Mat img){
+    public void findYellowSamples(Mat img) {
         foundSample = false;
 
         Mat corrected = undistortImage(img);
 
         Mat blurred = null;
 
-        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
+        Imgproc.GaussianBlur(corrected, blurred, new Size(3, 3), 5);
 
         Mat cropped = crop(blurred);
 
@@ -95,7 +106,7 @@ private double foundSamplePositionYaw = 0;
         Mat thresholded = thresholdImage(hsv, 0);
 
 
-        Mat kernel = Mat.ones(55,55,0);
+        Mat kernel = Mat.ones(55, 55, 0);
         Mat eroded = null;
         Imgproc.erode(thresholded, eroded, kernel);
 
@@ -115,7 +126,7 @@ private double foundSamplePositionYaw = 0;
 
         Mat blurredCanny = null;
 
-        Imgproc.GaussianBlur(seperationCanny, blurredCanny, new Size(3,3), 3);
+        Imgproc.GaussianBlur(seperationCanny, blurredCanny, new Size(3, 3), 3);
 
         Mat seperated = null;
 
@@ -127,15 +138,41 @@ private double foundSamplePositionYaw = 0;
 
         Mat outlineBlurred = null;
 
-        Imgproc.GaussianBlur(outlineCanny, outlineBlurred, new Size(3,3), 3);
+        Imgproc.GaussianBlur(outlineCanny, outlineBlurred, new Size(3, 3), 3);
 
-        List contours = new ArrayList<>();
+        List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(outlineBlurred, contours, hierarchy,Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(outlineBlurred, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
+        for (MatOfPoint c : contours) {
+            MatOfPoint2f k = new MatOfPoint2f(c.toArray());
 
+            if (Imgproc.arcLength(k, true) < MIN_CONTOUR_LENGTH) {
+                continue;
+            }
+            if (Imgproc.arcLength(k, true) > MAX_CONTOUR_LENGTH) {
+                continue;
+            }
 
+            MatOfPoint2f approxContour = null;
+            Imgproc.approxPolyDP(k, approxContour, Imgproc.arcLength(k, true) / 22, true);
+
+            List<Integer> positionsX = new ArrayList<>();
+            List<Integer> positionsY = new ArrayList<>();
+
+            MatOfPoint normal = new MatOfPoint(approxContour);
+
+            for (MatOfPoint pos : normal) {
+                Point p = pos.toArray()[0];
+            }
+            positionsX.add((int) p.x);
+            positionsY.add((int) p.y);
+        }
     }
+
+
+
+
 
     public void findRedSamples(Mat img){
         foundSample = false;
@@ -188,17 +225,29 @@ private double foundSamplePositionYaw = 0;
         }else if(mode == 1){
             //red
 
-            // create the yellow thresholds
-            lowerBound = new Scalar(RedHL,RedSL,RedVL);
-            upperBound = new Scalar(RedHH,RedSH,RedVH);
+            //since red is the color where the HSV color space wraps around, we need to use two different thresholds to get all red pixels
+
+            // create the red thresholds
+            lowerBound = new Scalar(Red1HL,Red1SL,Red1VL);
+            upperBound = new Scalar(Red1HH,Red1SH,Red1VH);
+
+            Scalar lowerBound2 = new Scalar(Red2HL,Red2SL,Red2VL);
+            Scalar upperBound2 = new Scalar(Red2HH,Red2SH,Red2VH);
+            Mat firstRed = null;
+            Mat secondRed = null;
 
             // threshold the image!
-            Core.inRange(src, lowerBound, upperBound, dst);
+            Core.inRange(src, lowerBound, upperBound, firstRed);
+
+            Core.inRange(src, lowerBound2, upperBound2, secondRed);
+
+            Core.add(firstRed,secondRed,dst);
+
 
         }else if(mode == 2){
             //blue
 
-            // create the yellow thresholds
+            // create the red thresholds
             lowerBound = new Scalar(BlueHL,BlueSL,BlueVL);
             upperBound = new Scalar(BlueHH,BlueSH,BlueVH);
 
