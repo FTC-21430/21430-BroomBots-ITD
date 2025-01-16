@@ -23,6 +23,11 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
+    public static double spicemenGrabElbow=-30;
+    public static double spicemenGrabExtension= 6.2;
+    public static double spicemenGrabShoulder= 120.5;
+    public static double specimenGrabTwist= 83;
+
     public armState currentArmState = armState.idle;
 
     //Arm sensors
@@ -272,6 +277,10 @@ public class SpampleArm {
         shoulderPID.updateConstants(pConstant,iConstant,dConstant);
     }
 
+    ;
+    public double getElbowRotation(){
+        return elbowServo.getServoPos() - elbowAngleOffset;
+    }
 
     // TODO Functions:
     /*
@@ -404,7 +413,6 @@ public class SpampleArm {
             case highChamber:
 
                 rotateTwistTo(-90);
-                rotateElbowTo(87.5);
                 rotateShoulderTo(90);
 
                 if (shoulderAtPosition()) {
@@ -426,14 +434,14 @@ public class SpampleArm {
                 break;
             case grabSpecimen:
 
-                rotateTwistTo(83);
+                rotateTwistTo(specimenGrabTwist);
                 if (!elbowAtPosition() || !elbowMoved){
                     if(!elbowMoved) {
-                        rotateElbowTo(-30);
+                        rotateElbowTo(spicemenGrabElbow);
                         elbowMoved=true;
                     }else {
-                        extendTo(5.9);
-                        rotateShoulderTo(120.5);
+                        extendTo(spicemenGrabExtension);
+                        rotateShoulderTo(spicemenGrabShoulder);
                         elbowMoved=false;
                         shoulderMoved=false;
                         extensionMoved=false;
@@ -456,7 +464,7 @@ public class SpampleArm {
                 rotateTwistTo(0);
                 if (!shoulderAtPosition() || !shoulderMoved) {
                     if (!shoulderMoved) {
-                        rotateShoulderTo(0);
+                        rotateShoulderTo(90);
                         shoulderMoved = true;
                     }
                 }else {
@@ -485,7 +493,7 @@ public class SpampleArm {
                     }
                 } else if (!shoulderAtPosition() || !shoulderMoved) {
                     if (!shoulderMoved) {
-                        rotateShoulderTo(1);
+                        rotateShoulderTo(90);
                         shoulderMoved = true;
                     }
                 }
@@ -506,14 +514,14 @@ public class SpampleArm {
                 extensionMoved = false;
                 break;
             case intake:
-                rotateShoulderTo(30);
+                rotateShoulderTo(90);
                 break;
             case spearHead:
 
                 rotateTwistTo(0);
                 rotateElbowTo(0);
                 extendTo(0);
-                rotateShoulderTo(10);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;

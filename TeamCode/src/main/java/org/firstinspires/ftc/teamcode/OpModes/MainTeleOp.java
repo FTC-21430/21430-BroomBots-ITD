@@ -77,8 +77,17 @@ public class MainTeleOp extends BaseTeleOp {
             if (gamepad2.triangle && !gp2tri) {
                 if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
                      } else {
+                    robot.spampleArm.rotateElbowTo(88.5);
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
                 }
+            }
+
+            if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
+                robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
+            } else if (robot.spampleArm.getElbowRotation() > 94) {
+                robot.spampleArm.rotateElbowTo(94);
+            } else if (robot.spampleArm.getElbowRotation() < 84) {
+                robot.spampleArm.rotateElbowTo(84);
             }
             gp2tri = gamepad2.triangle;
 
@@ -193,6 +202,8 @@ public class MainTeleOp extends BaseTeleOp {
 
 
             // Telemetry for testing/debug purposes
+
+            telemetry.addData("elbow angle", robot.spampleArm.getElbowRotation());
 
             telemetry.addData("arm extension", robot.spampleArm.getArmExtension());
 
