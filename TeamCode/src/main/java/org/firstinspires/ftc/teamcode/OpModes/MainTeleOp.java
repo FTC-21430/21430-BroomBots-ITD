@@ -81,14 +81,16 @@ public class MainTeleOp extends BaseTeleOp {
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
                 }
             }
-
-            if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
-                robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
-            } else if (robot.spampleArm.getElbowRotation() > 94) {
-                robot.spampleArm.rotateElbowTo(94);
-            } else if (robot.spampleArm.getElbowRotation() < 84) {
-                robot.spampleArm.rotateElbowTo(84);
+            if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
+                if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
+                    robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
+                } else if (robot.spampleArm.getElbowRotation() > 94) {
+                    robot.spampleArm.rotateElbowTo(94);
+                } else if (robot.spampleArm.getElbowRotation() < 84) {
+                    robot.spampleArm.rotateElbowTo(84);
+                }
             }
+
             gp2tri = gamepad2.triangle;
 
             if (gamepad2.cross) {
@@ -101,13 +103,8 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
             }
             if (gamepad2.dpad_down) {
-                if (robot.spampleArm.currentArmState == SpampleArm.armState.grabSpecimen) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.specimenIdle;
-                } else {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-                }
-
                 robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+
             }
             if (gamepad2.dpad_right) {
 //                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
@@ -126,9 +123,7 @@ public class MainTeleOp extends BaseTeleOp {
 //                }
 
 
-            if (gamepad1.left_bumper) {
-                robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-            }
+
 
             if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
                 robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);

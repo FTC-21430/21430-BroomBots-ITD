@@ -23,9 +23,9 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbow=-30;
-    public static double spicemenGrabExtension= 6.2;
-    public static double spicemenGrabShoulder= 120.5;
+    public static double spicemenGrabElbow=-36;
+    public static double spicemenGrabExtension= 5.0;
+    public static double spicemenGrabShoulder= 119;
     public static double specimenGrabTwist= 83;
 
     public armState currentArmState = armState.idle;
@@ -55,13 +55,19 @@ public class SpampleArm {
     //TODO: replace with correct value; calibrated for 312 RPM motor
     //the motor will not turn correctly without these values right.
     //Constants for the shoulder
+    // goBILDA 60rpm motor spec sheet 2786.2 pulses per revolution at output, sprockets are 3:1 ratio
+    // 2786.2 * 3 = 8358.6
     final double shoulderPulsesPerRevolution = 8358.6;
     final double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
     
     //Constants for the linear slide
-    final double linearSlidePulsesPerRevolution = 1223.08;
+    //REV Gear cartridges 5, 3, 3 = 5.23 * 2.89 * 2.89 = 43.681283 : 1 ratio
+    //Encoder 28 pulse per revolution = 1223.081
+    final double linearSlidePulsesPerRevolution = 1223.081;
+    // GT2 pulley is 60 teeth, 2mm pitch = 120mm inch per revolution
+    // 120mm / 2.54 = 4.724409 inch per revolution
     // multiplied by two because of the cascade rigging
-    final double linearSlideRevPerInch = 1/(4.724*2);
+    final double linearSlideRevPerInch = 1/(4.7244409*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
     final double linearSlideMaxExtension = 19.5;
     
@@ -155,16 +161,16 @@ public class SpampleArm {
         
         // I tried to do some fancy calibration and stuff but it did not work :(
 //        double correctedAngle = angle - (6.33 + 9.66E-03 * angle + -1.12E-03 * Math.pow(angle, 2));
-        double correctedAngle;
-        if (angle <= 30){
-            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
-            correctedAngle = angle + 7.2;
-        }
-        
-        
-        else{
-            correctedAngle = angle;
-        }
+//        double correctedAngle;
+//        if (angle <= 30){
+//            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
+//            correctedAngle = angle + 7.2;
+//        }
+//
+//
+//        else{
+//            correctedAngle = angle;
+//        }
         
         
         //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
@@ -381,6 +387,7 @@ public class SpampleArm {
             case grabSample:
 
                 rotateShoulderTo(35);
+                extendTo(0);
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);

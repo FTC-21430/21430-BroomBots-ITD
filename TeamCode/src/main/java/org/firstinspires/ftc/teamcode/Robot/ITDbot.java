@@ -106,7 +106,7 @@ public class ITDbot extends Robot {
         //Drops sample
         spampleArm.setClawPosition(Claw.ClawPosition.open);
 
-        chill(0.3, true);
+        chill(0.45, true);
 
         // Brings claw and twist to regular position
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
