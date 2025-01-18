@@ -67,7 +67,7 @@ public class SpampleArm {
     // GT2 pulley is 60 teeth, 2mm pitch = 120mm inch per revolution
     // 120mm / 2.54 = 4.724409 inch per revolution
     // multiplied by two because of the cascade rigging
-    final double linearSlideRevPerInch = 1/(4.7244409*2);
+    final double linearSlideRevPerInch = 1/(4.724409*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
     final double linearSlideMaxExtension = 19.5;
     
@@ -328,7 +328,8 @@ public class SpampleArm {
         spearHead,
         intake,
         init,
-        test
+        test,
+        fullyIdle
     }
 
     public void updateState(){
@@ -358,14 +359,22 @@ public class SpampleArm {
             case idle:
                 rotateTwistTo(0);
                 rotateElbowTo(0);
-                extendTo(0);
+                extendTo(1);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case fullyIdle:
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0.0);
                 rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
                 break;
             case lowBasket:
-
                 rotateTwistTo(90);
                 rotateElbowTo(-130);
                 extendTo(0);
@@ -421,10 +430,8 @@ public class SpampleArm {
 
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
+                extendTo(0.25);
 
-                if (shoulderAtPosition()) {
-                    extendTo(0.25);
-                }
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;

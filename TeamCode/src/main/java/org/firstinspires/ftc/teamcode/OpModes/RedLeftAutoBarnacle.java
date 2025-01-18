@@ -59,7 +59,7 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 //        robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
 //
 //        robot.autoMoveTo(-26.5,-12,-90,2);
-        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+        robot.spampleArm.currentArmState = SpampleArm.armState.fullyIdle;
         robot.chill(0.4, true);
         robot.autoMoveTo(-38,-12, -90, 2, 3);
         robot.autoMoveTo(-26,-12, -90, 2, 3);
