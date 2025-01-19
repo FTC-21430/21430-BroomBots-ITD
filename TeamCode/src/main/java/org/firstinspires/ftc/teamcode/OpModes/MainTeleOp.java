@@ -24,7 +24,7 @@ public class MainTeleOp extends BaseTeleOp {
         // We multiply this by the speed to activate slowmode.
         final double slowSpeedMultiplier = 0.35;
 
-        initialize();
+        initialize(false);
 
         telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);

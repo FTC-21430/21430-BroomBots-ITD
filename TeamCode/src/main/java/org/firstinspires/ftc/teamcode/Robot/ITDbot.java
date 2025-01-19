@@ -23,9 +23,9 @@ public class ITDbot extends Robot {
     public static double proportionalConstantAngleDef = 0.02;
     public SpampleArm arm;
  
-    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode){
-        super.init(hardwareMap, telemetry,0, 0, 0, opMode);
-        spampleArm = new SpampleArm(hardwareMap, runtime);
+    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode,boolean reset){
+        super.init(hardwareMap, telemetry,0, 0, 0, opMode,reset);
+        spampleArm = new SpampleArm(hardwareMap, runtime,reset);
 }
 
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
@@ -87,14 +87,14 @@ public class ITDbot extends Robot {
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
-        spampleArm.currentArmState = SpampleArm.armState.highBasket;
-        autoMoveTo(-55,-54,-40,2,3);
+        spampleArm.currentArmState = SpampleArm.armState.lowBasket;
+        autoMoveTo(-55,-49,-40,2,3);
 
 
 
 
 
-        chill(.3, true);
+        chill(.7, true);
 
         //Drives directly above high basket
         driveTrain.setSpeedMultiplier(0.35);
@@ -119,7 +119,7 @@ public class ITDbot extends Robot {
         // Shoulder back to normal position
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
-        spampleArm.extendTo(0);
+        spampleArm.extendTo(1);
         spampleArm.rotateShoulderTo(90);
 
         chill(0.3, true);

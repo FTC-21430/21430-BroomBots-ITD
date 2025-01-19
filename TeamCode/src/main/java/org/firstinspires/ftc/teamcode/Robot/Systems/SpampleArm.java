@@ -96,7 +96,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset){
 
         
         shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
@@ -112,10 +112,13 @@ public class SpampleArm {
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);
-        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (reset){
+            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        linearSlideMotor.setPower(1);
+        linearSlideMotor.setPower(0.5);
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
@@ -376,8 +379,8 @@ public class SpampleArm {
                 break;
             case lowBasket:
                 rotateTwistTo(90);
-                rotateElbowTo(-130);
-                extendTo(0);
+                rotateElbowTo(-142);
+                extendTo(2);
                 rotateShoulderTo(100);
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -396,7 +399,7 @@ public class SpampleArm {
             case grabSample:
 
                 rotateShoulderTo(35);
-                extendTo(0);
+                extendTo(0.5);
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);

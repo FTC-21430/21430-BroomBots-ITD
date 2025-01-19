@@ -20,7 +20,7 @@ public static double Pconstant= 0.5;
     public static double speedMultplier=0.3;
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 

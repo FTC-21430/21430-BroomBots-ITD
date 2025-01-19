@@ -19,7 +19,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         utlities = new Utlities();
 
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 

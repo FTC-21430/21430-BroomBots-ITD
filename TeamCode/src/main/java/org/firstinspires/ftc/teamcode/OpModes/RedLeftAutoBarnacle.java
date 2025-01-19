@@ -17,7 +17,7 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         utlities = new Utlities();
 
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
@@ -37,6 +37,8 @@ public class RedLeftAutoBarnacle extends BaseAuto {
         }
         robot.odometry.overridePosition(-40,-63,-90);
 
+        robot.spampleArm.currentArmState = SpampleArm.armState.test;
+        robot.spampleArm.extendTo(1);
         robot.autoMoveTo(-44,-52,-40,2,3);
 
        robot.ScoreSampleInHighBasket();
@@ -63,6 +65,7 @@ public class RedLeftAutoBarnacle extends BaseAuto {
         robot.chill(0.4, true);
         robot.autoMoveTo(-38,-12, -90, 2, 3);
         robot.autoMoveTo(-26,-12, -90, 2, 3);
+        robot.chill(0.4,false);
     }
 
 

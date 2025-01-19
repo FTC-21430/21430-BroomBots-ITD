@@ -6,7 +6,7 @@ public class climberTest extends BaseTeleOp {
     private boolean climbingOld = false;
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize();
+        initialize(true);
         waitForStart();
         robot.climber.releaseLatches();
         while (opModeIsActive()) {

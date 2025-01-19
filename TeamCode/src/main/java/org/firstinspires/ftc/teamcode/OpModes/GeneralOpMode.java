@@ -23,10 +23,10 @@ abstract public class GeneralOpMode extends LinearOpMode {
 
     // normal functions
     
-    public void initialize() {
+    public void initialize(boolean reset) {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new ITDbot();
-        robot.Init(hardwareMap,telemetry,runtime, this);
+        robot.Init(hardwareMap,telemetry,runtime, this, reset);
         
     }
     
