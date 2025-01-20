@@ -144,8 +144,11 @@ public class SampleDetection {
         Mat hierarchy = new Mat();
         Imgproc.findContours(outlineBlurred, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        for (MatOfPoint c : contours) {
-            MatOfPoint2f k = new MatOfPoint2f(c.toArray());
+
+
+        for (int i = 0; i < contours.size(); i++) {
+
+            MatOfPoint2f k  = new MatOfPoint2f(contours.get(i).toArray());
 
             if (Imgproc.arcLength(k, true) < MIN_CONTOUR_LENGTH) {
                 continue;
@@ -160,13 +163,19 @@ public class SampleDetection {
             List<Integer> positionsX = new ArrayList<>();
             List<Integer> positionsY = new ArrayList<>();
 
-            MatOfPoint normal = new MatOfPoint(approxContour);
+            List<Point> pointsList = approxContour.toList();
 
-            for (MatOfPoint pos : normal) {
-                Point p = pos.toArray()[0];
+            MatOfPoint convertedApproxContour = new MatOfPoint();
+
+            convertedApproxContour.fromList(pointsList);
+
+            MatOfPoint finalApproxContour = null;
+
+            if (convertedApproxContour.size().width > 4){
+                MatOfPoint2f tempReApprox = null;
+
             }
-            positionsX.add((int) p.x);
-            positionsY.add((int) p.y);
+
         }
     }
 
