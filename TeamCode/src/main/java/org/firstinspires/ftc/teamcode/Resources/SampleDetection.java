@@ -160,8 +160,8 @@ public class SampleDetection {
             MatOfPoint2f approxContour = null;
             Imgproc.approxPolyDP(k, approxContour, Imgproc.arcLength(k, true) / 22, true);
 
-            List<Integer> positionsX = new ArrayList<>();
-            List<Integer> positionsY = new ArrayList<>();
+            int[] positionsX;
+            int[] positionsY;
 
             List<Point> pointsList = approxContour.toList();
 
@@ -173,8 +173,17 @@ public class SampleDetection {
 
             if (convertedApproxContour.size().width > 4){
                 MatOfPoint2f tempReApprox = null;
+                Imgproc.approxPolyDP(approxContour, tempReApprox, Imgproc.arcLength(approxContour, true) / 10, true);
+                List<Point> morePoints = tempReApprox.toList();
+                finalApproxContour.fromList(morePoints);
+            }else{
+                finalApproxContour = convertedApproxContour;
+            }
+
+            for (Point pos : finalApproxContour.toList()){
 
             }
+
 
         }
     }
