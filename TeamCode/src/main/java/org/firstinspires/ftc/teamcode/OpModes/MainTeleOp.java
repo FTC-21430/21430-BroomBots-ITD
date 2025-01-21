@@ -10,19 +10,22 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 //This is the teleop we run during competitions.
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
-    
-    
+
+
     InverseKinematics kinematics;
     boolean gp1xJoy = false;
-    boolean gp2y = false;
+    boolean gp2tri = false;
     public double LastLoopTime;
     double targetAngle = 0;
 
-    
+
     @Override
     public void runOpMode() throws InterruptedException {
         // We multiply this by the speed to activate slowmode.
         final double slowSpeedMultiplier = 0.35;
+        final double updateTagsSpeed = 0.15;
+
+
 
         initialize();
 
@@ -38,49 +41,50 @@ public class MainTeleOp extends BaseTeleOp {
             // get and update functions
             robot.odometry.updateOdometry();
 
-            //TODO: fix the april tag system
-//            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
-//            if (robot.aprilTags.hasDetection()){
-//                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
-//                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
-//                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
-//                }
-//            }
+
+            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
+            // checks if there is a tag to check and that we are moving slow enough to limit using motion blur of the tag
+            if (robot.aprilTags.hasDetection() && robot.driveTrain.getAvgDrivePower() <= updateTagsSpeed){
+                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
+                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
+                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
+                }
+            }
 
 
             // resets Field Centric Driving
 
-            if (gamepad1.back) {
+            if (gamepad1.share) {
                 robot.IMUReset();
             }
 
             //  claw Positions
 
-            if (gamepad1.a) {
+            if (gamepad1.cross) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
             }
-            if (gamepad1.b) {
+            if (gamepad1.circle) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
             }
-            if (gamepad1.y) {
+            if (gamepad1.triangle) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.grabOutside);
             }
-            if (gamepad1.x) {
+            if (gamepad1.square) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
             }
 
             // angles for testing only
 
-//                if (gamepad1.a){
+//                if (gamepad1.cross){
 //                    robot.spampleArm.rotateShoulderTo(90);
 //                }
-//                if (gamepad1.x){
+//                if (gamepad1.square){
 //                    robot.spampleArm.rotateShoulderTo(30);
 //                }
-//                if (gamepad1.y){
+//                if (gamepad1.triangle){
 //                    robot.spampleArm.rotateShoulderTo(70);
 //                }
-//                if (gamepad1.b){
+//                if (gamepad1.circle){
 //                    robot.spampleArm.rotateShoulderTo(150);
 //                }
             // lengths for testing only
@@ -103,19 +107,15 @@ public class MainTeleOp extends BaseTeleOp {
             if (gamepad2.dpad_up) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
             }
-            if (gamepad2.y && !gp2y) {
-                if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
-                } else {
+            if (gamepad2.triangle) {
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
-                }
             }
-            gp2y = gamepad2.y;
+            gp2tri = gamepad2.triangle;
 
-            if (gamepad2.a) {
+            if (gamepad2.cross) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.lowChamber;
             }
-            if (gamepad2.x) {
+            if (gamepad2.square) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.lowBasket;
             }
             if (gamepad2.dpad_left) {
@@ -131,7 +131,7 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.currentArmState = SpampleArm.armState.idle;
             }
             if (gamepad2.dpad_right) {
-                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
+//                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
             }
             if (gamepad2.right_bumper) {
 
@@ -204,11 +204,11 @@ public class MainTeleOp extends BaseTeleOp {
             }
 
 
-            if (gamepad1.right_trigger >= 0.5){
-                robot.climber.extendTo(12.50);
-            }else{
-                robot.climber.startingPosition();
-            }
+//            if (gamepad1.right_trigger >= 0.5){
+//                robot.climber.extendTo(12.50);
+//            }else{
+//                robot.climber.startingPosition();
+//            }
 
             robot.spampleArm.updateArm();
 
