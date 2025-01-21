@@ -119,7 +119,7 @@ public class ITDbot extends Robot {
         // Shoulder back to normal position
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
-        spampleArm.extendTo(0);
+        spampleArm.extendTo(4);
         spampleArm.rotateShoulderTo(90);
 
         chill(0.3, true);

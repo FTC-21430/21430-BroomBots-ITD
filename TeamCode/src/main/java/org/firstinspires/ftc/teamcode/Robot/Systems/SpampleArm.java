@@ -395,8 +395,8 @@ public class SpampleArm {
                 break;
             case grabSample:
 
-                rotateShoulderTo(35);
-                extendTo(0);
+                rotateShoulderTo(36);
+                extendTo(2);
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);
@@ -404,7 +404,8 @@ public class SpampleArm {
                 break;
             case grabSample2:
 
-                rotateShoulderTo(22);
+                extendTo(2);
+                rotateShoulderTo(24);
                 rotateElbowTo(66);
                 break;
 
