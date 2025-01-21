@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.Resources;
 
-import android.media.Image;
-import android.provider.ContactsContract;
-
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -16,6 +13,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +59,7 @@ public class SampleDetection {
     final double BlueHH = 141;
     final double BlueSL = 128;
     final double BlueSH = 255;
+
     final double BlueVL = 56;
     final double BlueVH = 255;
 
@@ -84,7 +83,7 @@ public class SampleDetection {
 
 
 
-    
+
 
     // unit conversions
     final double PIX2INCHES = 4 / 200;
@@ -98,13 +97,18 @@ public class SampleDetection {
     // true only if we found a sample the last time we checked
     private boolean foundSample = false;
 
-    private List<Point> foundSamplePositions = new ArrayList<>();
+    private List<Point> foundSamplePositionsPix = new ArrayList<>();
+
+    private List<Point> foundSamplePositionsInches = new ArrayList<>();
+    private List<Double> foundSampleRotations = new ArrayList<>();
 
     public SampleDetection() {
 
     }
     public void findSamples(Mat img, int mode){
-        foundSamplePositions = new ArrayList<>();
+        foundSamplePositionsPix = new ArrayList<>();
+        foundSamplePositionsInches = new ArrayList<>();
+        foundSampleRotations = new ArrayList<>();
         foundSample = false;
 
         Mat corrected = undistortImage(img);
@@ -215,13 +219,13 @@ public class SampleDetection {
 
             boolean originalPos = true;
 
-            for(Point s :foundSamplePositions){
+            for(Point s : foundSamplePositionsPix){
                 if (distance(centorPos, s) < MIN_DISTANCE){
                     originalPos = false;
                 }
             }
             if (originalPos){
-                foundSamplePositions.add(centorPos);
+                foundSamplePositionsPix.add(centorPos);
 
                 double bestDistance = 0.0;
                 int bestY = 0;
@@ -268,13 +272,34 @@ public class SampleDetection {
                 double inchPositionX = (centorPos.x - imageCenterX) * PIX2INCHES;
                 double inchPositionY = (centorPos.y - imageCenterY) * PIX2INCHES;
 
-                foundSamplePositionX = inchPositionX;
-                foundSamplePositionY = inchPositionY;
-                foundSamplePositionYaw = sampleAngle;
-
+                Point foundPosition = new Point(inchPositionX,inchPositionY);
+                foundSamplePositionsInches.add(foundPosition);
+                foundSampleRotations.add(sampleAngle);
             }
 
 
+        }
+
+        // then we need to find which sample out of all of the samples we found we want to grab!
+        // right now we just calculate which one is closest.
+
+        double closestDist = 0;
+        int bestI = 0;
+
+        for (int i = 0; i < foundSamplePositionsInches.size(); i++){
+
+            // if we get here then we definitely found a sample!
+            foundSample = true;
+
+            if (distance(foundSamplePositionsInches.get(i), new Point(0,0)) < closestDist || i == 0){
+                bestI = i;
+            }
+        }
+
+        if (foundSample){
+            foundSamplePositionX = foundSamplePositionsInches.get(bestI).x;
+            foundSamplePositionY = foundSamplePositionsInches.get(bestI).y;
+            foundSamplePositionYaw = foundSampleRotations.get(bestI);
         }
     }
     public void findYellowSamples(Mat img) {
@@ -426,4 +451,18 @@ public class SampleDetection {
     private double distance(Point one, Point two){
         return Math.sqrt(Math.pow(two.x-one.x,2)+Math.pow(two.y-one.y,2));
     }
+    public double getFoundSamplePositionX(){
+        return foundSamplePositionX;
+    }
+    public double getFoundSamplePositionY(){
+        return foundSamplePositionY;
+    }
+    public double getFoundSamplePositionYaw(){
+        return foundSamplePositionYaw;
+    }
+    public boolean isFoundSample(){
+        return foundSample;
+    }
+
+
 }

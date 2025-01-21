@@ -20,6 +20,8 @@ public class MecanumDriveTrain {
     double speedMultiplier = 1;
     public boolean fieldCentricDriving = true;
     private Telemetry telemetry;
+
+    private double avgDrivePower = 0;
     /**
      * constructor for mecanum drive train
      * -assigns motors from hardware map
@@ -129,6 +131,12 @@ public class MecanumDriveTrain {
         motorBL.setPower(Range.clip(forwardPower - sidewaysPower - turnPower, -1.0, 1.0) * speedMultiplier);
         motorBR.setPower(Range.clip(forwardPower + sidewaysPower + turnPower, -1.0, 1.0) * speedMultiplier);
 
+        //divided by 2 on purpose, I think it will help give us closer values to the use case
+        avgDrivePower = (Math.abs(forwardPower) + Math.abs(sidewaysPower) + Math.abs(turnPower))/2;
+
+    }
+    public double getAvgDrivePower(){
+        return avgDrivePower;
     }
 }
 
