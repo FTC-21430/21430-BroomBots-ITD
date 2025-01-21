@@ -75,6 +75,17 @@ public class SampleDetection {
     final int MAX_CONTOUR_LENGTH = 675;
     final double MIN_DISTANCE = 65;
 
+
+
+
+
+
+
+
+
+
+    
+
     // unit conversions
     final double PIX2INCHES = 4 / 200;
 
@@ -87,11 +98,13 @@ public class SampleDetection {
     // true only if we found a sample the last time we checked
     private boolean foundSample = false;
 
+    private List<Point> foundSamplePositions = new ArrayList<>();
+
     public SampleDetection() {
 
     }
-
-    public void findYellowSamples(Mat img) {
+    public void findSamples(Mat img, int mode){
+        foundSamplePositions = new ArrayList<>();
         foundSample = false;
 
         Mat corrected = undistortImage(img);
@@ -103,7 +116,7 @@ public class SampleDetection {
         Mat cropped = crop(blurred);
 
         Mat hsv = convertColorSpace(cropped);
-        Mat thresholded = thresholdImage(hsv, 0);
+        Mat thresholded = thresholdImage(hsv, mode);
 
 
         Mat kernel = Mat.ones(55, 55, 0);
@@ -160,8 +173,7 @@ public class SampleDetection {
             MatOfPoint2f approxContour = null;
             Imgproc.approxPolyDP(k, approxContour, Imgproc.arcLength(k, true) / 22, true);
 
-            int[] positionsX;
-            int[] positionsY;
+
 
             List<Point> pointsList = approxContour.toList();
 
@@ -171,57 +183,111 @@ public class SampleDetection {
 
             MatOfPoint finalApproxContour = null;
 
-            if (convertedApproxContour.size().width > 4){
-                MatOfPoint2f tempReApprox = null;
-                Imgproc.approxPolyDP(approxContour, tempReApprox, Imgproc.arcLength(approxContour, true) / 10, true);
-                List<Point> morePoints = tempReApprox.toList();
-                finalApproxContour.fromList(morePoints);
-            }else{
-                finalApproxContour = convertedApproxContour;
-            }
+
+/**
+ * The logic needed to approximate more if the size has more than 4 points
+ * Not used in the most recent python algorithm so I commented it out but will still leave it here as it took me a while lol
+ */
+
+//            if (convertedApproxContour.size().width > 4){
+//                MatOfPoint2f tempReApprox = null;
+//                Imgproc.approxPolyDP(approxContour, tempReApprox, Imgproc.arcLength(approxContour, true) / 10, true);
+//                List<Point> morePoints = tempReApprox.toList();
+//                finalApproxContour.fromList(morePoints);
+//            }else{
+            finalApproxContour = convertedApproxContour;
+//            }
+
+            int p = 0;
+
+            int[] positionsX = new int[(int)finalApproxContour.size().width];
+            int[] positionsY = new int[(int)finalApproxContour.size().width];
 
             for (Point pos : finalApproxContour.toList()){
+                positionsX[p] = (int)pos.x;
+                positionsY[p] = (int)pos.y;
+                p++;
+            }
+            int avgX = avgInt(positionsX);
+            int avgY = avgInt(positionsY);
+
+            Point centorPos = new Point(avgX,avgY);
+
+            boolean originalPos = true;
+
+            for(Point s :foundSamplePositions){
+                if (distance(centorPos, s) < MIN_DISTANCE){
+                    originalPos = false;
+                }
+            }
+            if (originalPos){
+                foundSamplePositions.add(centorPos);
+
+                double bestDistance = 0.0;
+                int bestY = 0;
+                int y = 0;
+                Point lastPos = new Point();
+                Point pos1 = new Point();
+                Point pos2 = new Point();
+
+                for(Point pos : finalApproxContour.toList()){
+                    if (y == 0){
+                        lastPos = pos;
+                        y++;
+                        continue;
+                    }
+                    double dist = distance(pos, lastPos);
+                    if (dist > bestDistance){
+                        bestDistance = dist;
+                        bestY = y;
+                        pos1 = pos;
+                        pos2 = lastPos;
+                    }
+                    lastPos = pos;
+                    y++;
+                }
+                Point anglePos1 = new Point();
+                Point anglePos2 = new Point();
+
+                if (pos1.x < pos2.x){
+                    anglePos1 = pos1;
+                    anglePos2 = pos2;
+                }else{
+                    anglePos1 = pos2;
+                    anglePos2 = pos1;
+                }
+
+                double difX = anglePos2.x - anglePos1.x;
+                double difY = anglePos2.y - anglePos1.y;
+
+                double sampleAngle = Math.atan2(difX, difY) * (180/Math.PI) - 180;
+
+                double imageCenterX = baseImage.size().width / 2;
+                double imageCenterY = baseImage.size().height / 2;
+
+                double inchPositionX = (centorPos.x - imageCenterX) * PIX2INCHES;
+                double inchPositionY = (centorPos.y - imageCenterY) * PIX2INCHES;
+
+                foundSamplePositionX = inchPositionX;
+                foundSamplePositionY = inchPositionY;
+                foundSamplePositionYaw = sampleAngle;
 
             }
 
 
         }
     }
-
-
-
+    public void findYellowSamples(Mat img) {
+       findSamples(img, 0);
+    }
 
 
     public void findRedSamples(Mat img){
-        foundSample = false;
-
-        Mat corrected = undistortImage(img);
-
-        Mat blurred = null;
-
-        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
-
-        Mat cropped = crop(blurred);
-
-        Mat hsv = convertColorSpace(cropped);
-
-        Mat thresholded = thresholdImage(hsv, 1);
+        findSamples(img, 1);
     }
 
     public void findBlueSamples(Mat img){
-        foundSample = false;
-
-        Mat corrected = undistortImage(img);
-
-        Mat blurred = null;
-
-        Imgproc.GaussianBlur(corrected, blurred, new Size(3,3),5);
-
-        Mat cropped = crop(blurred);
-
-        Mat hsv = convertColorSpace(cropped);
-
-        Mat thresholded = thresholdImage(hsv, 2);
+        findSamples(img, 2);
     }
 
     private Mat thresholdImage(Mat src, int mode){
@@ -356,5 +422,8 @@ public class SampleDetection {
         }else{
             return -1;
         }
+    }
+    private double distance(Point one, Point two){
+        return Math.sqrt(Math.pow(two.x-one.x,2)+Math.pow(two.y-one.y,2));
     }
 }
