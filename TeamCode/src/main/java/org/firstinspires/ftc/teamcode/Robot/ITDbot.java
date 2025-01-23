@@ -87,7 +87,7 @@ public class ITDbot extends Robot {
         driveTrain.setSpeedMultiplier(speedMultplierSlow);
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
-        spampleArm.currentArmState = SpampleArm.armState.lowBasket;
+        spampleArm.currentArmState = SpampleArm.armState.highBasket;
         autoMoveTo(-55,-49,-40,2,3);
 
 
@@ -119,7 +119,7 @@ public class ITDbot extends Robot {
         // Shoulder back to normal position
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
-        spampleArm.extendTo(1);
+        spampleArm.extendTo(2);
         spampleArm.rotateShoulderTo(90);
 
         chill(0.3, true);

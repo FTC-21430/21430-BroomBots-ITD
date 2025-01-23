@@ -118,7 +118,7 @@ public class SpampleArm {
 
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
-        linearSlideMotor.setPower(0.5);
+        linearSlideMotor.setPower(1);
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
