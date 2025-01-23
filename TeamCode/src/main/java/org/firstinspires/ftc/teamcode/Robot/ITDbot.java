@@ -88,7 +88,7 @@ public class ITDbot extends Robot {
         pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
         pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
         spampleArm.currentArmState = SpampleArm.armState.highBasket;
-        autoMoveTo(-55,-49,-40,2,3);
+        autoMoveTo(-55,-54,-40,2,3);
 
 
 
