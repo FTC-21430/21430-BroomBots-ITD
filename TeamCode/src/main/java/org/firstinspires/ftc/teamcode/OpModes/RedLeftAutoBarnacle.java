@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Resources.Utlities;
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
@@ -17,7 +18,7 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         utlities = new Utlities();
 
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
@@ -37,6 +38,8 @@ public class RedLeftAutoBarnacle extends BaseAuto {
         }
         robot.odometry.overridePosition(-40,-63,-90);
 
+        robot.spampleArm.currentArmState = SpampleArm.armState.test;
+        robot.spampleArm.extendTo(1);
         robot.autoMoveTo(-44,-52,-40,2,3);
 
        robot.ScoreSampleInHighBasket();
@@ -48,21 +51,15 @@ public class RedLeftAutoBarnacle extends BaseAuto {
       robot.GrabMiddleSample();
 
      robot.ScoreSampleInHighBasket();
-    robot.GrabLeftSample();
+        robot.GrabLeftSample();
 
-        robot.ScoreSampleInHighBasket();
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
 
-//
-//        robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
-//
-//        robot.autoMoveTo(-26.5,-12,-90,2);
         robot.spampleArm.currentArmState = SpampleArm.armState.fullyIdle;
         robot.chill(0.4, true);
         robot.autoMoveTo(-38,-12, -90, 2, 3);
         robot.autoMoveTo(-26,-12, -90, 2, 3);
+        robot.chill(0.4,false);
     }
 
 

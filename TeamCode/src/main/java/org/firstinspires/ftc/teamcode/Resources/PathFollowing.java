@@ -11,8 +11,8 @@ public class PathFollowing {
   
   // these are the PID controllers for both the x and y axis relative to the field.
   // these powers get converted over to relative to the robot later on
-  public PIDController xPID;
-  public PIDController yPID;
+  private PIDController xPID;
+  private PIDController yPID;
   
   // these are the tuning variables for both PID controllers.
   private double pXConstant, pYConstant;
@@ -32,7 +32,7 @@ public class PathFollowing {
    * @param dY derivative constant Y
    * @param runtime the runtime object from the first SDK
    */
-  public PathFollowing(double pX, double pY, double dX, double dY, ElapsedTime runtime){
+  public PathFollowing(double pX, double pY, double iX, double iY, double dX, double dY, ElapsedTime runtime){
    pXConstant = pX;
    pYConstant = pY;
    dXConstant = dX;
@@ -84,5 +84,9 @@ public class PathFollowing {
   
   // returns followSpeed just in case you need it somewhere.
   public double getFollowSpeed(){ return followSpeed; }
-  
+
+  public void setAutoSpeed(double p, double i, double d){
+    xPID.updateConstants(p,i,d);
+    yPID.updateConstants(p,i,d);
+  }
 }

@@ -1,18 +1,8 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.DConstantFast;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.DConstantSlow;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.IconstantFast;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.IconstantSlow;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.PconstantFast;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.PconstantSlow;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.speedMultplierFast;
-import static org.firstinspires.ftc.teamcode.OpModes.BaseAuto.speedMultplierSlow;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
@@ -23,9 +13,9 @@ public class ITDbot extends Robot {
     public static double proportionalConstantAngleDef = 0.02;
     public SpampleArm arm;
  
-    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode){
-        super.init(hardwareMap, telemetry,0, 0, 0, opMode);
-        spampleArm = new SpampleArm(hardwareMap, runtime);
+    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode,boolean reset){
+        super.init(hardwareMap, telemetry,0, 0, 0, opMode,reset);
+        spampleArm = new SpampleArm(hardwareMap, runtime,reset);
 }
 
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
@@ -84,9 +74,7 @@ public class ITDbot extends Robot {
     }
     public void ScoreSampleInHighBasket(){
         // Drives over to the high basket
-        driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        setRobotSpeed(Robot.Speed.SLOW);
         spampleArm.currentArmState = SpampleArm.armState.highBasket;
         autoMoveTo(-55,-54,-40,2,3);
 
@@ -94,7 +82,7 @@ public class ITDbot extends Robot {
 
 
 
-        chill(.3, true);
+        chill(.7, true);
 
         //Drives directly above high basket
         driveTrain.setSpeedMultiplier(0.35);
@@ -119,38 +107,32 @@ public class ITDbot extends Robot {
         // Shoulder back to normal position
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
-        spampleArm.extendTo(4);
+        spampleArm.extendTo(2);
+
         spampleArm.rotateShoulderTo(90);
 
         chill(0.3, true);
 
     }
     public void GrabRightSample(){
-        spampleArm.rotateElbowTo(65);
+        setRobotSpeed(Robot.Speed.FAST);
+        spampleArm.rotateShoulderTo(64);
+        chill(0.4,true);
+        //  goes to position for hovering over sample
+        spampleArm.currentArmState = SpampleArm.armState.grabSample;
         spampleArm.rotateTwistTo(-90);
-
         spampleArm.setClawPosition(Claw.ClawPosition.open);
-        driveTrain.setSpeedMultiplier(speedMultplierFast);
-        pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
 
+        spampleArm.rotateElbowTo(65);
+       
         //Goes to the drive position for picking up sample
         autoMoveTo(-48,-48,0,1,0.2);
-
-        driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        setRobotSpeed(Robot.Speed.SLOW);
         spampleArm.rotateShoulderTo(68);
 
         chill(0.6,true);
         //  goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
-
-
-
-
-
-
 
         chill(.5, true);
         autoMoveTo(-47.2,-47.7,0,1,0.2);
@@ -168,28 +150,22 @@ public class ITDbot extends Robot {
         chill(0.4, true);
     }
     public void GrabMiddleSample(){
+
         spampleArm.rotateElbowTo(65);
         spampleArm.rotateTwistTo(-90);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
-        driveTrain.setSpeedMultiplier(speedMultplierFast);
-        pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        setRobotSpeed(Robot.Speed.FAST);
 
         spampleArm.rotateShoulderTo(64);
         spampleArm.rotateElbowTo(65);
         //Goes to the drive position for picking up sample
         autoMoveTo(-57.4,-47.5,0,1,0.2);
 
-        driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        setRobotSpeed(Robot.Speed.SLOW);
 
         chill(0.4,true);
         //  goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
-
-
-
 
 
         chill(0.7, true);
@@ -215,21 +191,12 @@ public class ITDbot extends Robot {
 
         spampleArm.setClawPosition(Claw.ClawPosition.open);
         autoMoveTo(-54.5,-42.2,30,2,0.2);
-        driveTrain.setSpeedMultiplier(speedMultplierFast);
-        pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
-
-
-
+        setRobotSpeed(Robot.Speed.FAST);
 
         //Goes to the drive position for picking up sample
         autoMoveTo(-54.5,-42.5,30,1,0.4);
 
-        driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
-
-
+        setRobotSpeed(Robot.Speed.SLOW);
 
         chill(0.3,true);
         //  goes to position for hovering over sample
@@ -239,8 +206,6 @@ public class ITDbot extends Robot {
         chill(0.4, true);
 
         autoMoveTo(-57,-42.4,30,1,0.2);
-
-
         chill(0.4, true);
 
         //actually grabs the sample

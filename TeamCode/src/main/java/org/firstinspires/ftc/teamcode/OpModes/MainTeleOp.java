@@ -25,7 +25,7 @@ public class MainTeleOp extends BaseTeleOp {
         // We multiply this by the speed to activate slowmode.
         final double slowSpeedMultiplier = 0.35;
 
-        initialize();
+        initialize(false);
 
         telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
@@ -79,8 +79,8 @@ public class MainTeleOp extends BaseTeleOp {
                 if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
                      } else {
                     robot.spampleArm.rotateElbowTo(88.5);
-                    robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
                 }
+                    robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
             }
             if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
                 if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {

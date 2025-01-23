@@ -14,7 +14,7 @@ public class ArmTest extends BaseTeleOp {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize();
+        initialize(true);
         waitForStart();
         while (opModeIsActive()) {
             robot.spampleArm.currentArmState = SpampleArm.armState.test;

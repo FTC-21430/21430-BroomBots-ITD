@@ -17,6 +17,7 @@ public class SpampleArm {
     
     private ElapsedTime runtime = null;
     private double elbowAngleOffset = 156;
+
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
@@ -96,7 +97,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset){
 
         
         shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
@@ -113,6 +114,8 @@ public class SpampleArm {
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
         linearSlideMotor.setPower(1);
@@ -376,8 +379,8 @@ public class SpampleArm {
                 break;
             case lowBasket:
                 rotateTwistTo(90);
-                rotateElbowTo(-130);
-                extendTo(0);
+                rotateElbowTo(-142);
+                extendTo(2);
                 rotateShoulderTo(100);
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -394,9 +397,9 @@ public class SpampleArm {
                 extensionMoved = false;
                 break;
             case grabSample:
-
                 rotateShoulderTo(36);
                 extendTo(2);
+
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);
@@ -432,6 +435,7 @@ public class SpampleArm {
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
                 extendTo(0.25);
+
 
                 shoulderMoved = false;
                 elbowMoved = false;
