@@ -73,7 +73,7 @@ public class Robot {
 
   public Climber climber;
 
-  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde) {
+  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde, boolean reset) {
 
     this.opMode = opMpde;
 
@@ -81,10 +81,11 @@ public class Robot {
 
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
 
-    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap);
-    //TODO These numbers are placeholders
+    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap, reset);
+
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
-    spampleArm = new SpampleArm(hardwareMap, runtime);
+    spampleArm = new SpampleArm(hardwareMap, runtime, reset);
+
     aprilTags = new AprilTagSystem(hardwareMap);
 
   }

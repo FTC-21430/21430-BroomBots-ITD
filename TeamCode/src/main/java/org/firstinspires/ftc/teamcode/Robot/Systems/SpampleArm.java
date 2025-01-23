@@ -16,12 +16,18 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 161;
+    private double elbowAngleOffset = 156;
+
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
+
+    public static double spicemenGrabElbow=-36;
+    public static double spicemenGrabExtension= 5.0;
+    public static double spicemenGrabShoulder= 119;
+    public static double specimenGrabTwist= 83;
 
     public armState currentArmState = armState.idle;
 
@@ -50,23 +56,38 @@ public class SpampleArm {
     //TODO: replace with correct value; calibrated for 312 RPM motor
     //the motor will not turn correctly without these values right.
     //Constants for the shoulder
-    final double shoulderPulsesPerRevolution = 8011.117;
+    // goBILDA 60rpm motor spec sheet 2786.2 pulses per revolution at output, sprockets are 3:1 ratio
+    // 2786.2 * 3 = 8358.6
+    final double shoulderPulsesPerRevolution = 8358.6;
     final double shoulderTicksPerDegrees = shoulderPulsesPerRevolution / 360;
     
     //Constants for the linear slide
-    final double linearSlidePulsesPerRevolution = 1223.08;
+    //REV Gear cartridges 5, 3, 3 = 5.23 * 2.89 * 2.89 = 43.681283 : 1 ratio
+    //Encoder 28 pulse per revolution = 1223.081
+    final double linearSlidePulsesPerRevolution = 1223.081;
+    // GT2 pulley is 60 teeth, 2mm pitch = 120mm inch per revolution
+    // 120mm / 2.54 = 4.724409 inch per revolution
     // multiplied by two because of the cascade rigging
-    final double linearSlideRevPerInch = 1/(4.724*2);
+    final double linearSlideRevPerInch = 1/(4.724409*2);
     final double linearSlideTicksPerInch = linearSlidePulsesPerRevolution * linearSlideRevPerInch;
     final double linearSlideMaxExtension = 19.5;
     
     // used to correct the error caused in the slide by the rotation of the shoulder.
     final double shoulderRotationToSlide = -linearSlidePulsesPerRevolution/shoulderPulsesPerRevolution;
 
+
+//    shoulder constants
+//    should be able to be changed by ftc dashboard
     public static double pConstant = 0.028;
     public static double iConstant = 0.06;
     public static double dConstant =0.0005;
 
+//    the shoulder constants for when the arm is up high without the integrator
+
+    private double pConstantHigh = 0.035;
+    private double dConstantHigh = 0.0023;
+
+    private double dConstantGrab = 0.0025;
 
 
 
@@ -76,7 +97,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset){
 
         
         shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
@@ -88,12 +109,13 @@ public class SpampleArm {
         shoulderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shoulderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // you need to set how fast the motor moves before it will move at all.
-        
-        shoulderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
         linearSlideMotor.setPower(1);
@@ -117,7 +139,17 @@ public class SpampleArm {
     
     
     public double getArmAngle(){
-        return 38.412 * Math.pow(armPotentiometer.getVoltage(),2) - 232.78 * armPotentiometer.getVoltage() + 299.5 - robotTilt;
+//        return 38.412 * Math.pow(armPotentiometer.getVoltage(),2) - 232.78 * armPotentiometer.getVoltage() + 299.5 - robotTilt;
+//       return  armPotentiometer.getVoltage();
+
+//        return -139.94 * armPotentiometer.getVoltage() + 243.28;
+
+//         current tuned potentiometer as of 1/11/....25
+
+        return -31.767 * Math.pow(armPotentiometer.getVoltage(),3) + 154.13 * Math.pow(armPotentiometer.getVoltage(),2) - 367.2 * armPotentiometer.getVoltage() + 345.4;
+
+
+//        return 0.0018 * Math.pow(armPotentiometer.getVoltage(), 2) + 4.9578 * armPotentiometer.getVoltage() + 5.1362 - robotTilt;
     }
 
     public double getArmExtension(){
@@ -132,16 +164,16 @@ public class SpampleArm {
         
         // I tried to do some fancy calibration and stuff but it did not work :(
 //        double correctedAngle = angle - (6.33 + 9.66E-03 * angle + -1.12E-03 * Math.pow(angle, 2));
-        double correctedAngle;
-        if (angle <= 30){
-            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
-            correctedAngle = angle + 7.2;
-        }
-        
-        
-        else{
-            correctedAngle = angle;
-        }
+//        double correctedAngle;
+//        if (angle <= 30){
+//            // to acount for the error of 7.2 degrees when picking up from angles less than 30 degrees
+//            correctedAngle = angle + 7.2;
+//        }
+//
+//
+//        else{
+//            correctedAngle = angle;
+//        }
         
         
         //this ensures that the rotation of the robot's arm is never past the mechanical constraints of the robot
@@ -163,8 +195,12 @@ public class SpampleArm {
     public void updateArm(){
         updateState();
         if (getArmExtension() >= 7){
+            shoulderPID.updateConstants(pConstantHigh,iConstant,dConstantHigh);
             shoulderPID.setIntegralMode(false);
+        }else if(currentArmState == armState.grabSample2){
+            shoulderPID.updateConstants(pConstant, iConstant, dConstantGrab);
         }else{
+            shoulderPID.updateConstants(pConstant,iConstant,dConstant);
             shoulderPID.setIntegralMode(true);
         }
 
@@ -208,11 +244,11 @@ public class SpampleArm {
      */
     public void rotateTwistTo (double angle){
         // values to ensure the twist goes where we need it to, then rotated by 90 degrees
-        twistServo.setServoPos(angle+16+ 90);
+        twistServo.setServoPos(angle+11+ 90);
     }
 
     public double getTwist(){
-        return twistServo.getServoPos() - 16 - 90;
+        return twistServo.getServoPos() - 11 - 90;
 
     }
 
@@ -244,6 +280,15 @@ public class SpampleArm {
     
     public void saveShoulderTime(){
         shoulderTimer = runtime.seconds();
+    }
+
+    public void updateShoulderConstants(){
+        shoulderPID.updateConstants(pConstant,iConstant,dConstant);
+    }
+
+    ;
+    public double getElbowRotation(){
+        return elbowServo.getServoPos() - elbowAngleOffset;
     }
 
     // TODO Functions:
@@ -286,7 +331,8 @@ public class SpampleArm {
         spearHead,
         intake,
         init,
-        test
+        test,
+        fullyIdle
     }
 
     public void updateState(){
@@ -316,17 +362,25 @@ public class SpampleArm {
             case idle:
                 rotateTwistTo(0);
                 rotateElbowTo(0);
-                extendTo(0);
+                extendTo(1);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case fullyIdle:
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0.0);
                 rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
                 break;
             case lowBasket:
-
                 rotateTwistTo(90);
-                rotateElbowTo(-130);
-                extendTo(0);
+                rotateElbowTo(-142);
+                extendTo(2);
                 rotateShoulderTo(100);
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -345,6 +399,7 @@ public class SpampleArm {
             case grabSample:
 
                 rotateShoulderTo(35);
+                extendTo(0.5);
 
                 if (shoulderAtPosition()){
                     rotateElbowTo(65);
@@ -353,7 +408,7 @@ public class SpampleArm {
             case grabSample2:
 
                 rotateShoulderTo(22);
-                rotateElbowTo(65);
+                rotateElbowTo(66);
                 break;
 
 
@@ -377,12 +432,10 @@ public class SpampleArm {
             case highChamber:
 
                 rotateTwistTo(-90);
-                rotateElbowTo(8);
-                rotateShoulderTo(80);
+                rotateShoulderTo(90);
+                extendTo(0.25);
 
-                if (shoulderAtPosition()) {
-                    extendTo(18);
-                }
+
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
@@ -399,14 +452,14 @@ public class SpampleArm {
                 break;
             case grabSpecimen:
 
-                rotateTwistTo(90);
+                rotateTwistTo(specimenGrabTwist);
                 if (!elbowAtPosition() || !elbowMoved){
                     if(!elbowMoved) {
-                        rotateElbowTo(-30);
+                        rotateElbowTo(spicemenGrabElbow);
                         elbowMoved=true;
                     }else {
-                        extendTo(5.5);
-                        rotateShoulderTo(120.5);
+                        extendTo(spicemenGrabExtension);
+                        rotateShoulderTo(spicemenGrabShoulder);
                         elbowMoved=false;
                         shoulderMoved=false;
                         extensionMoved=false;
@@ -429,7 +482,7 @@ public class SpampleArm {
                 rotateTwistTo(0);
                 if (!shoulderAtPosition() || !shoulderMoved) {
                     if (!shoulderMoved) {
-                        rotateShoulderTo(0);
+                        rotateShoulderTo(90);
                         shoulderMoved = true;
                     }
                 }else {
@@ -458,7 +511,7 @@ public class SpampleArm {
                     }
                 } else if (!shoulderAtPosition() || !shoulderMoved) {
                     if (!shoulderMoved) {
-                        rotateShoulderTo(1);
+                        rotateShoulderTo(90);
                         shoulderMoved = true;
                     }
                 }
@@ -479,14 +532,14 @@ public class SpampleArm {
                 extensionMoved = false;
                 break;
             case intake:
-                rotateShoulderTo(30);
+                rotateShoulderTo(90);
                 break;
             case spearHead:
 
                 rotateTwistTo(0);
                 rotateElbowTo(0);
                 extendTo(0);
-                rotateShoulderTo(10);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;

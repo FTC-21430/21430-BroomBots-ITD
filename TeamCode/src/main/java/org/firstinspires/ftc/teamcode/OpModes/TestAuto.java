@@ -18,7 +18,7 @@ public class TestAuto extends BaseAuto{
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
