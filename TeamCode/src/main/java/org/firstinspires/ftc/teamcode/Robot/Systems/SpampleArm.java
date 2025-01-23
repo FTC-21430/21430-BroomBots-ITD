@@ -113,9 +113,8 @@ public class SpampleArm {
 
         linearSlideMotor = hardwareMap.get(DcMotor.class,"linearSlideMotor");
         linearSlideMotor.setTargetPosition(0);
-        if (reset){
-            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // you need to set how fast the motor moves before it will move at all.
