@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Resources.Utlities;
 import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
@@ -25,10 +26,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.init;
 
-
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 

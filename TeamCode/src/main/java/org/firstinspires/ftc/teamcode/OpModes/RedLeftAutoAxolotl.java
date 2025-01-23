@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Resources.Utlities;
-import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
@@ -25,10 +25,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.init;
 
-
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 
@@ -45,9 +42,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
         robot.autoMoveTo(-40,-50,-90,2,3);
         robot.autoMoveTo(-62,-46,0,2,3);
 
-        robot.driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        robot.pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        robot.pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        robot.setRobotSpeed(Robot.Speed.SLOW);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
 
@@ -69,17 +64,12 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         robot.chill(0.5, true);
 
-
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
 
         //Goes to the positon for hovering over sample
         robot.autoMoveTo(-48,-50,0,1,3);
 
-        robot.driveTrain.setSpeedMultiplier(speedMultplierSlow);
-        robot.pathFollowing.xPID.updateConstants(PconstantSlow, IconstantSlow  , DConstantSlow);
-        robot.pathFollowing.yPID.updateConstants(PconstantSlow, IconstantSlow, DConstantSlow);
+        robot.setRobotSpeed(Robot.Speed.SLOW);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSample;
         robot.spampleArm.rotateTwistTo(-90);
@@ -98,7 +88,6 @@ public class RedLeftAutoAxolotl extends BaseAuto {
         robot.chill(1, true);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-
 
         robot.chill(1, true);
 
@@ -122,18 +111,11 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         robot.chill(0.7, true);
 
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
         robot.autoMoveTo(-36,-12,-90,2,3);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
 
         robot.autoMoveTo(-26.5,-12,-90,2,3);
-
-
-
-
-
     }
 }
