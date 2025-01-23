@@ -78,8 +78,8 @@ public class MainTeleOp extends BaseTeleOp {
                 if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
                      } else {
                     robot.spampleArm.rotateElbowTo(88.5);
+
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
-                }
             }
             if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
                 if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {

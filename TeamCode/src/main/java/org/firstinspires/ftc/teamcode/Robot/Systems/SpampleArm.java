@@ -17,6 +17,7 @@ public class SpampleArm {
     
     private ElapsedTime runtime = null;
     private double elbowAngleOffset = 156;
+
     private double shoulderAngleOffset;
 
     public boolean extensionMoved = false;
@@ -434,6 +435,7 @@ public class SpampleArm {
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
                 extendTo(0.25);
+
 
                 shoulderMoved = false;
                 elbowMoved = false;
