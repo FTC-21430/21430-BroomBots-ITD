@@ -88,6 +88,8 @@ public class Robot {
 
     aprilTags = new AprilTagSystem(hardwareMap);
 
+    climber =  new Climber(hardwareMap,telemetry);
+
   }
   
   // you call this function in a main auto opMode to make the robot move somewhere.

@@ -11,7 +11,8 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
 
-
+    boolean climberActive = false;
+    boolean climberSwitchPrev = false;
     InverseKinematics kinematics;
     boolean gp1xJoy = false;
     boolean gp2tri = false;
@@ -132,6 +133,33 @@ public class MainTeleOp extends BaseTeleOp {
             } else if (robot.spampleArm.getTwist() < -90) {
                 robot.spampleArm.rotateTwistTo(-90);
             }
+
+
+            //Climber operation
+            if (gamepad1.left_bumper && !climberSwitchPrev){
+                if (!robot.climber.getIfInitilized()){
+                    robot.climber.initClimber();
+                }
+                if (climberActive){
+                    climberActive = false;
+                }else{
+                    climberActive = true;
+                }
+            }
+
+
+            if (climberActive){
+                robot.climber.releaseLatches();
+
+                if (gamepad1.right_trigger > 0.6){
+                    robot.climber.extendTo(12.5);
+                }else{
+                    robot.climber.extendTo(0);
+                }
+            }else{
+                robot.climber.lockLatches();
+            }
+
 
 
 

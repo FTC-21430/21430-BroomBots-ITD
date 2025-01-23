@@ -108,6 +108,7 @@ public class ITDbot extends Robot {
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
         spampleArm.extendTo(2);
+
         spampleArm.rotateShoulderTo(90);
 
         chill(0.3, true);
