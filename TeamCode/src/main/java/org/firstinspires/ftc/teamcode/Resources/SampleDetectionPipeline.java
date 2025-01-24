@@ -130,6 +130,45 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     Mat outlineBlurred = new Mat();
     Mat hierarchy = new Mat();
 
+    Mat seperated = new Mat();
+
+    Mat output = new Mat();
+
+    Mat corrected = new Mat();
+
+    Mat cropped = new Mat();
+
+    Mat hsv = new Mat();
+
+    Mat thresholded = new Mat();
+
+    Mat threshHSV = new Mat();
+
+    Mat kernel = new Mat();
+
+    Mat baseImage = new Mat();
+
+    Mat dilationKernal = new Mat();
+
+    Mat HSV_Blurred_Canny = new Mat();
+
+    Mat dst = new Mat();;
+
+    Mat firstRed = new Mat();
+    Mat secondRed = new Mat();
+
+    Mat croppedCrop = new Mat();
+
+    Mat hsv_image = new Mat();
+
+    Mat cameraMatrix = new Mat();
+
+    Mat dist_coeffs = new Mat();
+
+    // create the destination for the undistorted image
+    Mat unDistorted = new Mat();
+
+    Mat rescaledDst = new Mat();;
 
     // other things I added later.. I am tired give me a break
 
@@ -159,12 +198,33 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
     /**
      * The init function overrided from the OpenCvPipeline class
-     * nothing is in here as we don't need stuff in here but it is a requirement to have this function exist
      */
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
-        // Executed before the first call to processFrame
-    }
+        cameraMatrix = new Mat(3,3,CvType.CV_64F);
+
+        //These are the values gotten from the camera calibration we did
+
+        // assign the values to the matrix... I could not find a better way through the documentation
+        cameraMatrix.put(0,0, 600.01851744);
+        cameraMatrix.put(0,1,0);
+        cameraMatrix.put(0,2, 906.817157357);
+        cameraMatrix.put(1,0,0);
+        cameraMatrix.put(1,1,600.01851744);
+        cameraMatrix.put(1,2,516.73047402);
+        cameraMatrix.put(2,0,0);
+        cameraMatrix.put(2,1,0);
+        cameraMatrix.put(2,2,1);
+
+        // assigning values to the camera distortion coefficients... the only way I know how
+        dist_coeffs = new Mat(1,5,CvType.CV_64F);
+
+        dist_coeffs.put(0,0,0.0115588983608);
+        dist_coeffs.put(0,1,-0.0313347203804);
+        dist_coeffs.put(0,2,0.00013459478315);
+        dist_coeffs.put(0,3,0.000897741867319);
+        dist_coeffs.put(0,4,0.00542752872672);
+          }
 
     /**
      * ran by the OpenCVPipeline class and it passes on Mat input every frame the vision portal is enabled
@@ -172,12 +232,11 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     @Override
     public Mat processFrame(Mat input, long captureTimeNanos) {
 
-        // releases the data from all Mats we use
-        clearMats();
+
         // Executed every time a new frame is dispatched
 
         // the output image we return at the endof the processFrame function
-        Mat output = new Mat();
+
 
         // sets the foundSample var to false to ensure we don't say we have a sample when we don't
         foundSample = false;
@@ -203,6 +262,9 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
         // telemetry.update();
 
+
+        // releases the data from all Mats we use
+        clearMats();
 
         return output; // Return the image that will be displayed in the viewport on the driver hub
     }
@@ -232,6 +294,25 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         outlineCanny.release();
         outlineBlurred.release();
         hierarchy.release();
+        seperated.release();
+        output.release();
+        corrected.release();
+        cropped.release();
+        hsv.release();
+        thresholded.release();
+        threshHSV.release();
+        kernel.release();
+        baseImage.release();
+        dilationKernal.release();
+        HSV_Blurred_Canny.release();
+        dst.release();
+        firstRed.release();
+        secondRed.release();
+        croppedCrop.release();
+        hsv_image.release();
+        unDistorted.release();
+        rescaledDst.release();
+
     }
 
 
@@ -274,33 +355,33 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         foundSample = false;
 
         // corrects the lens distortion of the image
-        Mat corrected = undistortImage(img);
+        corrected = undistortImage(img);
 
 
         // blurs the image with a kernel of (3,3)
         Imgproc.GaussianBlur(corrected, blurred, new Size(3, 3), 5);
 
         // crops the image
-        Mat cropped = crop(blurred);
+        cropped = crop(blurred);
 
         // converts the images color space to from RGB to HSV
-        Mat hsv = convertColorSpace(cropped);
+        hsv = convertColorSpace(cropped);
 
         // thresholds the image
-        Mat thresholded = thresholdImage(hsv, mode);
+        thresholded = thresholdImage(hsv, mode);
 
         // flips the threshhold to make a make
         Core.bitwise_not(thresholded, threshFlipped);
 
         // makes the make in the same color space as the base image
         Imgproc.cvtColor(threshFlipped, threshBGR, Imgproc.COLOR_GRAY2RGB);
-        Mat threshHSV = convertColorSpace(threshBGR);
+        threshHSV = convertColorSpace(threshBGR);
 
         // erodes the mask
-        Mat kernel = Mat.ones(5, 5, 0);
+        kernel = Mat.ones(5, 5, 0);
         Imgproc.erode(threshHSV, eroded, kernel);
 
-        Mat baseImage = hsv;
+        baseImage = hsv;
 
         // uses that mask to remove all colors that are not the target samples
         // Set all black regions to black : written by copilot :(
@@ -324,17 +405,17 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         }
 
         // dilates that canny
-        Mat dilationKernal = Mat.ones(4, 4, CvType.CV_32F);
+        dilationKernal = Mat.ones(4, 4, CvType.CV_32F);
         Imgproc.dilate(seperationCanny, dilatedSeperationCanny, dilationKernal);
 
         // blurs the dilation result
         Imgproc.GaussianBlur(seperationCanny, blurredCanny, new Size(3, 3), 3);
 
         // seperates the samples out if they are touching
-        Mat seperated = baseImage;
+        seperated = baseImage;
         Imgproc.cvtColor(blurredCanny, BGR_Blurred_Canny, Imgproc.COLOR_GRAY2RGB);
 
-        Mat HSV_Blurred_Canny = convertColorSpace(BGR_Blurred_Canny);
+        HSV_Blurred_Canny = convertColorSpace(BGR_Blurred_Canny);
 
         for (int row = 0; row < baseImage.rows(); row++) {
             for (int col = 0; col < baseImage.cols(); col++) {
@@ -530,7 +611,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         Scalar lowerBound = null;
         Scalar upperBound = null;
 
-        Mat dst = new Mat();;
+
 
         if (mode == 0){
             // yellow
@@ -553,8 +634,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
             Scalar lowerBound2 = new Scalar(Red2HL,Red2SL,Red2VL);
             Scalar upperBound2 = new Scalar(Red2HH,Red2SH,Red2VH);
-            Mat firstRed = new Mat();
-            Mat secondRed = new Mat();
+
 
             // threshold the image!
             Core.inRange(src, lowerBound, upperBound, firstRed);
@@ -575,6 +655,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
             Core.inRange(src, lowerBound, upperBound, dst);
 
         }
+
         return dst;
     }
 
@@ -591,45 +672,19 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         // calculating the part of the image we want to remain
         Rect roi = new Rect(cropCornerX, cropCornerY, rectWidth, rectHeight);
 
-        Mat cropped = new Mat(src, roi);
+        croppedCrop = new Mat(src, roi);
 
 
-        return cropped;
+        return croppedCrop;
     }
 
     private Mat convertColorSpace(Mat src){
-        Mat hsv = new Mat();;
+
         Imgproc.cvtColor(src, hsv, Imgproc.COLOR_RGB2HSV);
-        return hsv;
+        return hsv_image;
     }
 
     private Mat undistortImage(Mat src){
-        Mat cameraMatrix = new Mat(3,3,CvType.CV_64F);
-
-        //These are the values gotten from the camera calibration we did
-
-        // assign the values to the matrix... I could not find a better way through the documentation
-        cameraMatrix.put(0,0, 600.01851744);
-        cameraMatrix.put(0,1,0);
-        cameraMatrix.put(0,2, 906.817157357);
-        cameraMatrix.put(1,0,0);
-        cameraMatrix.put(1,1,600.01851744);
-        cameraMatrix.put(1,2,516.73047402);
-        cameraMatrix.put(2,0,0);
-        cameraMatrix.put(2,1,0);
-        cameraMatrix.put(2,2,1);
-
-        // assigning values to the camera distortion coefficients... the only way I know how
-        Mat dist_coeffs = new Mat(1,5,CvType.CV_64F);
-
-        dist_coeffs.put(0,0,0.0115588983608);
-        dist_coeffs.put(0,1,-0.0313347203804);
-        dist_coeffs.put(0,2,0.00013459478315);
-        dist_coeffs.put(0,3,0.000897741867319);
-        dist_coeffs.put(0,4,0.00542752872672);
-
-        // create the destination for the undistorted image
-        Mat unDistorted = new Mat();
 
         // un distort
         Calib3d.undistort(src, unDistorted, cameraMatrix, dist_coeffs);
@@ -640,9 +695,9 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         double width = (int) Math.round(frame.cols() * scale);
         double height = (int) Math.round(frame.rows() * scale);
         Size image_size = new Size(width,height);
-        Mat dst = new Mat();;
-        Imgproc.resize(frame, dst, image_size);
-        return dst;
+
+        Imgproc.resize(frame, rescaledDst, image_size);
+        return rescaledDst;
     }
 
     private int avgInt(List<Integer> numbers){

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Systems;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -36,6 +38,10 @@ public class Camera {
        VisionPortal.Builder builder = new VisionPortal.Builder();
 
        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+       builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+
+       builder.setCameraResolution(new Size(1920,1080));
 
        builder.addProcessor(samples);
 
