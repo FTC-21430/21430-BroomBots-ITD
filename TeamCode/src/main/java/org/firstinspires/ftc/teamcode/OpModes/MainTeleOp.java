@@ -122,7 +122,9 @@ public class MainTeleOp extends BaseTeleOp {
 //                if (gamepad1.dpad_right){
 //                    currentArmState = armState.spearHead;
 //                }
-
+            if (gamepad2.dpad_right){
+                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
+            }
 
 
 
@@ -147,20 +149,23 @@ public class MainTeleOp extends BaseTeleOp {
                 }
             }
 
+            climberSwitchPrev = gamepad1.left_bumper;
 
             if (climberActive){
                 robot.climber.releaseLatches();
 
-                if (gamepad1.right_trigger > 0.6){
+                if (gamepad1.left_trigger > 0.6){
                     robot.climber.extendTo(12.5);
                 }else{
                     robot.climber.extendTo(0);
                 }
             }else{
                 robot.climber.lockLatches();
+                robot.climber.extendTo(0);
             }
 
-
+            telemetry.addData("climberActive", climberActive);
+            telemetry.addData("climber init?", robot.climber.getIfInitilized());
 
 
 

@@ -397,19 +397,14 @@ public class SpampleArm {
                 extensionMoved = false;
                 break;
             case grabSample:
-                rotateShoulderTo(36);
+                rotateShoulderTo(30);
                 extendTo(2);
-
-
-                if (shoulderAtPosition()){
-                    rotateElbowTo(65);
-                }
+                rotateElbowTo(65.5);
                 break;
             case grabSample2:
-
                 extendTo(2);
-                rotateShoulderTo(24);
-                rotateElbowTo(66);
+                rotateShoulderTo(16.5);
+                rotateElbowTo(73.5);
                 break;
 
 
@@ -444,9 +439,9 @@ public class SpampleArm {
             case climberReady:
 
                 rotateTwistTo(0);
-                rotateElbowTo(1);
+                rotateElbowTo(0);
                 extendTo(1);
-                rotateShoulderTo(90);
+                rotateShoulderTo(130);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
