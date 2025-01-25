@@ -25,7 +25,8 @@ public class SampleDetectionTesting extends LinearOpMode {
         }
 
         while(opModeIsActive()){
-            telemetry.addLine("Sample: " + sampleCamera.getTempX() + ", " + sampleCamera.getTempY() + ", "+ sampleCamera.getTempYaw());
+            telemetry.addLine("SampleX: " + sampleCamera.getTempX() + ", "+ sampleCamera.getTempYaw());
+            telemetry.addLine("SampleY" + sampleCamera.getTempY());
             telemetry.update();
         }
     }

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Resources;
 // imports
 import android.graphics.Canvas;
 
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.opencv.core.Mat;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -33,7 +35,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
     private final double YellowHL = 12;
     private final double YellowHH = 61;
-    private final double YellowSL = 119;
+    private final double YellowSL = 80;
     private final double YellowSH = 255;
     private final double YellowVL = 186;
     private final double YellowVH = 255;
@@ -84,10 +86,11 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     private final double MIN_DISTANCE = 65;
 
     // unit conversions
-    private final double PIX2INCHES = 0.015;
+    private final double PIX2INCHES = 0.0175;
     // 3 inches / 200 pix
 
-    private final double INCH2PIX = 66.667;
+    // TODO fix these values
+    private final double INCH2PIX = 57.1429;
     // 200 pix / 3 inches
 
 
@@ -236,7 +239,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
      */
     @Override
     public Mat processFrame(Mat input, long captureTimeNanos) {
-        output.release();
+//        output.release();
 
         // Executed every time a new frame is dispatched
 
@@ -247,10 +250,10 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         foundSample = false;
 
         // checks if we should run the algorithm
-        if (update){
+        if (true){
             // sets the output image to the output of the main algorithm
             // passes in the input image from OpenCV and the colorMode (0-2) for which color of samples we are looking for
-            output = findSamples(input, colorMode);
+            findSamples(input, colorMode).copyTo(input);
         }else{
             // if we should not update, we still need to return something so we just return the input as the output
             output = input;
@@ -269,7 +272,11 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
 
         // releases the data from all Mats we use
-        clearMats();
+//        clearMats();
+
+//        Imgproc.circle(output, new Point(500,500), 40,new Scalar(255,0,0), 15);
+
+//        Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
         return output; // Return the image that will be displayed in the viewport on the driver hub
     }
@@ -366,29 +373,30 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         foundSample = false;
 
         // corrects the lens distortion of the image
-        corrected = undistortImage(img);
+        undistortImage(img).copyTo(corrected);
 
 
         // blurs the image with a kernel of (3,3)
         Imgproc.GaussianBlur(corrected, blurred, new Size(3, 3), 5);
 
-        corrected.release();
+//        corrected.release();
 
         // crops the image
-        cropped = crop(blurred);
+        crop(blurred).copyTo(cropped);
 
-        blurred.release();
+
+//        blurred.release();
         // converts the images color space to from RGB to HSV
-        hsv = convertColorSpace(cropped);
+        convertColorSpace(cropped).copyTo(hsv);
 
-        cropped.release();
+//        cropped.release();
 
         // thresholds the image
-        thresholded = thresholdImage(hsv, mode);
+        thresholdImage(hsv, mode).copyTo(thresholded);
 
         // flips the threshhold to make a make
         Core.bitwise_not(thresholded, threshFlipped);
-        thresholded.release();
+//        thresholded.release();
 
 
         telemetry.addLine("RIGHT BEFORE cvtColor 1");
@@ -396,20 +404,20 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
         // makes the make in the same color space as the base image
         Imgproc.cvtColor(threshFlipped, threshBGR, Imgproc.COLOR_GRAY2RGB);
-        threshFlipped.release();
-        threshHSV = convertColorSpace(threshBGR);
-        threshBGR.release();
+//        threshFlipped.release();
+        convertColorSpace(threshBGR).copyTo(threshHSV);
+//        threshBGR.release();
         // erodes the mask
         kernel = Mat.ones(5, 5, 0);
         Imgproc.erode(threshHSV, eroded, kernel);
-        threshHSV.release();
+//        threshHSV.release();
 
-         baseImage = hsv;
-         hsv.release();
+         hsv.copyTo(baseImage);
 
-        baseImage = subtract(baseImage,eroded);
 
-        eroded.release();
+        subtract(baseImage,eroded).copyTo(baseImage);
+//        hsv.release();
+//        eroded.release();
 
 //        // uses that mask to remove all colors that are not the target samples
 //        // Set all black regions to black : written by copilot :(
@@ -428,36 +436,40 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         } else if(colorMode ==1){
             Imgproc.Canny(baseImage, separationCanny, CANNY_LOW_R, CANNY_HIGH_R);
 
-        } else if(colorMode == 2){
+        } else{
             Imgproc.Canny(baseImage, separationCanny, CANNY_LOW_B, CANNY_HIGH_B);
         }
+        RobotLog.e("Hello world!");
+        RobotLog.e("separationCanny empty: " + separationCanny.empty());
+
 
         // dilates that canny
         Imgproc.dilate(separationCanny, dilatedSeparationCanny, dilationKernel);
+        RobotLog.e("Dilation worked!");
 
-        separationCanny.release();
+//        separationCanny.release();
 
         // seperates the samples out if they are touching
-        separated = baseImage;
+        baseImage.copyTo(separated);
         telemetry.addLine("RIGHT BEFORE cvtColor 2");
         telemetry.update();
         Imgproc.cvtColor(dilatedSeparationCanny, BGR_Blurred_Canny, Imgproc.COLOR_GRAY2RGB);
-        dilatedSeparationCanny.release();
-        HSV_Blurred_Canny = convertColorSpace(BGR_Blurred_Canny);
-        BGR_Blurred_Canny.release();
+//        dilatedSeparationCanny.release();
+        convertColorSpace(BGR_Blurred_Canny).copyTo(HSV_Blurred_Canny);
+//        BGR_Blurred_Canny.release();
 
-        separated = subtract(baseImage, HSV_Blurred_Canny);
-        HSV_Blurred_Canny.release();
+        subtract(baseImage, HSV_Blurred_Canny).copyTo(separated);
+//        HSV_Blurred_Canny.release();
 
 
         // gets the contours of the samples
         Imgproc.Canny(separated, outlineCanny, 272, 70);
-        separated.release();
+//        separated.release();
         Imgproc.GaussianBlur(outlineCanny, outlineBlurred, new Size(3, 3), 3);
-        outlineCanny.release();
+//        outlineCanny.release();
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(outlineBlurred, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        outlineBlurred.release();
+//        outlineBlurred.release();
         // now that we have those contours, we filter through them one by one!
         for (int i = 0; i < contours.size(); i++) {
 
@@ -627,6 +639,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
         }
 
+
+
         return baseImage;
         // return seperated;
     }
@@ -647,7 +661,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
             // threshold the image!
             Core.inRange(src, lowerBound, upperBound, dst);
-            src.release();
+//            src.release();
 
         }else if(mode == 1){
             //red
@@ -666,10 +680,10 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
             Core.inRange(src, lowerBound, upperBound, firstRed);
 
             Core.inRange(src, lowerBound2, upperBound2, secondRed);
-src.release();
+//src.release();
             Core.add(firstRed,secondRed,dst);
-            firstRed.release();
-            secondRed.release();
+//            firstRed.release();
+//            secondRed.release();
 
 
         }else if(mode == 2){
@@ -681,7 +695,7 @@ src.release();
 
             // threshold the image!
             Core.inRange(src, lowerBound, upperBound, dst);
-            src.release();
+//            src.release();
 
         }
 
@@ -711,7 +725,7 @@ src.release();
         telemetry.addLine("RIGHT BEFORE cvtColor convert ColorSpace");
         telemetry.update();
         Imgproc.cvtColor(src, hsv_image, Imgproc.COLOR_RGB2HSV);
-        src.release();
+//        src.release();
 
         return hsv_image;
     }
@@ -720,7 +734,7 @@ src.release();
 
         // un distort
         Calib3d.undistort(src, unDistorted, cameraMatrix, dist_coeffs);
-        src.release();
+//        src.release();
         return unDistorted;
     }
 
@@ -730,7 +744,7 @@ src.release();
         Size image_size = new Size(width,height);
 
         Imgproc.resize(frame, rescaledDst, image_size);
-        frame.release();
+//        frame.release();
         return rescaledDst;
     }
 
@@ -755,17 +769,17 @@ src.release();
 
 
     private Mat subtract(Mat src1, Mat src2){
-        telemetry.addLine("RIGHT BEFORE subtract cvt color");
-        telemetry.update();
+//        telemetry.addLine("RIGHT BEFORE subtract cvt color");
+//        telemetry.update();
         Imgproc.cvtColor(src1, Hsv2RGB1, Imgproc.COLOR_HSV2RGB);
         Imgproc.cvtColor(src2, Hsv2RGB2, Imgproc.COLOR_HSV2RGB);
         Core.subtract(Hsv2RGB1, Hsv2RGB2, subtractedMethodMat);
-        src1.release();
-        src2.release();
-        Hsv2RGB1.release();
-        Hsv2RGB2.release();
+//        src1.release();
+//        src2.release();
+//        Hsv2RGB1.release();
+//        Hsv2RGB2.release();
         Imgproc.cvtColor(subtractedMethodMat, reConverted, Imgproc.COLOR_RGB2HSV);
-        subtractedMethodMat.release();
+//        subtractedMethodMat.release();
         return reConverted;
     }
 
