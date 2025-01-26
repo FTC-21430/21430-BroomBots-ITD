@@ -59,7 +59,7 @@ public class InverseKinematics {
     private final double TWIST_MIN = 0, TWIST_MAX = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    private final double ELBOW_OFFSET = 4.0;
+    public final double ELBOW_OFFSET = 4.0;
     
     // the length in inches of the non-extending shaft.
     private final double FOREARM_LENGTH = 11.18;

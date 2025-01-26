@@ -282,6 +282,7 @@ public class SpampleArm {
         shoulderTimer = runtime.seconds();
     }
 
+
     public void updateShoulderConstants(){
         shoulderPID.updateConstants(pConstant,iConstant,dConstant);
     }
@@ -309,7 +310,6 @@ public class SpampleArm {
     //elbow
     //twist
     //pinchy
-
     //High Basket
     //fix variables
 
@@ -549,15 +549,5 @@ public class SpampleArm {
             case test:
                 break;
         }
-
-
     }
-    
-    
-    
-    
-    
-
-
-
 }
