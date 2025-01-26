@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 @Autonomous
 public class RedLeftAutoBarnacle extends BaseAuto {
     Utlities utlities;
-
-    //None of the values for RunToPoint Functions are correct
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -24,10 +22,7 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.init;
 
-//        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-//        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-//        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
-            setAutoSpeedSlow();
+        setAutoSpeedSlow();
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 
@@ -36,22 +31,29 @@ public class RedLeftAutoBarnacle extends BaseAuto {
             telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
             telemetry.update();
         }
+
+        // Sets starting position
         robot.odometry.overridePosition(-40,-63,-90);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.test;
         robot.spampleArm.extendTo(1);
-        robot.autoMoveTo(-44,-52,-40,2,3);
+
+        robot.autoMoveTo(-42,-50,-40,2,3);
 
        robot.ScoreSampleInHighBasket();
 
       robot.GrabRightSample();
-//
+
       robot.ScoreSampleInHighBasket();
 
       robot.GrabMiddleSample();
 
      robot.ScoreSampleInHighBasket();
+
         robot.GrabLeftSample();
+
+        robot.ScoreSampleInHighBasket();
+
 
         robot.setRobotSpeed(Robot.Speed.FAST);
 

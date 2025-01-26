@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
+import org.firstinspires.ftc.teamcode.Robot.Systems.ServoPlus;
+
 
 
 //This class is the code foundations for making the robot's arm move.
@@ -403,7 +405,7 @@ public class SpampleArm {
                 break;
             case grabSample2:
                 extendTo(2);
-                rotateShoulderTo(16.5);
+                rotateShoulderTo(19.5);
                 rotateElbowTo(73.5);
                 break;
 
