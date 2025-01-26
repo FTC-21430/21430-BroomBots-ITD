@@ -20,8 +20,10 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.Climber;
 @Config
 public class Robot {
   
-  
-  //used for how fast the turning input is used.
+  public enum Speed {
+    SLOW, FAST
+  }
+  // used for how fast the turning input is used.
   // the number for maxTurnDegPerSecond is how much the robot can turn for one degree
   public static double maxTurnDegPerSecond = 280;
   public static double pCon = 0.025;
@@ -34,9 +36,6 @@ public class Robot {
   public boolean turningBoolean;
   public MecanumDriveTrain driveTrain;
   public OdometryOTOS odometry;
-  
-
-  
   public ElapsedTime runtime = new ElapsedTime();
   //TODO Tune the pConstant and d Constant numbers, these are place holders.
   public PIDController anglePID = new PIDController(pCon, 0, dCon, runtime);
@@ -47,9 +46,16 @@ public class Robot {
   private double lastTimeAngle;
   private boolean CurrentAlign = true;
   private boolean DriverOrientationDriveMode = true;
-  
 
-  
+  private static final double P_CONSTANT_FAST = 0.15;
+  private static final double I_CONSTANT_FAST = 0.1;
+  private static final double D_CONSTANT_FAST = 0.02;
+  private static final double SPEED_MULTIPLIER_FAST = 1;
+  private static final double P_CONSTANT_SLOW = 0.5;
+  private static final double I_CONSTANT_SLOW = 1;
+  private static final double D_CONSTANT_SLOW = 0.02;
+  private static final double SPEED_MULTIPLIER_SLOW = 0.5;
+
   public double derivativeConstantAngle;
   public double proportionalConstantAngle;
   public Telemetry telemetry;
@@ -67,7 +73,7 @@ public class Robot {
 
   public Climber climber;
 
-  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde) {
+  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde, boolean reset) {
 
     this.opMode = opMpde;
 
@@ -75,17 +81,20 @@ public class Robot {
 
     driveTrain = new MecanumDriveTrain(hardwareMap, telemetry);
 
-    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap);
-    //TODO These numbers are placeholders
-    pathFollowing = new PathFollowing(0.12, 0.17, 0.01, 0.01, runtime);
-    spampleArm = new SpampleArm(hardwareMap, runtime);
+    odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap, reset);
+
+    pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
+    spampleArm = new SpampleArm(hardwareMap, runtime, reset);
+
     aprilTags = new AprilTagSystem(hardwareMap);
+
+    climber =  new Climber(hardwareMap,telemetry);
 
   }
   
   // you call this function in a main auto opMode to make the robot move somewhere.
   // This is the foundation that every robot should need but you should more season specific things in the bot class.
-  public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle) {
+  public void autoMoveTo(double targetX, double targetY, double robotAngle, double targetCircle, double Timeout) {
     while (distanceCircle(targetX, targetY) > targetCircle && opMode.opModeIsActive()) {
       pathFollowing.setTargetPosition(targetX,targetY);
       anglePID.setTarget(robotAngle);
@@ -157,5 +166,16 @@ public class Robot {
       }
     }
 
-
+    public void setRobotSpeed(Speed robotSpeed){
+    switch(robotSpeed) {
+      case SLOW:
+        driveTrain.setSpeedMultiplier(SPEED_MULTIPLIER_SLOW);
+        pathFollowing.setAutoSpeed(P_CONSTANT_SLOW, I_CONSTANT_SLOW, D_CONSTANT_SLOW);
+        break;
+      case FAST:
+        driveTrain.setSpeedMultiplier(SPEED_MULTIPLIER_FAST);
+        pathFollowing.setAutoSpeed(P_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST);
+        break;
+    }
+    }
   }

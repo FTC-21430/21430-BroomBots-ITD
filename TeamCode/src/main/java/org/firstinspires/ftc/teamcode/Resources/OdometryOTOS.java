@@ -27,15 +27,17 @@ public class OdometryOTOS {
    * @param robotAngle
    * @param telemetry
    */
-  public OdometryOTOS(double initX, double initY, double robotAngle, Telemetry telemetry, HardwareMap hardwareMap){
+  public OdometryOTOS(double initX, double initY, double robotAngle, Telemetry telemetry, HardwareMap hardwareMap, boolean reset){
     OTOS = hardwareMap.get(SparkFunOTOS.class, "OTOS");
     configureOtos();
-    robotX = initX;
-    robotY = initY;
-    OTOS.setLinearScalar(1.011);
-    OTOS.setAngularScalar(0.993);
-    this.robotAngle = robotAngle;
-    overridePosition(robotX,robotY,robotAngle);
+    if (reset){
+      robotX = initX;
+      robotY = initY;
+      OTOS.setLinearScalar(1.011);
+      OTOS.setAngularScalar(0.993);
+      this.robotAngle = robotAngle;
+      overridePosition(robotX,robotY,robotAngle);
+    }
   }
   
   // this does all of the math to recalculate where to robot is.

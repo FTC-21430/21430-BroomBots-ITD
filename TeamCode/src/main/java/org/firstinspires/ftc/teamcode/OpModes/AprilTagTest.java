@@ -15,7 +15,7 @@ public class AprilTagTest extends BaseTeleOp {
     
     aprilTagSystem = new AprilTagSystem(hardwareMap);
     
-    initialize();
+    initialize(true);
     
     waitForStart();
     while (opModeIsActive()) {

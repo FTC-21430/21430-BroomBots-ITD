@@ -11,7 +11,8 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
 
-
+    boolean climberActive = false;
+    boolean climberSwitchPrev = false;
     InverseKinematics kinematics;
     boolean gp1xJoy = false;
     boolean gp2tri = false;
@@ -27,7 +28,7 @@ public class MainTeleOp extends BaseTeleOp {
 
 
 
-        initialize();
+        initialize(false);
 
         telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
@@ -73,43 +74,28 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
             }
 
-            // angles for testing only
-
-//                if (gamepad1.cross){
-//                    robot.spampleArm.rotateShoulderTo(90);
-//                }
-//                if (gamepad1.square){
-//                    robot.spampleArm.rotateShoulderTo(30);
-//                }
-//                if (gamepad1.triangle){
-//                    robot.spampleArm.rotateShoulderTo(70);
-//                }
-//                if (gamepad1.circle){
-//                    robot.spampleArm.rotateShoulderTo(150);
-//                }
-            // lengths for testing only
-//                if (gamepad1.dpad_up){
-//                    robot.spampleArm.extendTo(0);
-//                }
-//                if (gamepad1.dpad_left){
-//                    robot.spampleArm.extendTo(19);
-//                }
-//                if (gamepad1.dpad_right){
-//                    robot.spampleArm.extendTo(6);
-//                }
-//                if (gamepad1.dpad_down){
-//                    robot.spampleArm.extendTo(12);
-//                }
-
-
             // arm positions
 
             if (gamepad2.dpad_up) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
             }
-            if (gamepad2.triangle) {
+            if (gamepad2.triangle && !gp2tri) {
+                if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
+                     } else {
+                    robot.spampleArm.rotateElbowTo(88.5);
+                }
                     robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
             }
+            if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
+                if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
+                    robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
+                } else if (robot.spampleArm.getElbowRotation() > 94) {
+                    robot.spampleArm.rotateElbowTo(94);
+                } else if (robot.spampleArm.getElbowRotation() < 84) {
+                    robot.spampleArm.rotateElbowTo(84);
+                }
+            }
+
             gp2tri = gamepad2.triangle;
 
             if (gamepad2.cross) {
@@ -122,13 +108,8 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
             }
             if (gamepad2.dpad_down) {
-                if (robot.spampleArm.currentArmState == SpampleArm.armState.grabSpecimen) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.specimenIdle;
-                } else {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-                }
-
                 robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+
             }
             if (gamepad2.dpad_right) {
 //                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
@@ -145,11 +126,11 @@ public class MainTeleOp extends BaseTeleOp {
 //                if (gamepad1.dpad_right){
 //                    currentArmState = armState.spearHead;
 //                }
-
-
-            if (gamepad1.left_bumper) {
-                robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+            if (gamepad2.dpad_right){
+                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
             }
+
+
 
             if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
                 robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
@@ -159,6 +140,36 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.spampleArm.rotateTwistTo(-90);
             }
 
+
+            //Climber operation
+            if (gamepad1.left_bumper && !climberSwitchPrev){
+                if (!robot.climber.getIfInitilized()){
+                    robot.climber.initClimber();
+                }
+                if (climberActive){
+                    climberActive = false;
+                }else{
+                    climberActive = true;
+                }
+            }
+
+            climberSwitchPrev = gamepad1.left_bumper;
+
+            if (climberActive){
+                robot.climber.releaseLatches();
+
+                if (gamepad1.left_trigger > 0.6){
+                    robot.climber.extendTo(12.5);
+                }else{
+                    robot.climber.extendTo(0);
+                }
+            }else{
+                robot.climber.lockLatches();
+                robot.climber.extendTo(0);
+            }
+
+            telemetry.addData("climberActive", climberActive);
+            telemetry.addData("climber init?", robot.climber.getIfInitilized());
 
 
 
@@ -223,6 +234,8 @@ public class MainTeleOp extends BaseTeleOp {
 
 
             // Telemetry for testing/debug purposes
+
+            telemetry.addData("elbow angle", robot.spampleArm.getElbowRotation());
 
             telemetry.addData("arm extension", robot.spampleArm.getArmExtension());
 

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Resources.Utlities;
 import org.firstinspires.ftc.teamcode.Robot.Autonomous.AutonomousFunctions;
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
@@ -19,16 +20,13 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         utlities = new Utlities();
 
-        initialize();
+        initialize(true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.init;
 
-
-        robot.driveTrain.setSpeedMultiplier(speedMultplierFast);
-        robot.pathFollowing.xPID.updateConstants(PconstantFast, IconstantFast  , DConstantFast);
-        robot.pathFollowing.yPID.updateConstants(PconstantFast, IconstantFast, DConstantFast);
+        robot.setRobotSpeed(Robot.Speed.FAST);
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 
@@ -42,7 +40,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
 
-        robot.autoMoveTo(9,-40,0,1);
+        robot.autoMoveTo(9,-40,0,1,3);
 
         robot.chill(2,true);
 
@@ -52,7 +50,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.chill(1.4, true);
 
-        robot.autoMoveTo(9,-33.4,0,1.5);
+        robot.autoMoveTo(9,-33.4,0,1.5,3);
 
         robot.spampleArm.currentArmState = SpampleArm.armState.scoreHighChamber;
 
@@ -62,7 +60,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 
         robot.chill(1,true);
 
-        robot.autoMoveTo(9,-50,0,2);
+        robot.autoMoveTo(9,-50,0,2,3);
 
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
@@ -134,7 +132,7 @@ public class RedRightAutoAxolotl extends BaseAuto {
 //
 //        // park in observation zone
 //
-        robot.autoMoveTo(30,-59,0,0.7);
+        robot.autoMoveTo(30,-59,0,0.7,3);
         robot.chill(4,true);
 
 
