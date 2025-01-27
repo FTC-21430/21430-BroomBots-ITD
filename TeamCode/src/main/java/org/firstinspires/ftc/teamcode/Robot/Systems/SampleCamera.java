@@ -6,20 +6,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Resources.SampleDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Resources.SampleDetectionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 
-public class Camera {
+public class SampleCamera {
     private double cameraXRobot;
     private double cameraYRobot;
     private double cameraZRobot;
     private double cameraDistance;
     private final double CAMERA_YAW_ROBOT = 90.0;
-    private final double PIVOT_OFFSET = 2.55;
+    private final double PIVOT_OFFSET = 6;
     private final double TUBE_LENGTH = 16.75;
-    private final double CAMERA_OFFSET = 1.00; //need to check value (also possibly negative)
+    private final double CAMERA_OFFSET = 1.50;
     private final double CHASSIS_HEIGHT = 5.73;
+
+    // what we measured from the robot
+    private final double Y_LENS_OFFSET_MEASURED = 21.6+ Math.sqrt(3);
 
     private Telemetry telemetry = null;
 
@@ -27,8 +29,12 @@ public class Camera {
 
     private SampleDetectionProcessor samples;
 
+    private double sample2RobotX;
+    private double sample2RobotY;
+    private double sample2RobotYaw;
 
-    public Camera(HardwareMap hardwareMap, Telemetry telemetry) {
+
+    public SampleCamera(HardwareMap hardwareMap, Telemetry telemetry) {
        this.telemetry = telemetry;
 
        samples = new SampleDetectionProcessor.Builder()
@@ -49,12 +55,29 @@ public class Camera {
 
     }
 
-    public void findCameraPos(double shoulderAngle, double extension){
-        cameraXRobot = CAMERA_OFFSET;
-        cameraYRobot = Math.cos(shoulderAngle) * (TUBE_LENGTH + extension) + PIVOT_OFFSET;
-        cameraZRobot = CHASSIS_HEIGHT + ((TUBE_LENGTH+extension) * Math.sin(shoulderAngle));
-        cameraDistance = Math.hypot(cameraXRobot, cameraYRobot);
+    public void findCameraPosRelativePosition(double shoulderAngle, double extension){
+        if (didWeFindOne()) {
+
+            cameraXRobot = CAMERA_OFFSET;
+            cameraYRobot = Y_LENS_OFFSET_MEASURED;
+            cameraZRobot = CHASSIS_HEIGHT + ((TUBE_LENGTH + extension) * Math.sin(shoulderAngle));
+            cameraDistance = Math.hypot(cameraXRobot, cameraYRobot);
+
+            sample2RobotX = -samples.getFoundSamplePositionY() + cameraXRobot;
+            sample2RobotY = samples.getFoundSamplePositionX() + cameraYRobot;
+            sample2RobotYaw = samples.getFoundSamplePositionYaw() - CAMERA_YAW_ROBOT;
+        }
     }
+    public double getSampleY(){
+        return sample2RobotY;
+    }
+    public double getSampleX(){
+        return sample2RobotX;
+    }
+    public double getSampleYaw(){
+        return sample2RobotYaw;
+    }
+
 
     public void findYellowSample(){
         samples.enableSampleDetection();
@@ -69,40 +92,16 @@ public class Camera {
         samples.setFilterToBlue();
     }
 
-    public double getTempX(){
-        return samples.getFoundSamplePositionX();
-    }
-    public double getTempY(){
-        return  samples.getFoundSamplePositionY();
-    }
-    public double getTempYaw(){
-        return  samples.getFoundSamplePositionYaw();
-    }
-
-    private double getCameraXRobot(){
-        return cameraXRobot;
-    }
-    private double getCameraYRobot() {
-        return cameraYRobot;
-    }
-
-    private double getCameraZRobot(double shoulderAngle, double extension){
-        return cameraZRobot;
-    }
-
-    private double getCameraDistance(){
-        return cameraDistance;
-    }
-
-    private double getCameraYawRobot(){
-        return CAMERA_YAW_ROBOT;
-    }
 
     public void startDetection(){
         samples.enableSampleDetection();
     }
     public void stopDetection(){
         samples.disableSampleDetection();
+    }
+
+    public boolean isActive(){
+        return samples.update;
     }
 
     public boolean didWeFindOne(){

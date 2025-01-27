@@ -332,7 +332,8 @@ public class SpampleArm {
         intake,
         init,
         test,
-        fullyIdle
+        fullyIdle,
+        pictureTake
     }
 
     public void updateState(){
@@ -546,6 +547,11 @@ public class SpampleArm {
                 rotateElbowTo(0);
                 rotateShoulderTo(137.5);
                 break;
+            case pictureTake:
+                extendTo(2);
+                rotateTwistTo(0);
+                rotateElbowTo(20);
+                rotateShoulderTo(30);
             case test:
                 break;
         }

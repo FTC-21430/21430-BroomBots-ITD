@@ -45,30 +45,32 @@ public class InverseKinematics {
 
     // the target rotation the robot should turn to.
     private double robotAngle;
-
-
-    //Todo tune these values correctly
     
     // the mechanical limits of the mechanisms so that you cannot pass a value that would break the robot.
     private final double ARM_EXTENSION_MIN = 0.0, ARM_EXTENSION_MAX = 19.5;
 
-    private final double ARM_ROTATION_MIN = 8.0, ARM_ROTATION_MAX = 180.0;
+    private final double ARM_ROTATION_MIN = 11.0, ARM_ROTATION_MAX = 170.0;
 
+
+    //TODO figure out what to do with these
     private final double ELBOW_ROTATION_MIN = -180.0, ELBOW_ROTATION_MAX = 180.0;
 
     private final double TWIST_MIN = 0, TWIST_MAX = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    public final double ELBOW_OFFSET = 4.0;
+    public final double ELBOW_OFFSET = 2.6;
+    // old number: 4.8 in
     
     // the length in inches of the non-extending shaft.
-    private final double FOREARM_LENGTH = 11.18;
+    private final double FOREARM_LENGTH = 11.45;
+
+    private final double GRABBERS_OFFSET = 0.8;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double PIVOT_OFFSET = 2.55;
+    private final double PIVOT_OFFSET = 5.375;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
-    private final double CHASSIS_HEIGHT = 5.73;
+    private final double CHASSIS_HEIGHT = 5.5;
 
     private final double TUBE_LENGTH = 16.75;
 
@@ -112,14 +114,14 @@ public class InverseKinematics {
         final double COORDINATE_ADJUSTMENT = 90.0;
 
         double a = sampleY - currentY; // adjacent side
-        double o = sampleX - currentX; // opposite side
+        double o = sampleX - currentX + ELBOW_OFFSET; // opposite side
 
         // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
         robotAngle = Math.toDegrees(Math.atan2(a,o))-COORDINATE_ADJUSTMENT;
 
      // 2) Adjust robot x,y for elbow offset
-        robotX = currentX - ELBOW_OFFSET * Math.cos(Math.toRadians(robotAngle));
-        robotY = currentY - ELBOW_OFFSET * Math.sin(Math.toRadians(robotAngle));
+        robotX = currentX;
+        robotY = currentY;
 
      // 3) Find target Robot xy based on least movement to reach sample
         double h = Math.hypot(sampleX-robotX,sampleY-robotY);
@@ -164,7 +166,7 @@ public class InverseKinematics {
         once the claw is above the sample.
          */
 
-        twist = sampleAngle - (-robotAngle);
+        twist = sampleAngle - (robotAngle);
     }
 
     // returns how much the arm should be extended

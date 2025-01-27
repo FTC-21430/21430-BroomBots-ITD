@@ -87,11 +87,9 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
     // unit conversions
     private final double PIX2INCHES = 0.0175;
-    // 3 inches / 200 pix
-
-    // TODO fix these values
-    private final double INCH2PIX = 57.1429;
-    // 200 pix / 3 inches
+    // 3.5 inches / 200 pix
+    private final double INCH2PIX = 57.14257;
+    // 200 pix / 3.5 inches
 
 
 // Other constants
@@ -399,8 +397,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 //        thresholded.release();
 
 
-        telemetry.addLine("RIGHT BEFORE cvtColor 1");
-        telemetry.update();
+//        telemetry.addLine("RIGHT BEFORE cvtColor 1");
+//        telemetry.update();
 
         // makes the make in the same color space as the base image
         Imgproc.cvtColor(threshFlipped, threshBGR, Imgproc.COLOR_GRAY2RGB);
@@ -451,8 +449,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
         // seperates the samples out if they are touching
         baseImage.copyTo(separated);
-        telemetry.addLine("RIGHT BEFORE cvtColor 2");
-        telemetry.update();
+//        telemetry.addLine("RIGHT BEFORE cvtColor 2");
+//        telemetry.update();
         Imgproc.cvtColor(dilatedSeparationCanny, BGR_Blurred_Canny, Imgproc.COLOR_GRAY2RGB);
 //        dilatedSeparationCanny.release();
         convertColorSpace(BGR_Blurred_Canny).copyTo(HSV_Blurred_Canny);
@@ -583,7 +581,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
                 double difX = anglePos2.x - anglePos1.x;
                 double difY = anglePos2.y - anglePos1.y;
 
-                double sampleAngle = Math.atan2(difX, difY) * (180/Math.PI) - 180;
+                double sampleAngle = Math.atan2(difX, difY) * (180/Math.PI);
 
                 double imageCenterX = baseImage.size().width / 2;
                 double imageCenterY = baseImage.size().height / 2;
@@ -622,7 +620,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
                 bestI = i;
             }
         }
-        telemetry.addLine("RIGHT BEFORE cvtColor 3");
+//        telemetry.addLine("RIGHT BEFORE cvtColor 3");
         telemetry.update();
         Imgproc.cvtColor(baseImage, baseImage, Imgproc.COLOR_HSV2RGB);
         if (foundSample){
@@ -722,8 +720,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     }
 
     private Mat convertColorSpace(Mat src){
-        telemetry.addLine("RIGHT BEFORE cvtColor convert ColorSpace");
-        telemetry.update();
+//        telemetry.addLine("RIGHT BEFORE cvtColor convert ColorSpace");
+//        telemetry.update();
         Imgproc.cvtColor(src, hsv_image, Imgproc.COLOR_RGB2HSV);
 //        src.release();
 

@@ -27,6 +27,8 @@ public class Robot {
   // the number for maxTurnDegPerSecond is how much the robot can turn for one degree
   public static double maxTurnDegPerSecond = 280;
   public static double pCon = 0.025;
+
+  public static double pConIntake = 0.05;
   public static double dCon = 0;
   
   private double drive;
@@ -86,7 +88,7 @@ public class Robot {
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
     spampleArm = new SpampleArm(hardwareMap, runtime, reset);
 
-    aprilTags = new AprilTagSystem(hardwareMap);
+//    aprilTags = new AprilTagSystem(hardwareMap);
 
     climber =  new Climber(hardwareMap,telemetry);
 
@@ -177,5 +179,13 @@ public class Robot {
         pathFollowing.setAutoSpeed(P_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST);
         break;
     }
+    }
+    public void setTurnPIntake(boolean intakeOn){
+      if (intakeOn) {
+        anglePID.updateConstants(pConIntake, 0, dCon);
+      }else{
+        anglePID.updateConstants(pCon, 0, dCon);
+      }
+
     }
   }

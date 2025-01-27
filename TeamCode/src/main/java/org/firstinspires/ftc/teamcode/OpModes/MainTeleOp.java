@@ -48,7 +48,7 @@ public class MainTeleOp extends BaseTeleOp {
             if (robot.aprilTags.hasDetection() && robot.driveTrain.getAvgDrivePower() <= updateTagsSpeed){
                 // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
                 if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
-                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
+//                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
                 }
             }
 
