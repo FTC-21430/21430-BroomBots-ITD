@@ -43,14 +43,14 @@ public class MainTeleOp extends BaseTeleOp {
             robot.odometry.updateOdometry();
 
 
-            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
-            // checks if there is a tag to check and that we are moving slow enough to limit using motion blur of the tag
-            if (robot.aprilTags.hasDetection() && robot.driveTrain.getAvgDrivePower() <= updateTagsSpeed){
-                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
-                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
-//                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
-                }
-            }
+//            robot.aprilTags.findAprilTags(robot.odometry.getRobotX(),robot.odometry.getRobotY());
+//            // checks if there is a tag to check and that we are moving slow enough to limit using motion blur of the tag
+//            if (robot.aprilTags.hasDetection() && robot.driveTrain.getAvgDrivePower() <= updateTagsSpeed){
+//                // to ensure that if we get a wildly wrong pos from a tag, we don't use it. it is ok if within 2 inches
+//                if (robot.aprilTags.calculateDistance(robot.odometry.getRobotX(),robot.odometry.getRobotY(), robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY()) < 2){
+////                    robot.odometry.overridePosition(robot.aprilTags.getRobotX(),robot.aprilTags.getRobotY(), robot.aprilTags.getRobotYaw());
+//                }
+//            }
 
 
             // resets Field Centric Driving

@@ -23,6 +23,11 @@ public class SampleDetectionTesting extends BaseTeleOp {
     private double twist;
     private double shoulder_rot;
 
+
+    private double foundX;
+    private double foundY;
+    private double foundYaw;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -32,7 +37,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
         kinematics = new InverseKinematics();
 
-        sampleCamera.findYellowSample();
+//        sampleCamera.findYellowSample();
 
         waitForStart();
 
@@ -82,51 +87,55 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 robot.setTurnPIntake(false);
             }
 
-            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake){
+            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake) {
                 sampleCamera.startDetection();
-            }else{
+            } else {
                 sampleCamera.stopDetection();
             }
 
 
             double z_target;
             if (gamepad1.right_bumper){
-                z_target = 1;
+                z_target = 0.25;
             }else{
-                z_target = 5;
+                z_target = 3.5;
             }
 
-            if (sampleCamera.didWeFindOne()){
-                sampleCamera.findCameraPosRelativePosition(30.0,0);
 
-                telemetry.addLine("Found a Sample!");
-                telemetry.addLine("SampleX: " + sampleCamera.getSampleX());
-                telemetry.addLine("SampleY" + sampleCamera.getSampleY());
-                telemetry.addLine("SampleYaw" + sampleCamera.getSampleYaw());
+            if (sampleCamera.didWeFindOne()) {
+                sampleCamera.findCameraPosRelativePosition(30.0, 0);
 
 
+                foundX = sampleCamera.getSampleX();
+                foundY = sampleCamera.getSampleY();
+                foundYaw = sampleCamera.getSampleYaw();
 
 
 
-                telemetry.addLine("---");
+            }
+            if (kinematics.calculateKinematics(0, 0, sampleCamera.getSampleX(), sampleCamera.getSampleY(), z_target, 0)) {
+
 
                 telemetry.addLine("arm extension: " + kinematics.getArmExtension());
                 telemetry.addLine("shoulder rotation: " + kinematics.getArmRotation());
                 telemetry.addLine("elbow rotation: " + kinematics.getElbowRotation());
                 telemetry.addLine("robot rotation: " + kinematics.getRobotAngle());
                 telemetry.addLine("twist rotation: " + kinematics.getTwist());
+                telemetry.addLine("-------------------");
+
 
                 target_r_rot = kinematics.getRobotAngle();
                 shoulder_rot = kinematics.getArmRotation();
                 elbow = kinematics.getElbowRotation();
                 extension = kinematics.getArmExtension();
                 twist = kinematics.getTwist();
-
-
             }
-            telemetry.update();
-            kinematics.calculateKinematics(0,0,sampleCamera.getSampleX(), sampleCamera.getSampleY(), z_target, sampleCamera.getSampleYaw());
 
+            telemetry.addLine("Found a Sample!");
+            telemetry.addLine("SampleX: " + foundX);
+            telemetry.addLine("SampleY" + foundY);
+            telemetry.addLine("SampleYaw" + foundYaw);
+            telemetry.addLine("------------");
 
             robot.driveTrain.setSpeedMultiplier(0.8);
             robot.anglePID.update(robot.odometry.getRobotAngle());
@@ -135,9 +144,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
             robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
             robot.updateRobot(false, false);
-
-
-
+            telemetry.update();
         }
     }
 

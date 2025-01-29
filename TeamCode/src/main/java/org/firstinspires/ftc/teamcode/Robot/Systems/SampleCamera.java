@@ -15,9 +15,13 @@ public class SampleCamera {
     private double cameraZRobot;
     private double cameraDistance;
     private final double CAMERA_YAW_ROBOT = 90.0;
+
+    private final double CAMERA_Y_OFFSET = 0.5;
+
+    private final double CAMERA_Z_OFFSET = 2.75;
     private final double PIVOT_OFFSET = 6;
     private final double TUBE_LENGTH = 16.75;
-    private final double CAMERA_OFFSET = 1.50;
+    private final double CAMERA_X_OFFSET = 1.50;
     private final double CHASSIS_HEIGHT = 5.73;
 
     // what we measured from the robot
@@ -58,11 +62,17 @@ public class SampleCamera {
     public void findCameraPosRelativePosition(double shoulderAngle, double extension){
         if (didWeFindOne()) {
 
-            cameraXRobot = CAMERA_OFFSET;
-            cameraYRobot = Y_LENS_OFFSET_MEASURED;
-            cameraZRobot = CHASSIS_HEIGHT + ((TUBE_LENGTH + extension) * Math.sin(shoulderAngle));
-            cameraDistance = Math.hypot(cameraXRobot, cameraYRobot);
+            double shoulderAngleRAD = Math.toRadians(shoulderAngle);
+            cameraXRobot = CAMERA_X_OFFSET;
+            double extensionCam = TUBE_LENGTH + extension - CAMERA_Y_OFFSET;
+            double theta1 = Math.atan2(CAMERA_Z_OFFSET,extensionCam);
+            double theta2 = shoulderAngleRAD - theta1;
+            double cameraHypo = Math.sqrt(Math.pow(extensionCam,2)+Math.pow(CAMERA_Z_OFFSET,2));
+            cameraZRobot = (Math.sin(theta2) * cameraHypo) + CHASSIS_HEIGHT;
+            cameraYRobot = (Math.cos(theta2) * cameraHypo) + PIVOT_OFFSET;
 
+
+            // here we are changing the axis on purpose because the camera is sideways.
             sample2RobotX = -samples.getFoundSamplePositionY() + cameraXRobot;
             sample2RobotY = samples.getFoundSamplePositionX() + cameraYRobot;
             sample2RobotYaw = samples.getFoundSamplePositionYaw() - CAMERA_YAW_ROBOT;
