@@ -35,11 +35,12 @@ public class SampleDetectionTesting extends BaseTeleOp {
     private double hoverZ = 4;
     private double grabZ = 0.0;
 
-    private double alignmentTime = 1.5;
+    double targetAngle = 0;
+    private double alignmentTime = 0.6;
 
-    private double loweringTime = 1.0;
+    private double loweringTime = 0.5;
 
-    private double grabbingTime = 0.5;
+    private double grabbingTime = 0.3;
 
     private double startingAngle = 0;
 
@@ -102,9 +103,19 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 robot.anglePID.setTarget(0);
                 robot.setTurnPIntake(false);
             }
-            if (gamepad1.dpad_left) {
+            if (gamepad1.dpad_down) {
                 lookingForSample = true;
                 sampleCamera.findYellowSample();
+                startedLookingTime = runtime.time();
+            }
+            if (gamepad1.dpad_left){
+                lookingForSample = true;
+                sampleCamera.findRedSample();
+                startedLookingTime = runtime.time();
+            }
+            if (gamepad1.dpad_right){
+                lookingForSample = true;
+                sampleCamera.findBlueSample();
                 startedLookingTime = runtime.time();
             }
 
@@ -116,7 +127,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
                     lookingForSample = false;
 
 
-                    sampleCamera.findCameraPosRelativePosition(robot.spampleArm.getArmAngle(), robot.spampleArm.getArmExtension(), robot.odometry.getRobotAngle());
+                    sampleCamera.findCameraPosRelativePosition(robot.spampleArm.getArmAngle(), robot.spampleArm.getArmExtension(), 0);
 
                     sampleCamera.stopDetection();
 
@@ -136,7 +147,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
                         gamepad1.rumble(0.0, 0.5, 1000);
 
-                        target_r_rot = kinematics.getRobotAngle();
+                        target_r_rot = kinematics.getRobotAngle() + robot.odometry.getRobotAngle();
                         shoulder_rot = kinematics.getArmRotation();
                         elbow = kinematics.getElbowRotation();
                         extension = kinematics.getArmExtension();
@@ -160,6 +171,8 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
 
             if (!grabbingSample && !lookingForSample) {
+                targetAngle = (robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
+
                 robot.driveTrain.setSpeedMultiplier(0.8);
                 robot.anglePID.update(robot.odometry.getRobotAngle());
 
@@ -173,22 +186,15 @@ public class SampleDetectionTesting extends BaseTeleOp {
                     robot.spampleArm.currentArmState = SpampleArm.armState.test;
                     robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
                     autoPickupTimer = runtime.time();
-                    if (gamepad1.right_trigger > 0.6) {
-                        aligning = true;
 
-
-                        grabbingSample = true;
-                        startingAngle = robot.odometry.getRobotAngle();
-
-                        robot.anglePID.setTarget(target_r_rot);
-                        robot.spampleArm.rotateShoulderTo(shoulder_rot + 15);
-                        robot.spampleArm.rotateElbowTo(elbow);
-                        robot.spampleArm.rotateTwistTo(twist);
-                        robot.spampleArm.extendTo(extension);
-                    }
-                    if (gamepad1.left_trigger > 0.6){
-                        grabbingSample = false;
-                    }
+                    aligning = true;
+                    grabbingSample = true;
+                    startingAngle = robot.odometry.getRobotAngle();
+                    robot.anglePID.setTarget(target_r_rot);
+                    robot.spampleArm.rotateShoulderTo(shoulder_rot + 15);
+                    robot.spampleArm.rotateElbowTo(elbow);
+                    robot.spampleArm.rotateTwistTo(twist);
+                    robot.spampleArm.extendTo(extension);
                 }
              else if (aligning) {
                 if (runtime.time() > autoPickupTimer + alignmentTime) {

@@ -62,7 +62,7 @@ public class InverseKinematics {
     private final double TWIST_MIN = 0, TWIST_MAX = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    public static double ELBOW_OFFSET = 2.6;
+    public static double ELBOW_OFFSET = 3;
     // old number: 4.8 in
     
     // the length in inches of the non-extending shaft.
@@ -71,7 +71,7 @@ public class InverseKinematics {
     public static double GRABBERS_OFFSET = 0.8;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    public static double PIVOT_OFFSET = 5.375;
+    public static double PIVOT_OFFSET = 4.375;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
     public static double CHASSIS_HEIGHT = 5.5;
