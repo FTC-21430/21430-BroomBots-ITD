@@ -28,6 +28,27 @@ public class SampleDetectionTesting extends BaseTeleOp {
     private double foundY;
     private double foundYaw;
 
+    private boolean lookingForSample;
+    private double startedLookingTime = 0.0;
+    private double searchTimeout = 1.0;
+    private boolean grabbingSample = false;
+    private double hoverZ = 4;
+    private double grabZ = 0.0;
+
+    private double alignmentTime = 1.5;
+
+    private double loweringTime = 1.0;
+
+    private double grabbingTime = 0.5;
+
+    private double startingAngle = 0;
+
+    private boolean aligning = false;
+    private boolean lowering = false;
+    private boolean grabbing = false;
+    private double autoPickupTimer = 0.0;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -41,28 +62,18 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
         waitForStart();
 
-        while(opModeIsActive()){
+        while(opModeIsActive()) {
 
-            if(gamepad1.dpad_left){
-                sampleCamera.findBlueSample();
-            }
-            if (gamepad1.dpad_right){
-                sampleCamera.findRedSample();
-            }
-            if (gamepad1.dpad_left){
-                sampleCamera.findYellowSample();
-            }
 
-            if (gamepad1.cross){
+            if (gamepad1.cross) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
             }
-            if (gamepad1.square){
+            if (gamepad1.square) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
             }
-            if (gamepad1.circle){
+            if (gamepad1.circle) {
                 robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
             }
-
 
 
             robot.updateLoopTime();
@@ -71,81 +82,150 @@ public class SampleDetectionTesting extends BaseTeleOp {
             robot.odometry.updateOdometry();
             // These call functions and pass the relevant parameters
 
-            if (gamepad1.right_trigger > 0.7) {
-                robot.setTurnPIntake(true);
-                robot.spampleArm.currentArmState = SpampleArm.armState.test;
-                robot.anglePID.setTarget(target_r_rot);
-                robot.spampleArm.rotateElbowTo(elbow);
-                robot.spampleArm.rotateTwistTo(twist);
-                robot.spampleArm.rotateShoulderTo(shoulder_rot);
-                robot.spampleArm.extendTo(extension);
-            } else if(gamepad1.left_trigger >0.6){
-                robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
-                robot.setTurnPIntake(false);
-            }else{
+
+//            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake) {
+//                sampleCamera.startDetection();
+//            } else {
+//                sampleCamera.stopDetection();
+//            }
+
+            if (gamepad1.right_bumper && !grabbingSample) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.idle;
                 robot.setTurnPIntake(false);
             }
 
-            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake) {
-                sampleCamera.startDetection();
-            } else {
+            if (gamepad1.left_bumper) {
+                grabbingSample = false;
+                lookingForSample = false;
                 sampleCamera.stopDetection();
+                robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
+                robot.anglePID.setTarget(0);
+                robot.setTurnPIntake(false);
+            }
+            if (gamepad1.dpad_left) {
+                lookingForSample = true;
+                sampleCamera.findYellowSample();
+                startedLookingTime = runtime.time();
+            }
+
+            if (lookingForSample) {
+                if (runtime.time() > startedLookingTime + searchTimeout) {
+                    lookingForSample = false;
+                    gamepad1.rumble(700);
+                } else if (sampleCamera.didWeFindOne()) {
+                    lookingForSample = false;
+
+
+                    sampleCamera.findCameraPosRelativePosition(robot.spampleArm.getArmAngle(), robot.spampleArm.getArmExtension(), robot.odometry.getRobotAngle());
+
+                    sampleCamera.stopDetection();
+
+                    foundX = sampleCamera.getSampleX();
+                    foundY = sampleCamera.getSampleY();
+                    foundYaw = sampleCamera.getSampleYaw();
+
+                    telemetry.addLine("SampleX: " + foundX);
+                    telemetry.addLine("SampleY: " + foundY);
+                    telemetry.addLine("SampleYaw: " + foundYaw);
+                    telemetry.addLine("------------");
+                    telemetry.addLine("camera X: " + sampleCamera.cameraXRobot);
+                    telemetry.addLine("camera Y: " + sampleCamera.cameraYRobot);
+                    telemetry.addLine("camera Z: " + sampleCamera.cameraZRobot);
+
+                    if (kinematics.calculateKinematics(0, 0, foundX, foundY, grabZ, foundYaw, robot.odometry.getRobotAngle())) {
+
+                        gamepad1.rumble(0.0, 0.5, 1000);
+
+                        target_r_rot = kinematics.getRobotAngle();
+                        shoulder_rot = kinematics.getArmRotation();
+                        elbow = kinematics.getElbowRotation();
+                        extension = kinematics.getArmExtension();
+                        twist = kinematics.getTwist();
+                        grabbingSample = true;
+                        startingAngle = robot.odometry.getRobotAngle();
+
+                        telemetry.addLine("------");
+                        telemetry.addLine("target_r_rot: " + kinematics.getRobotAngle());
+                        telemetry.addLine("shoulder rot: " + kinematics.getArmRotation());
+                        telemetry.addLine("elbow: " + kinematics.getElbowRotation());
+                        telemetry.addLine("twisty twist: " + kinematics.getTwist());
+                        telemetry.addLine("extension: " + kinematics.getArmExtension());
+
+                    } else {
+                        gamepad1.rumble(2400);
+                    }
+                    telemetry.update();
+                }
             }
 
 
-            double z_target;
-            if (gamepad1.right_bumper){
-                z_target = 0.25;
-            }else{
-                z_target = 3.5;
+            if (!grabbingSample && !lookingForSample) {
+                robot.driveTrain.setSpeedMultiplier(0.8);
+                robot.anglePID.update(robot.odometry.getRobotAngle());
+
+                robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
+
+                robot.updateRobot(false, false);
+
+            } else if (grabbingSample) {
+                if (!grabbing && !lowering && !aligning) {
+                    robot.setTurnPIntake(true);
+                    robot.spampleArm.currentArmState = SpampleArm.armState.test;
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
+                    autoPickupTimer = runtime.time();
+                    if (gamepad1.right_trigger > 0.6) {
+                        aligning = true;
+
+
+                        grabbingSample = true;
+                        startingAngle = robot.odometry.getRobotAngle();
+
+                        robot.anglePID.setTarget(target_r_rot);
+                        robot.spampleArm.rotateShoulderTo(shoulder_rot + 15);
+                        robot.spampleArm.rotateElbowTo(elbow);
+                        robot.spampleArm.rotateTwistTo(twist);
+                        robot.spampleArm.extendTo(extension);
+                    }
+                    if (gamepad1.left_trigger > 0.6){
+                        grabbingSample = false;
+                    }
+                }
+             else if (aligning) {
+                if (runtime.time() > autoPickupTimer + alignmentTime) {
+                    aligning = false;
+                    lowering = true;
+                    autoPickupTimer = runtime.time();
+                    grabbingSample = true;
+                    robot.anglePID.setTarget(target_r_rot);
+                    robot.spampleArm.rotateShoulderTo(shoulder_rot);
+                    robot.spampleArm.rotateElbowTo(elbow);
+                    robot.spampleArm.rotateTwistTo(twist);
+                    robot.spampleArm.extendTo(extension);
+
+                }
+            } else if (lowering) {
+                if (runtime.time() > autoPickupTimer + loweringTime) {
+                    robot.spampleArm.setClawPosition(Claw.ClawPosition.grabInside);
+                    lowering = false;
+                    grabbing = true;
+                    autoPickupTimer = runtime.time();
+                }
+            } else if (grabbing) {
+                if (runtime.time() > autoPickupTimer + grabbingTime) {
+                    robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
+                    grabbing = false;
+                    grabbingSample = false;
+                    robot.setTurnPIntake(false);
+                }
             }
-
-
-            if (sampleCamera.didWeFindOne()) {
-                sampleCamera.findCameraPosRelativePosition(30.0, 0);
-
-
-                foundX = sampleCamera.getSampleX();
-                foundY = sampleCamera.getSampleY();
-                foundYaw = sampleCamera.getSampleYaw();
-
-
-
-            }
-            if (kinematics.calculateKinematics(0, 0, sampleCamera.getSampleX(), sampleCamera.getSampleY(), z_target, 0)) {
-
-
-                telemetry.addLine("arm extension: " + kinematics.getArmExtension());
-                telemetry.addLine("shoulder rotation: " + kinematics.getArmRotation());
-                telemetry.addLine("elbow rotation: " + kinematics.getElbowRotation());
-                telemetry.addLine("robot rotation: " + kinematics.getRobotAngle());
-                telemetry.addLine("twist rotation: " + kinematics.getTwist());
-                telemetry.addLine("-------------------");
-
-
-                target_r_rot = kinematics.getRobotAngle();
-                shoulder_rot = kinematics.getArmRotation();
-                elbow = kinematics.getElbowRotation();
-                extension = kinematics.getArmExtension();
-                twist = kinematics.getTwist();
-            }
-
-            telemetry.addLine("Found a Sample!");
-            telemetry.addLine("SampleX: " + foundX);
-            telemetry.addLine("SampleY" + foundY);
-            telemetry.addLine("SampleYaw" + foundYaw);
-            telemetry.addLine("------------");
-
             robot.driveTrain.setSpeedMultiplier(0.8);
             robot.anglePID.update(robot.odometry.getRobotAngle());
 
-            telemetry.addData("angle PID output", robot.anglePID.getPower());
             robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
             robot.updateRobot(false, false);
-            telemetry.update();
+
+        }
         }
     }
-
 }

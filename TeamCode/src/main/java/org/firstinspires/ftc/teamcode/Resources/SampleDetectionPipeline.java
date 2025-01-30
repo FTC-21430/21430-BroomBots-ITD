@@ -108,7 +108,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     private List<Point> foundSamplePositionsPix = new ArrayList<>();
 
     // same thing as the list above but these are the positions in inches and relitive to the center of the frame
-    private List<Point> foundSamplePositionsInches = new ArrayList<>();
+    private List<Point> foundSamplePositionsCenteredPix = new ArrayList<>();
 
     // a list of all the rotations all all found samples. the order of the rotations lines up with the order of the points above.
     private List<Double> foundSampleRotations = new ArrayList<>();
@@ -248,7 +248,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         foundSample = false;
 
         // checks if we should run the algorithm
-        if (true){
+        if (update){
             // sets the output image to the output of the main algorithm
             // passes in the input image from OpenCV and the colorMode (0-2) for which color of samples we are looking for
             findSamples(input, colorMode).copyTo(input);
@@ -366,7 +366,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
         // sets the arrays back to empty since the last update
         foundSamplePositionsPix.clear();
-        foundSamplePositionsInches.clear();
+        foundSamplePositionsCenteredPix.clear();
         foundSampleRotations.clear();
         foundSample = false;
 
@@ -590,14 +590,14 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
                 // telemetry.addLine(""+ PIX2INCHES);
 
-                double inchPositionX = (centorPos.x - imageCenterX) * PIX2INCHES;
-                double inchPositionY = (centorPos.y - imageCenterY) * -PIX2INCHES;
+                double inchPositionX = (centorPos.x - imageCenterX);
+                double inchPositionY = (centorPos.y - imageCenterY);
 
                 // telemetry.addLine(""+ inchPositionX + " : " + inchPositionY);
 
                 Point foundPosition = new Point(inchPositionX,inchPositionY);
                 // telemetry.addLine(""+ baseImage.size());
-                foundSamplePositionsInches.add(foundPosition);
+                foundSamplePositionsCenteredPix.add(foundPosition);
                 foundSampleRotations.add(sampleAngle);
             }
 
@@ -610,28 +610,32 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         double closestDist = 1000000;
         int bestI = 0;
 
-        for (int i = 0; i < foundSamplePositionsInches.size(); i++){
+        for (int i = 0; i < foundSamplePositionsCenteredPix.size(); i++){
 
             // if we get here then we definitely found a sample!
             foundSample = true;
             // telemetry.addLine(""+ closestDist);
-            if (distance(foundSamplePositionsInches.get(i), new Point(0,0)) < closestDist){
-                closestDist = distance(foundSamplePositionsInches.get(i), new Point(0,0));
+            if (distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0)) < closestDist){
+                closestDist = distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0));
                 bestI = i;
             }
         }
 //        telemetry.addLine("RIGHT BEFORE cvtColor 3");
-        telemetry.update();
+//        telemetry.update();
         Imgproc.cvtColor(baseImage, baseImage, Imgproc.COLOR_HSV2RGB);
         if (foundSample){
             // telemetry.addLine(""+ bestI);
             // telemetry.addLine(""+ foundSamplePositionsInches);
             // telemetry.addLine(""+ foundSampleRotations);
 
+            double x = foundSamplePositionsCenteredPix.get(bestI).x;
+            double y = foundSamplePositionsCenteredPix.get(bestI).y;
 
-            foundSamplePositionX = foundSamplePositionsInches.get(bestI).x;
-            foundSamplePositionY = foundSamplePositionsInches.get(bestI).y;
+            foundSamplePositionTheta = Math.atan2(y,x);
+            foundSamplePositionRadius = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
             foundSamplePositionYaw = foundSampleRotations.get(bestI);
+
+
 
             Imgproc.circle(baseImage, foundSamplePositionsPix.get(bestI), 25, new Scalar(0,255,0),9);
 
