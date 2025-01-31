@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Resources;
 // this class is just for figuring out how the robot should be positioned when intaking from the submersible,
 // this includes both the chassis and arm.
 
+import com.acmerobotics.dashboard.config.Config;
+
 /*
  *
  *   |   o (x`, y`, h`)
@@ -26,7 +28,9 @@ package org.firstinspires.ftc.teamcode.Resources;
  * b = ...
  * ...
  */
+@Config
 public class InverseKinematics {
+
 
     // how much the arm extension should be out
     private double armExtension;
@@ -58,27 +62,27 @@ public class InverseKinematics {
     private final double TWIST_MIN = 0, TWIST_MAX = 180.0;
     
     //the distance between the center of the robot and the center of the claw on the x axis
-    public final double ELBOW_OFFSET = 2.6;
+    public static double ELBOW_OFFSET = 3;
     // old number: 4.8 in
     
     // the length in inches of the non-extending shaft.
-    private final double FOREARM_LENGTH = 11.45;
+    public static double FOREARM_LENGTH = 11.45;
 
-    private final double GRABBERS_OFFSET = 0.8;
+    public static double GRABBERS_OFFSET = 0.8;
 
     // how far the pivot point of the arm is away from the center of the robot.
-    private final double PIVOT_OFFSET = 5.375;
+    public static double PIVOT_OFFSET = 4.375;
 
     // the distance between the bottom of the wheels to the center of the arm pivot point
-    private final double CHASSIS_HEIGHT = 5.5;
+    public static double CHASSIS_HEIGHT = 5.5;
 
-    private final double TUBE_LENGTH = 16.75;
+    public static double TUBE_LENGTH = 16.75;
 
     // how close we can be to a sample and still pick it up without moving back = ~21.5
     private final double MIN_H = PIVOT_OFFSET + Math.hypot(TUBE_LENGTH, FOREARM_LENGTH + 1.5 - CHASSIS_HEIGHT);
     
     // how far away a sample can be without us breaking the expansion limit
-    private final double MAX_H = 26; // inches from center the of the robot
+    private final double MAX_H = 30; // inches from center the of the robot
     
     
     // the constructor for this class.... that needs to do nothing.. yup
@@ -109,64 +113,36 @@ public class InverseKinematics {
      *      * 4) Find arm arm rotation and arm extension, based on distance to sample and target height
      *      * 5) tbd - Find twist
      */
-    public void calculateKinematics(double currentX, double currentY, double sampleX, double sampleY, double targetZ, double sampleAngle) {
-   // 1) Find robotAngle: angle for elbow-offset-adjusted robot to face sample
-        final double COORDINATE_ADJUSTMENT = 90.0;
+    public boolean calculateKinematics(double currentX, double currentY, double sampleX, double sampleY, double targetZ, double sampleAngle,double robotRotation) {
+        boolean passed = true;
 
-        double a = sampleY - currentY; // adjacent side
-        double o = sampleX - currentX + ELBOW_OFFSET; // opposite side
-
-        // robot heading 0 deg is +y axis !!  subtracting 90 also means range of theta is -270 to +90
-        robotAngle = Math.toDegrees(Math.atan2(a,o))-COORDINATE_ADJUSTMENT;
-
-     // 2) Adjust robot x,y for elbow offset
-        robotX = currentX;
-        robotY = currentY;
-
-     // 3) Find target Robot xy based on least movement to reach sample
-        double h = Math.hypot(sampleX-robotX,sampleY-robotY);
-        
-        if (h < MIN_H){
-            double lengthError = MIN_H - h;
-            robotX -= lengthError * Math.cos(robotAngle);
-            robotY -= lengthError * Math.sin(robotAngle);
-            h=MIN_H;
+        if (!verifyLength(currentX,currentY,sampleX,sampleY)){
+            passed = false;
         }
 
-        if (h > MAX_H){
-            double lengthError = h - MAX_H;
-            robotX += lengthError * Math.cos(robotAngle);
-            robotY += lengthError * Math.sin(robotAngle);
-            h=MAX_H;
-        }
 
-    // 4) Find arm arm rotation and arm extension, based on distance to sample and target height
-        // adjacent: horizontal distance from pivot to target
-        double elbowA = h - PIVOT_OFFSET;
-        // opposite: vertical distance from chassis to elbow height
-        double elbowO = FOREARM_LENGTH + targetZ - CHASSIS_HEIGHT;
-
-        armRotation = Math.toDegrees(Math.atan2(elbowO,elbowA));
-        // because we've already checked that distance from robot to sample
-        // is >= MIN_H and <=MAX_H, armRotation and armExtension should be in range
-        // but just in case ...
-        armRotation = Math.max(armRotation,ARM_ROTATION_MIN);
-        armRotation = Math.min(armRotation, ARM_ROTATION_MAX);
-
-        armExtension = Math.hypot(elbowO,elbowA)- TUBE_LENGTH;
-        armExtension = Math.max(armExtension, ARM_EXTENSION_MIN);
-        armExtension = Math.min(armExtension, ARM_EXTENSION_MAX);
-
-        // elbow rotation and arm rotation are complementary angles
+        sampleAngle = sampleAngle * (Math.PI/180);
+        double clawAddedY = GRABBERS_OFFSET * -Math.sin(sampleAngle);
+        double sampleDistance = Math.hypot(sampleX - currentX, sampleY - currentY);
+        double topDownArmLength = Math.sqrt(Math.pow(sampleDistance,2) - Math.pow((GRABBERS_OFFSET * Math.cos(sampleAngle)) + ELBOW_OFFSET,2)) - (clawAddedY + PIVOT_OFFSET);
+        double angle1 = Math.acos((clawAddedY + topDownArmLength + PIVOT_OFFSET) / sampleDistance);
+        double angle2 = Math.asin((currentX - sampleX)/sampleDistance);
+        robotAngle = (angle1 - angle2) * -(180/Math.PI);
+        armRotation = Math.atan2((FOREARM_LENGTH + targetZ) - CHASSIS_HEIGHT,topDownArmLength) * (180/Math.PI);
         elbowRotation = 90 - armRotation;
+        armExtension = Math.sqrt(Math.pow(topDownArmLength,2)+ Math.pow((FOREARM_LENGTH+targetZ) - CHASSIS_HEIGHT,2)) - TUBE_LENGTH;
+        sampleAngle = sampleAngle * (180/Math.PI);
+        twist = sampleAngle - robotAngle;
 
-        // 5) Find twist
-        /* Seems like this could be separate from inverse kinematics,
-        as you might have multiple options for gripping a sample
-        once the claw is above the sample.
-         */
+        if (armRotation > ARM_ROTATION_MAX || armRotation < ARM_ROTATION_MIN){
+            passed = false;
+        }
+        if (armExtension > ARM_EXTENSION_MAX || armExtension < ARM_EXTENSION_MIN){
+            passed = false;
+        }
 
-        twist = sampleAngle - (robotAngle);
+
+        return passed;
     }
 
     // returns how much the arm should be extended

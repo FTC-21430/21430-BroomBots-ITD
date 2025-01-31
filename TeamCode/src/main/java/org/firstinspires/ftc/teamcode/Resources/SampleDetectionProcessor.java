@@ -6,9 +6,9 @@ import org.firstinspires.ftc.vision.VisionProcessor;
 
 public abstract class SampleDetectionProcessor implements VisionProcessor {
 
-    // The position data about where the sample we want to grab is RELATIVE TO CAMERA
-    public double foundSamplePositionX = 0;
-    public double foundSamplePositionY = 0;
+    // The position data about where the sample we want to grab is RELATIVE TO CAMERA, These are in polar coordinates
+    public double foundSamplePositionTheta = 0;
+    public double foundSamplePositionRadius= 0;
     public double foundSamplePositionYaw = 0;
 
     public boolean update= false;
@@ -32,11 +32,11 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
         }
     }
 
-    public double getFoundSamplePositionX(){
-        return foundSamplePositionX;
+    public double getFoundSamplePositionTheta(){
+        return foundSamplePositionTheta;
     }
-    public double getFoundSamplePositionY(){
-        return foundSamplePositionY;
+    public double getFoundSamplePositionRadius(){
+        return foundSamplePositionRadius;
     }
     public double getFoundSamplePositionYaw(){
         return foundSamplePositionYaw;
@@ -46,23 +46,28 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
     }
 
     public void enableSampleDetection(){
+        foundSample = false;
         update = true;
     }
     public void disableSampleDetection(){
+        foundSample = false;
         update = false;
     }
 
 
     public void setFilterToYellow() {
+        foundSample = false;
         colorMode = 0;
     }
 
 
     public void setFilterToRed(){
+        foundSample = false;
         colorMode = 1;
     }
 
     public void setFilterToBlue(){
+        foundSample = false;
         colorMode = 2;
     }
 

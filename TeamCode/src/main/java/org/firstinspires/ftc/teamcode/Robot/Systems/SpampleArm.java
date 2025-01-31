@@ -16,7 +16,7 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 156;
+    private double elbowAngleOffset = 161.3;
 
     private double shoulderAngleOffset;
 
@@ -122,7 +122,7 @@ public class SpampleArm {
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                250,0,290 );
+                264.3,0,264.3 );
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 260,0,260);
