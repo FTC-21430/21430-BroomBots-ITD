@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.teamcode.Resources.InverseKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Systems.SampleCamera;
@@ -11,21 +10,18 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 //This is the teleop we run during competitions.
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
-
     boolean climberActive = false;
     boolean climberSwitchPrev = false;
-    InverseKinematics kinematics;
+    private InverseKinematics kinematics;
     boolean gp1xJoy = false;
     boolean gp2tri = false;
     public double LastLoopTime;
     double targetAngle = 0;
 
-
     private SampleCamera sampleCamera;
-
     private double target_r_rot;
     private double extension;
-    private double elbow = 60;
+    private double elbow;
     private double twist;
     private double shoulder_rot;
 
@@ -36,7 +32,7 @@ public class MainTeleOp extends BaseTeleOp {
 
     private boolean lookingForSample;
     private double startedLookingTime = 0.0;
-    private double searchTimeout = 1.7;
+    private double searchTimeout = 1.0;
     private boolean grabbingSample = false;
     private double grabZ = 0.0;
 
@@ -144,9 +140,6 @@ public class MainTeleOp extends BaseTeleOp {
                     }
                 }
 
-
-
-
                 if (gamepad2.cross) {
                     robot.spampleArm.currentArmState = SpampleArm.armState.lowChamber;
                 }
@@ -159,9 +152,6 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.dpad_down) {
                     robot.spampleArm.currentArmState = SpampleArm.armState.idle;
 
-                }
-                if (gamepad2.dpad_right) {
-//                robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
                 }
 
                 if (manualMode) {
@@ -179,8 +169,6 @@ public class MainTeleOp extends BaseTeleOp {
                 if (gamepad2.dpad_right){
                     robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
                 }
-
-
 
                 if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
                     robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
@@ -403,35 +391,56 @@ public class MainTeleOp extends BaseTeleOp {
 
             // Telemetry for testing/debug purposes
 
-            telemetry.addData("elbow angle", robot.spampleArm.getElbowRotation());
 
-            telemetry.addData("arm extension", robot.spampleArm.getArmExtension());
+            // did that to turn off these telemetry lines for the  auto pickup sample testing - Tobin - 1/30/25
+            if (false) {
+                telemetry.addData("elbow angle", robot.spampleArm.getElbowRotation());
 
-            telemetry.addData("current Speed", robot.driveTrain.getSpeedMultiplier());
-            telemetry.addData("currentState", robot.spampleArm.currentArmState);
-            telemetry.addData("Robot Angle", robot.odometry.getRobotAngle());
-            telemetry.addData("Target Angle", targetAngle);
-            telemetry.addData("arm angle", robot.spampleArm.getArmAngle());
-            telemetry.addData("Robot X", robot.odometry.getRobotX());
-            telemetry.addData("Robot Y", robot.odometry.getRobotY());
-            telemetry.addData("Potemeter", robot.spampleArm.getArmAngle());
-            double currentlooptime = getRuntime();
-            telemetry.addData("Runtime", currentlooptime - LastLoopTime);
-            LastLoopTime = currentlooptime;
-            telemetry.addData("MoterPower", robot.spampleArm.shoulderMotor.getPower());
+                telemetry.addData("arm extension", robot.spampleArm.getArmExtension());
+
+                telemetry.addData("current Speed", robot.driveTrain.getSpeedMultiplier());
+                telemetry.addData("currentState", robot.spampleArm.currentArmState);
+                telemetry.addData("Robot Angle", robot.odometry.getRobotAngle());
+                telemetry.addData("Target Angle", targetAngle);
+                telemetry.addData("arm angle", robot.spampleArm.getArmAngle());
+                telemetry.addData("Robot X", robot.odometry.getRobotX());
+                telemetry.addData("Robot Y", robot.odometry.getRobotY());
+                telemetry.addData("Potemeter", robot.spampleArm.getArmAngle());
+                double currentlooptime = getRuntime();
+                telemetry.addData("Runtime", currentlooptime - LastLoopTime);
+                LastLoopTime = currentlooptime;
+                telemetry.addData("MoterPower", robot.spampleArm.shoulderMotor.getPower());
 
 
-            telemetry.addData("UpperGraph", 100);
-            telemetry.addData("LowerGraph", 0);
-            telemetry.addData("TargetAngle", robot.spampleArm.shoulderPID.target);
-            telemetry.addData("MeasuedAngle", robot.spampleArm.getArmAngle());
-            telemetry.addData("Power", robot.spampleArm.shoulderMotor.getPower());
-            telemetry.addData("PowerProportional", robot.spampleArm.shoulderPID.powerProportional);
-            telemetry.addData("PowerIntegral", robot.spampleArm.shoulderPID.powerIntegral);
-            telemetry.addData("PowerDerivative", robot.spampleArm.shoulderPID.powerDerivative);
+                telemetry.addData("UpperGraph", 100);
+                telemetry.addData("LowerGraph", 0);
+                telemetry.addData("TargetAngle", robot.spampleArm.shoulderPID.target);
+                telemetry.addData("MeasuedAngle", robot.spampleArm.getArmAngle());
+                telemetry.addData("Power", robot.spampleArm.shoulderMotor.getPower());
+                telemetry.addData("PowerProportional", robot.spampleArm.shoulderPID.powerProportional);
+                telemetry.addData("PowerIntegral", robot.spampleArm.shoulderPID.powerIntegral);
+                telemetry.addData("PowerDerivative", robot.spampleArm.shoulderPID.powerDerivative);
+
+
+            }
+            else{
+                telemetry.addLine("SampleX: " + foundX);
+                telemetry.addLine("SampleY: " + foundY);
+                telemetry.addLine("SampleYaw: " + foundYaw);
+                telemetry.addLine("------------");
+                telemetry.addLine("camera X: " + sampleCamera.cameraXRobot);
+                telemetry.addLine("camera Y: " + sampleCamera.cameraYRobot);
+                telemetry.addLine("camera Z: " + sampleCamera.cameraZRobot);
+
+                telemetry.addLine("------");
+                telemetry.addLine("target_r_rot: " + kinematics.getRobotAngle());
+                telemetry.addLine("shoulder rot: " + kinematics.getArmRotation());
+                telemetry.addLine("elbow: " + kinematics.getElbowRotation());
+                telemetry.addLine("twisty twist: " + kinematics.getTwist());
+                telemetry.addLine("extension: " + kinematics.getArmExtension());
+
+            }
             telemetry.update();
-
-
         }
     }
 }

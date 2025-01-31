@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
 public class SampleDetectionTesting extends BaseTeleOp {
-
-
     private SampleCamera sampleCamera;
 
     private InverseKinematics kinematics;
@@ -126,7 +124,6 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 } else if (sampleCamera.didWeFindOne()) {
                     lookingForSample = false;
 
-
                     sampleCamera.findCameraPosRelativePosition(robot.spampleArm.getArmAngle(), robot.spampleArm.getArmExtension(), 0);
 
                     sampleCamera.stopDetection();
@@ -152,6 +149,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
                         elbow = kinematics.getElbowRotation();
                         extension = kinematics.getArmExtension();
                         twist = kinematics.getTwist();
+
                         grabbingSample = true;
                         startingAngle = robot.odometry.getRobotAngle();
 
