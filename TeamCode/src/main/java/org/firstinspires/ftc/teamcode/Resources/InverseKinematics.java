@@ -39,7 +39,7 @@ public class InverseKinematics {
     private double armRotation;
     
     // how much the wrist is angled, this should always have the wrist perpendicular with the field floor.
-    private double elbowRotation;
+    private double elbowRotation = 0;
     
     // how much the twist should rotated to align with the sample's orientation
     private double twist;
@@ -96,7 +96,7 @@ public class InverseKinematics {
     public boolean verifyLength(double Rx,double Ry,double Tx,double Ty){
         double h = Math.hypot(Tx-Rx,Ty-Ry);
 
-      return h <= MAX_H;
+      return h <= MAX_H && h >= 4;
 
     }
     /**
@@ -138,6 +138,9 @@ public class InverseKinematics {
             passed = false;
         }
         if (armExtension > ARM_EXTENSION_MAX || armExtension < ARM_EXTENSION_MIN){
+            passed = false;
+        }
+        if (elbowRotation <30){
             passed = false;
         }
 

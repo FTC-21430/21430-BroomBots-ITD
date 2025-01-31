@@ -174,6 +174,9 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 targetAngle = (robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
 
                 robot.driveTrain.setSpeedMultiplier(0.8);
+
+                // These call functions and pass the relevant parameters
+                robot.anglePID.setTarget(targetAngle);
                 robot.anglePID.update(robot.odometry.getRobotAngle());
 
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
