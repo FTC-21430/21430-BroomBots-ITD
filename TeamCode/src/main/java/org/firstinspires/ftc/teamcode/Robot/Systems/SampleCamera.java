@@ -73,8 +73,6 @@ public class SampleCamera {
     }
 
     public void findCameraPosRelativePosition(double shoulderAngle, double extension, double rotation){
-        if (didWeFindOne()) {
-
             double rotationRad = rotation * (Math.PI/180);
 
             double shoulderAngleRAD = Math.toRadians(shoulderAngle);
@@ -104,7 +102,6 @@ public class SampleCamera {
 //            sample2RobotY = sampleRobotY;
 
             sample2RobotYaw = rawSampleYaw - CAMERA_YAW_ROBOT + rotation;
-        }
     }
     public double getSampleY(){
         return sample2RobotY;

@@ -46,8 +46,8 @@ public class CompetitionTeleop extends BaseTeleOp {
     private final double grabZ = 0.0;
 
     // Timings for auto pickups
-    private double searchTimeout = 1.0;
-    private double alignmentTime = 1.6;
+    private double searchTimeout = 0.7;
+    private double alignmentTime = 1.0;
     private double loweringTime = 0.5;
     private double grabbingTime = 0.3;
     private double startingAngle = 0;

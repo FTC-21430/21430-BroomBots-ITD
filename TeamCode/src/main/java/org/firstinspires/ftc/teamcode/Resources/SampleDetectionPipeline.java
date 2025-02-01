@@ -614,6 +614,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
             // if we get here then we definitely found a sample!
             foundSample = true;
+            update = false;
             // telemetry.addLine(""+ closestDist);
             if (distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0)) < closestDist){
                 closestDist = distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0));
