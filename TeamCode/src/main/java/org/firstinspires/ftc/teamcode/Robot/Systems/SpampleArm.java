@@ -405,7 +405,7 @@ public class SpampleArm {
                 break;
             case grabSample2:
                 extendTo(2);
-                rotateShoulderTo(19.5);
+                rotateShoulderTo(17.5);
                 rotateElbowTo(73.5);
                 break;
 
@@ -468,9 +468,9 @@ public class SpampleArm {
             case level1Assent:
 
                 rotateTwistTo(0);
-                rotateElbowTo(0);
+                rotateElbowTo(60);
                 extendTo(0);
-                rotateShoulderTo(82);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;

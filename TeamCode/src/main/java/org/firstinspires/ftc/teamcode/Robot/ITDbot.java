@@ -81,7 +81,7 @@ public class ITDbot extends Robot {
 
         // Drives directly above high basket
         driveTrain.setSpeedMultiplier(0.35);
-        autoMoveTo(-58.5,-58.5,-40,1.5,2);
+        autoMoveTo(-57.5,-56.5,-40,1.5,2);
         chill(0.2, true);
         driveTrain.setSpeedMultiplier(0.4);
 
@@ -118,9 +118,9 @@ public class ITDbot extends Robot {
         spampleArm.rotateElbowTo(65);
        
         // Goes to the drive position for picking up sample
-        autoMoveTo(-48,-50,0,1,0.2);
+        autoMoveTo(-48,-52,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
-        spampleArm.rotateShoulderTo(64);
+//        spampleArm.rotateShoulderTo(32);
         chill(0.6,true);
 
         //  Goes to position for hovering over sample
@@ -141,11 +141,11 @@ public class ITDbot extends Robot {
         spampleArm.rotateTwistTo(-90);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
         setRobotSpeed(Robot.Speed.FAST);
-        spampleArm.rotateShoulderTo(64);
+        spampleArm.rotateShoulderTo(50);
         spampleArm.rotateElbowTo(65);
 
         // Goes to the drive position for picking up sample
-        autoMoveTo(-57.4,-49.5,0,1,0.2);
+        autoMoveTo(-57.4,-52,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
         chill(0.4,true);
 
@@ -153,8 +153,8 @@ public class ITDbot extends Robot {
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.7, true);
 
-        // Actually grabs the sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
+//        // Actually grabs the sample
+//        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
         chill(0.3, true);
@@ -172,19 +172,21 @@ public class ITDbot extends Robot {
         setRobotSpeed(Robot.Speed.FAST);
 
         // Goes to the drive position for picking up sample
-        autoMoveTo(-54.5,-46,30,1,0.4);
+        autoMoveTo(-54.5,-45,30,1,0.4);
         setRobotSpeed(Robot.Speed.SLOW);
         chill(0.3,true);
 
         // Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample;
         chill(0.4, true);
-        autoMoveTo(-57,-42.4,30,1,0.2);
+        autoMoveTo(-57,-46.4,30,1,0.2);
         chill(0.4, true);
 
         // Actually grabs the sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
+        spampleArm.currentArmState = SpampleArm.armState.test;
+        spampleArm.rotateShoulderTo(15.5);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
         chill(0.3, true);
 

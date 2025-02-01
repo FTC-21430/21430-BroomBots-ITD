@@ -86,7 +86,7 @@ public class Robot {
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
     spampleArm = new SpampleArm(hardwareMap, runtime, reset);
 
-    aprilTags = new AprilTagSystem(hardwareMap);
+//    aprilTags = new AprilTagSystem(hardwareMap);
 
     climber =  new Climber(hardwareMap,telemetry);
 
