@@ -181,7 +181,9 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
                 robot.updateRobot(false, false);
 
-            } else if (grabbingSample) {
+            }
+//            else if (grabbingSample) {
+            else if(false){
                 if (!grabbing && !lowering && !aligning) {
                     robot.setTurnPIntake(true);
                     robot.spampleArm.currentArmState = SpampleArm.armState.test;
@@ -233,6 +235,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
             robot.updateRobot(false, false);
 
         }
+            grabbingSample = false;
         }
     }
 }

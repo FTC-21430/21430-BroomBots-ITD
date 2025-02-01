@@ -100,8 +100,8 @@ public class MainTeleOp extends BaseTeleOp {
                     manualMode = true;
                 }
             }
-
             gp2shareold = gamepad2.share;
+
             //  claw Positions
 
             if (gamepad1.cross) {
@@ -326,7 +326,9 @@ public class MainTeleOp extends BaseTeleOp {
                     robot.driveTrain.setSpeedMultiplier(slowSpeedMultiplier);
                 }
 
-            } else if (grabbingSample) {
+            }
+//            else if (grabbingSample) {
+                else if(false){
                 if (!grabbing && !lowering && !aligning) {
                     robot.setTurnPIntake(true);
                     robot.spampleArm.currentArmState = SpampleArm.armState.test;
@@ -337,7 +339,7 @@ public class MainTeleOp extends BaseTeleOp {
                     grabbingSample = true;
                     startingAngle = robot.odometry.getRobotAngle();
                     robot.anglePID.setTarget(target_r_rot);
-                    robot.spampleArm.rotateShoulderTo(shoulder_rot + 10);
+                    robot.spampleArm.rotateShoulderTo(shoulder_rot + 15);
                     robot.spampleArm.rotateElbowTo(elbow);
                     robot.spampleArm.rotateTwistTo(twist);
                     robot.spampleArm.extendTo(extension);
@@ -441,6 +443,7 @@ public class MainTeleOp extends BaseTeleOp {
 
             }
             telemetry.update();
+            grabbingSample = false;
         }
     }
 }

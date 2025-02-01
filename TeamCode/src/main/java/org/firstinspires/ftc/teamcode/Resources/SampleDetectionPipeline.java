@@ -631,9 +631,9 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
             double x = foundSamplePositionsCenteredPix.get(bestI).x;
             double y = foundSamplePositionsCenteredPix.get(bestI).y;
 
-            foundSamplePositionTheta = Math.atan2(y,x);
-            foundSamplePositionRadius = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
-            foundSamplePositionYaw = foundSampleRotations.get(bestI);
+            foundSamplePositionThetaBuffer = Math.atan2(y,x);
+            foundSamplePositionRadiusBuffer = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+            foundSamplePositionYawBuffer = foundSampleRotations.get(bestI);
 
 
 
@@ -784,5 +784,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 //        subtractedMethodMat.release();
         return reConverted;
     }
+
+
 
 }

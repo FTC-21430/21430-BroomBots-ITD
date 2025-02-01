@@ -46,6 +46,10 @@ public class SampleCamera {
     private double sample2RobotY;
     private double sample2RobotYaw;
 
+    private double rawSampleRad;
+    private double rawSampleTheta;
+    private double rawSampleYaw;
+
 
     public SampleCamera(HardwareMap hardwareMap, Telemetry telemetry) {
        this.telemetry = telemetry;
@@ -86,9 +90,9 @@ public class SampleCamera {
 //            telemetry.addLine("camera X: "+ cameraXRobot);
 //            telemetry.addLine("camera Y: " + cameraYRobot);
 
-            double distanceInches = Math.tan(samples.getFoundSamplePositionRadius() * PIX2RAD) * cameraZRobot;
-            double sampleRobotX = Math.cos(samples.getFoundSamplePositionTheta() - (Math.PI/2)) * distanceInches - DETECTION_OFFSET_X + cameraXRobot;
-            double sampleRobotY = Math.sin(samples.getFoundSamplePositionTheta() - (Math.PI/2)) * -distanceInches - DETECTION_OFFSET_Y + cameraYRobot;
+            double distanceInches = Math.tan(rawSampleRad * PIX2RAD) * cameraZRobot;
+            double sampleRobotX = Math.cos(rawSampleTheta - (Math.PI/2)) * distanceInches - DETECTION_OFFSET_X + cameraXRobot;
+            double sampleRobotY = Math.sin(rawSampleTheta - (Math.PI/2)) * -distanceInches - DETECTION_OFFSET_Y + cameraYRobot;
             double sampleDistance = Math.sqrt(Math.pow(sampleRobotX,2)+Math.pow(sampleRobotY,2));
 
             double sample2BotRad = Math.atan2(sampleRobotX,sampleRobotY);
@@ -99,7 +103,7 @@ public class SampleCamera {
 //            sample2RobotX = sampleRobotX;
 //            sample2RobotY = sampleRobotY;
 
-            sample2RobotYaw = samples.getFoundSamplePositionYaw() - CAMERA_YAW_ROBOT + rotation;
+            sample2RobotYaw = rawSampleYaw - CAMERA_YAW_ROBOT + rotation;
         }
     }
     public double getSampleY(){
@@ -141,6 +145,14 @@ public class SampleCamera {
     public boolean didWeFindOne(){
         return samples.isFoundSample();
     }
-
+    public void clearFoundSample(){
+        samples.foundSample = false;
+    }
+    public void acceptBuffer(){
+        samples.acceptBuffer();
+        rawSampleRad = samples.getFoundSamplePositionRadius();
+        rawSampleTheta = samples.getFoundSamplePositionTheta();
+        rawSampleYaw = samples.getFoundSamplePositionYaw();
+    }
 
 }

@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.Resources;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionProcessor;
 
 public abstract class SampleDetectionProcessor implements VisionProcessor {
 
     // The position data about where the sample we want to grab is RELATIVE TO CAMERA, These are in polar coordinates
-    public double foundSamplePositionTheta = 0;
-    public double foundSamplePositionRadius= 0;
-    public double foundSamplePositionYaw = 0;
+    public double foundSamplePositionThetaBuffer = 0;
+    public double foundSamplePositionRadiusBuffer = 0;
+    public double foundSamplePositionYawBuffer = 0;
+
+    private double foundSamplePositionTheta = 0;
+    private double foundSamplePositionRadius = 0;
+    private double foundSamplePositionYaw = 0;
+
 
     public boolean update= false;
 
@@ -50,7 +54,7 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
         update = true;
     }
     public void disableSampleDetection(){
-        foundSample = false;
+//        foundSample = false;
         update = false;
     }
 
@@ -69,6 +73,12 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
     public void setFilterToBlue(){
         foundSample = false;
         colorMode = 2;
+    }
+
+    public void acceptBuffer(){
+        foundSamplePositionRadius = foundSamplePositionRadiusBuffer;
+        foundSamplePositionTheta = foundSamplePositionThetaBuffer;
+        foundSamplePositionYaw = foundSamplePositionYawBuffer;
     }
 
 }
