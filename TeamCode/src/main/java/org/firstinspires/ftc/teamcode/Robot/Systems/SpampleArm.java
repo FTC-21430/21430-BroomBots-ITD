@@ -26,9 +26,9 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbow=-36;
+    public static double spicemenGrabElbow=-37;
     public static double spicemenGrabExtension= 5.0;
-    public static double spicemenGrabShoulder= 119;
+    public static double spicemenGrabShoulder= 119.3;
     public static double specimenGrabTwist= 83;
 
     public armState currentArmState = armState.idle;

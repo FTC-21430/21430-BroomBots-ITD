@@ -194,15 +194,18 @@ public class ITDbot extends Robot {
         spampleArm.currentArmState = SpampleArm.armState.idle;
         autoMoveTo(-51,-47,0,1,0.2);
     }
-    public void ScoreSpecimenHighChamber(double offset){
+    public void ScoreSpecimenHighChamber(double offsetX){
+        ScoreSpecimenHighChamber(offsetX,0);
+    }
+    public void ScoreSpecimenHighChamber(double offsetX,double offsetY){
         setRobotSpeed(Speed.FAST);
-        spampleArm.rotateElbowTo(80.5);
+        spampleArm.rotateElbowTo(82.5);
         //goes to drive position for scoring specimen
         spampleArm.currentArmState = SpampleArm.armState.highChamber;
         autoMoveTo(0,-52,0,2,0.2);
         chill(0.5,true);
-        autoMoveTo(0+offset,-35.5,0,2,0.2);
-        chill(0.5,true);
+        autoMoveTo(0+offsetX,-34.5-offsetY,0,2,0.2);
+        chill(0.15,true);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
         chill(0.3,true);
         autoMoveTo(0,-42,0,2,0.2);
