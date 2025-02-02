@@ -334,7 +334,7 @@ public class SpampleArm {
         intake,
         init,
         test,
-        fullyIdle
+        fullyIdle,
     }
 
     public void updateState(){
@@ -392,8 +392,8 @@ public class SpampleArm {
 
                 rotateTwistTo(90);
                 rotateElbowTo(-45);
-                extendTo(0);
-                rotateShoulderTo(135);
+                extendTo(2);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
@@ -405,8 +405,8 @@ public class SpampleArm {
                 break;
             case grabSample2:
                 extendTo(2);
-                rotateShoulderTo(17.5);
-                rotateElbowTo(73.5);
+                rotateShoulderTo(16);
+                rotateElbowTo(67);
                 break;
 
 
@@ -431,7 +431,7 @@ public class SpampleArm {
 
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
-                extendTo(0.25);
+                extendTo(1);
 
 
                 shoulderMoved = false;
