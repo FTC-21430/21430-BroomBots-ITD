@@ -244,18 +244,21 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         // the output image we return at the endof the processFrame function
 
 
-        // sets the foundSample var to false to ensure we don't say we have a sample when we don't
-        foundSample = false;
+
 
         // checks if we should run the algorithm
         if (update){
+            update = false;
+            // sets the foundSample var to false to ensure we don't say we have a sample when we don't
+            foundSample = false;
+
             // sets the output image to the output of the main algorithm
             // passes in the input image from OpenCV and the colorMode (0-2) for which color of samples we are looking for
             findSamples(input, colorMode).copyTo(input);
-        }else{
+        }
             // if we should not update, we still need to return something so we just return the input as the output
             output = input;
-        }
+
 
 
         // you can use this code the read out to the user where the sample we found is. only run this code if there is a sample found, so check first!
@@ -614,7 +617,7 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
             // if we get here then we definitely found a sample!
             foundSample = true;
-            update = false;
+
             // telemetry.addLine(""+ closestDist);
             if (distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0)) < closestDist){
                 closestDist = distance(foundSamplePositionsCenteredPix.get(i), new Point(0,0));

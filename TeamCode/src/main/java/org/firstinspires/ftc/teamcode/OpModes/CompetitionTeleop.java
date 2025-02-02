@@ -23,19 +23,19 @@ public class CompetitionTeleop extends BaseTeleOp {
     private InverseKinematics kinematics;
 
     // The output of the Inverse Kinematics to be used elsewhere in the file
-    private double target_r_rot;
-    private double extension;
-    private double elbow;
-    private double twist;
-    private double shoulder_rot;
+    private double target_r_rot = 0;
+    private double extension = 2;
+    private double elbow = 60;
+    private double twist = 0;
+    private double shoulder_rot = 30;
 
     // The found sample positions
-    private double foundX;
-    private double foundY;
-    private double foundYaw;
+    private double foundX =0.0;
+    private double foundY = 0.0;
+    private double foundYaw = 0.0;
 
     // the logic for the auto grabs and detection
-    private boolean lookingForSample;
+    private boolean lookingForSample = false;
     private double startedLookingTime = 0.0;
     private boolean grabbingSample = false;
     private boolean aligning = false;
@@ -73,7 +73,7 @@ public class CompetitionTeleop extends BaseTeleOp {
     boolean gp2tri = false;
 
     // for getting our loop times
-    public double LastLoopTime;
+    public double LastLoopTime = 0.0;
 
     // climber logic:
 
@@ -249,7 +249,6 @@ public class CompetitionTeleop extends BaseTeleOp {
                         gamepad1.rumble(0.8,0.0, 700);
                     }
                     telemetry.update();
-
                 }
             }
 

@@ -60,18 +60,18 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
 
 
     public void setFilterToYellow() {
-        foundSample = false;
+
         colorMode = 0;
     }
 
 
     public void setFilterToRed(){
-        foundSample = false;
+
         colorMode = 1;
     }
 
     public void setFilterToBlue(){
-        foundSample = false;
+
         colorMode = 2;
     }
 
