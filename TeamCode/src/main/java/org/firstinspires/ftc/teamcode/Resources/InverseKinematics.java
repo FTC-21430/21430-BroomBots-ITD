@@ -82,7 +82,7 @@ public class InverseKinematics {
     private final double MIN_H = PIVOT_OFFSET + Math.hypot(TUBE_LENGTH, FOREARM_LENGTH + 1.5 - CHASSIS_HEIGHT);
     
     // how far away a sample can be without us breaking the expansion limit
-    private final double MAX_H = 30; // inches from center the of the robot
+    private final double MAX_H = 24.9; // inches from center the of the robot
     
     
     // the constructor for this class.... that needs to do nothing.. yup

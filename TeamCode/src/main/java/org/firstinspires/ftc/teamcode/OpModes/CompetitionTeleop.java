@@ -41,15 +41,18 @@ public class CompetitionTeleop extends BaseTeleOp {
     private boolean aligning = false;
     private boolean lowering = false;
     private boolean grabbing = false;
+    private boolean raising = false;
 
     // the height we pick up samples
     private final double grabZ = 0.0;
 
     // Timings for auto pickups
     private double searchTimeout = 1.25;
-    private double alignmentTime = 1.0;
-    private double loweringTime = 0.5;
-    private double grabbingTime = 0.3;
+    private double alignmentTime = 0.5;
+    private double loweringTime = 0.4;
+
+    private double grabbingTime = 0.12;
+    private double raisingTime = 0.3;
     private double startingAngle = 0;
     private double autoPickupTimer = 0.0;
 
@@ -114,7 +117,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                     manualMode = true;
                 }
             }
-            manualMode = false;
+           gp2shareold = gamepad2.share;
 
 //          claw logic
             if (gamepad1.cross) {
@@ -165,6 +168,43 @@ public class CompetitionTeleop extends BaseTeleOp {
                 if (gamepad2.dpad_down && !grabbingSample) {
                     robot.spampleArm.currentArmState = SpampleArm.armState.idle;
                     robot.setTurnPIntake(false);
+                }
+                if (gamepad2.dpad_up) {
+                    robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
+                }
+                if (gamepad2.triangle && !gp2tri) {
+                    if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
+                    } else {
+                        robot.spampleArm.rotateElbowTo(88.5);
+                    }
+                    robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+                }
+                if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
+                    if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
+                        robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
+                    } else if (robot.spampleArm.getElbowRotation() > 94) {
+                        robot.spampleArm.rotateElbowTo(94);
+                    } else if (robot.spampleArm.getElbowRotation() < 84) {
+                        robot.spampleArm.rotateElbowTo(84);
+                    }
+                }
+
+                if (gamepad2.square) {
+                    robot.spampleArm.currentArmState = SpampleArm.armState.lowBasket;
+                }
+                if (gamepad2.dpad_left) {
+                    robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
+                }
+                if (gamepad2.dpad_right){
+                    robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
+                }
+
+                if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
+                    robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
+                } else if (robot.spampleArm.getTwist() > 90) {
+                    robot.spampleArm.rotateTwistTo(90);
+                } else if (robot.spampleArm.getTwist() < -90) {
+                    robot.spampleArm.rotateTwistTo(-90);
                 }
             }
 
@@ -278,7 +318,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                 robot.updateRobot(false, false);
 
             } else if (grabbingSample) {
-                if (!grabbing && !lowering && !aligning) {
+                if (!grabbing && !lowering && !aligning && !raising) {
                     robot.setTurnPIntake(true);
                     robot.spampleArm.currentArmState = SpampleArm.armState.test;
                     robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
@@ -299,7 +339,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                         autoPickupTimer = runtime.seconds();
                         grabbingSample = true;
                         robot.anglePID.setTarget(target_r_rot);
-                        robot.spampleArm.rotateShoulderTo(shoulder_rot);
+                        robot.spampleArm.rotateShoulderTo(shoulder_rot -(0.9*extension));
                         robot.spampleArm.rotateElbowTo(elbow);
                         robot.spampleArm.rotateTwistTo(twist);
                         robot.spampleArm.extendTo(extension);
@@ -314,11 +354,19 @@ public class CompetitionTeleop extends BaseTeleOp {
                     }
                 } else if (grabbing) {
                     if (runtime.seconds() > autoPickupTimer + grabbingTime) {
-                        robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
+                        robot.spampleArm.rotateShoulderTo(shoulder_rot + 15);
                         grabbing = false;
+                        raising = true;
+                        autoPickupTimer = runtime.seconds();
+                    }
+                }else if(raising){
+                    if (runtime.seconds() > autoPickupTimer + raisingTime) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
+                        autoPickupTimer = runtime.seconds();
+                        raising = false;
                         grabbingSample = false;
                         robot.setTurnPIntake(false);
-                    }
+                  }
                 }
                 robot.driveTrain.setSpeedMultiplier(0.8);
                 robot.anglePID.update(robot.odometry.getRobotAngle());
