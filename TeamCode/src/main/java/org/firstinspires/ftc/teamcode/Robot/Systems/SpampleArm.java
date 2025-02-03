@@ -18,7 +18,7 @@ public class SpampleArm {
 
     
     private ElapsedTime runtime = null;
-    private double elbowAngleOffset = 156;
+    private double elbowAngleOffset = 161.3;
 
     private double shoulderAngleOffset;
 
@@ -124,7 +124,7 @@ public class SpampleArm {
 
         //Mapping/initializing servos
         elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                250,0,290 );
+                264.3,0,264.3 );
 
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 260,0,260);
@@ -284,6 +284,7 @@ public class SpampleArm {
         shoulderTimer = runtime.seconds();
     }
 
+
     public void updateShoulderConstants(){
         shoulderPID.updateConstants(pConstant,iConstant,dConstant);
     }
@@ -311,7 +312,6 @@ public class SpampleArm {
     //elbow
     //twist
     //pinchy
-
     //High Basket
     //fix variables
 
@@ -335,6 +335,8 @@ public class SpampleArm {
         init,
         test,
         fullyIdle,
+        pictureTake
+
     }
 
     public void updateState(){
@@ -432,7 +434,6 @@ public class SpampleArm {
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
                 extendTo(1);
-
 
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -548,18 +549,13 @@ public class SpampleArm {
                 rotateElbowTo(0);
                 rotateShoulderTo(137.5);
                 break;
+            case pictureTake:
+                extendTo(2);
+                rotateTwistTo(0);
+                rotateElbowTo(20);
+                rotateShoulderTo(30);
             case test:
                 break;
         }
-
-
     }
-    
-    
-    
-    
-    
-
-
-
 }

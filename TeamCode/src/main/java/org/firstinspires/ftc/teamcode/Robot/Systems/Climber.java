@@ -81,10 +81,11 @@ public class Climber {
 
 
         leftLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchL"), 295, 0, 295);
-        rightLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchR"), 295, 0, 295);
+
 
 //        releaseLatches();
         lockLatches();
+
 
     }
     // The motors go to their lowest extension

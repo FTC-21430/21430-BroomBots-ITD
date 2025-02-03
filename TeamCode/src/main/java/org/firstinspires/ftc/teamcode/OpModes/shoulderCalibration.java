@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
+@Disabled
 @TeleOp
 public class shoulderCalibration extends BaseTeleOp {
 

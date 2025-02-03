@@ -41,6 +41,11 @@ AprilTagSystem {
    * The variable to store our instance of the vision portal.
    */
   private VisionPortal visionPortal;
+
+  /**
+   * The amount the tags detection is allowed to be off from the OTOS, this helps if the detection has a really inaccurate reading from things like motion blur and ect...
+   */
+  private final double ALLOWED_ERROR_DISTANCE = 3.5; // inches
   
   /**
    * Initialize the AprilTag processor.
@@ -56,7 +61,7 @@ AprilTagSystem {
     // Create the vision portal by using a builder.
     VisionPortal.Builder builder = new VisionPortal.Builder();
     
-    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+    builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
     
     
     builder.addProcessor(aprilTag);
@@ -96,6 +101,7 @@ AprilTagSystem {
         // if the distance of the current tag is closer to where to we think the robot is then we make that the new best detection,
         // else we go to the top of the for loop.
         if (calculateDistance(RX,RY,TX,TY) > calculateDistance(RX,RY,BX,BY)) continue;
+        if (calculateDistance(RX, RY, TX,TY) > ALLOWED_ERROR_DISTANCE) continue;
       }
       
       this.detection = detection;
