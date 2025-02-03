@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 @TeleOp
 public class SampleDetectionTesting extends BaseTeleOp {
-
-
     private SampleCamera sampleCamera;
 
     private InverseKinematics kinematics;
@@ -126,7 +124,6 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 } else if (sampleCamera.didWeFindOne()) {
                     lookingForSample = false;
 
-
                     sampleCamera.findCameraPosRelativePosition(robot.spampleArm.getArmAngle(), robot.spampleArm.getArmExtension(), 0);
 
                     sampleCamera.stopDetection();
@@ -152,6 +149,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
                         elbow = kinematics.getElbowRotation();
                         extension = kinematics.getArmExtension();
                         twist = kinematics.getTwist();
+
                         grabbingSample = true;
                         startingAngle = robot.odometry.getRobotAngle();
 
@@ -174,13 +172,18 @@ public class SampleDetectionTesting extends BaseTeleOp {
                 targetAngle = (robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
 
                 robot.driveTrain.setSpeedMultiplier(0.8);
+
+                // These call functions and pass the relevant parameters
+                robot.anglePID.setTarget(targetAngle);
                 robot.anglePID.update(robot.odometry.getRobotAngle());
 
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
                 robot.updateRobot(false, false);
 
-            } else if (grabbingSample) {
+            }
+//            else if (grabbingSample) {
+            else if(false){
                 if (!grabbing && !lowering && !aligning) {
                     robot.setTurnPIntake(true);
                     robot.spampleArm.currentArmState = SpampleArm.armState.test;
