@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Resources.InverseKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Systems.Claw;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Systems.SpampleArm;
 
 
 //This is the teleop we run during competitions.
+@Disabled
 @TeleOp
 public class MainTeleOp extends BaseTeleOp {
     boolean climberActive = false;
