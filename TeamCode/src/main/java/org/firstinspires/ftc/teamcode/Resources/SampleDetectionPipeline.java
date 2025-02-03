@@ -96,7 +96,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
 
 
     // the amount the image should be cropped by, more means less image at the end
-    private final double CROPPING_FACTOR = 2;
+    private final double CROPPING_FACTOR_X = 2;
+    private final double CROPPING_FACTOR_Y = 1.25;
 
     // should just be something kinda hacky but could be a useful thing to tune
     private final double EXTRA_CROPPING_X = 0;
@@ -181,6 +182,8 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
     // a telemetry instance from the FIRST SDK
     private Telemetry telemetry = null;
 
+    private boolean calculatingWasTrue = false;
+
     /**
      * an int used to decide which color of sample we should be looking for
      * 0 = yellow samples
@@ -230,6 +233,9 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         dist_coeffs.put(0,2,0.00013459478315);
         dist_coeffs.put(0,3,0.000897741867319);
         dist_coeffs.put(0,4,0.00542752872672);
+
+        colorMode = 0;
+
           }
 
     /**
@@ -237,14 +243,12 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
      */
     @Override
     public Mat processFrame(Mat input, long captureTimeNanos) {
+        calculatingWasTrue = calculating;
 //        output.release();
 
         // Executed every time a new frame is dispatched
 
         // the output image we return at the endof the processFrame function
-
-
-
 
         // checks if we should run the algorithm
         if (update){
@@ -255,6 +259,10 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
             // sets the output image to the output of the main algorithm
             // passes in the input image from OpenCV and the colorMode (0-2) for which color of samples we are looking for
             findSamples(input, colorMode).copyTo(input);
+
+
+            calculating = false;
+
         }
             // if we should not update, we still need to return something so we just return the input as the output
             output = input;
@@ -712,17 +720,18 @@ public class SampleDetectionPipeline extends SampleDetectionProcessor {
         int scaleX = src.cols();
         int scaleY = src.rows();
 
-        int cropCornerX = (int) (scaleX / (CROPPING_FACTOR * 2));
-        int cropCornerY = (int) (scaleY / (CROPPING_FACTOR * 2));
+        int rectWidth = (int) (scaleX / (CROPPING_FACTOR_X));
+        int rectHeight = (int) (scaleY / (CROPPING_FACTOR_Y));
 
-        int rectWidth = (int) (scaleX / (CROPPING_FACTOR));
-        int rectHeight = (int) (scaleY / (CROPPING_FACTOR));
+        int cropCornerX = ((scaleX - rectWidth) / 2);
+        int cropCornerY = ((scaleY - rectHeight) / 2);
 
         // calculating the part of the image we want to remain
+        RobotLog.e("WEEEEE");
         Rect roi = new Rect(cropCornerX, cropCornerY, rectWidth, rectHeight);
-
+        RobotLog.e("WOOOOO: " + roi);
         croppedCrop = new Mat(src, roi);
-
+        RobotLog.e("WAAAAAA");
 
         return croppedCrop;
     }

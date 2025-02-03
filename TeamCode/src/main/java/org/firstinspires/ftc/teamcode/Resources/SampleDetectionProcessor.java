@@ -19,6 +19,7 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
 
     // true only if we found a sample the last time we checked
     public boolean foundSample = false;
+    public boolean calculating = false;
 
     public int colorMode = 2;
     public static class Builder
@@ -50,10 +51,12 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
     }
 
     public void enableSampleDetection(){
+        calculating = true;
         foundSample = false;
         update = true;
     }
     public void disableSampleDetection(){
+
 //        foundSample = false;
         update = false;
     }
@@ -79,6 +82,12 @@ public abstract class SampleDetectionProcessor implements VisionProcessor {
         foundSamplePositionRadius = foundSamplePositionRadiusBuffer;
         foundSamplePositionTheta = foundSamplePositionThetaBuffer;
         foundSamplePositionYaw = foundSamplePositionYawBuffer;
+    }
+    public void beginProccessing(){
+        calculating = false;
+    }
+    public boolean getIfDone(){
+        return calculating;
     }
 
 }

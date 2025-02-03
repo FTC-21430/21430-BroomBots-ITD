@@ -151,5 +151,7 @@ public class SampleCamera {
         rawSampleTheta = samples.getFoundSamplePositionTheta();
         rawSampleYaw = samples.getFoundSamplePositionYaw();
     }
-
+    public boolean getIfProcessing(){
+        return samples.calculating;
+    }
 }

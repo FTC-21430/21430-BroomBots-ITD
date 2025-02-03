@@ -235,7 +235,6 @@ public class SampleDetectionTesting extends BaseTeleOp {
             robot.updateRobot(false, false);
 
         }
-            grabbingSample = false;
         }
     }
 }

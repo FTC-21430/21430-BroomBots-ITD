@@ -46,7 +46,7 @@ public class CompetitionTeleop extends BaseTeleOp {
     private final double grabZ = 0.0;
 
     // Timings for auto pickups
-    private double searchTimeout = 0.7;
+    private double searchTimeout = 1.25;
     private double alignmentTime = 1.0;
     private double loweringTime = 0.5;
     private double grabbingTime = 0.3;
@@ -170,7 +170,7 @@ public class CompetitionTeleop extends BaseTeleOp {
 
 
 
-            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake) {
+            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake && !lookingForSample && !grabbingSample) {
                 // starts the vision detection process in either red, blue or yellow.
                 if (gamepad1.dpad_down) {
                     lookingForSample = true;
@@ -192,8 +192,11 @@ public class CompetitionTeleop extends BaseTeleOp {
 
             if (lookingForSample) {
 
+                if (!sampleCamera.getIfProcessing()){
+
+
                 // if we time out the detection
-                if (runtime.time() > startedLookingTime + searchTimeout) {
+                if (!sampleCamera.didWeFindOne()) {
                     lookingForSample = false;
                     // rumbles the whole controller to tell driver 1 that we could not find a sample
                     gamepad1.rumble(0.5,0.0, 700);
@@ -224,7 +227,6 @@ public class CompetitionTeleop extends BaseTeleOp {
                     telemetry.addLine("camera Z: " + sampleCamera.cameraZRobot);
 
 
-
                     if (kinematics.calculateKinematics(0, 0, foundX, foundY, grabZ, foundYaw, robot.odometry.getRobotAngle())) {
 
                         gamepad1.rumble(0.0, 0.3, 700);
@@ -246,13 +248,15 @@ public class CompetitionTeleop extends BaseTeleOp {
                         telemetry.addLine("extension: " + kinematics.getArmExtension());
 
                     } else {
-                        gamepad1.rumble(0.8,0.0, 700);
+                        gamepad1.rumble(0.8, 0.0, 700);
                     }
                     telemetry.update();
                 }
-            }
+                }
 
-            sampleCamera.clearFoundSample();
+            }
+//
+//            sampleCamera.clearFoundSample();
 
             if (!grabbingSample && !lookingForSample || manualMode) {
                 targetAngle = (robot.anglePID.getTarget() + (-gamepad1.right_stick_x * robot.maxTurnDegPerSecond * robot.getDeltaTime() * robot.driveTrain.getSpeedMultiplier()));
