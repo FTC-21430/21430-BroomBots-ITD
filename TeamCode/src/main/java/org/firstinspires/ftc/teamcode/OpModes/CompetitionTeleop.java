@@ -49,7 +49,7 @@ public class CompetitionTeleop extends BaseTeleOp {
     // Timings for auto pickups
     private double searchTimeout = 1.25;
     private double alignmentTime = 0.5;
-    private double loweringTime = 0.4;
+    private double loweringTime = 0.2;
 
     private double grabbingTime = 0.12;
     private double raisingTime = 0.3;
@@ -210,7 +210,7 @@ public class CompetitionTeleop extends BaseTeleOp {
 
 
 
-            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake && !lookingForSample && !grabbingSample) {
+            if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake && !lookingForSample && !grabbingSample && !manualMode) {
                 // starts the vision detection process in either red, blue or yellow.
                 if (gamepad1.dpad_down) {
                     lookingForSample = true;
@@ -239,7 +239,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                 if (!sampleCamera.didWeFindOne()) {
                     lookingForSample = false;
                     // rumbles the whole controller to tell driver 1 that we could not find a sample
-                    gamepad1.rumble(0.5,0.0, 700);
+                    gamepad1.rumble(0.5,0.0, 600);
                 }
                 // checks if we found a sample already so we don't wait unnecessarily
                 else if (sampleCamera.didWeFindOne()) {
@@ -269,7 +269,7 @@ public class CompetitionTeleop extends BaseTeleOp {
 
                     if (kinematics.calculateKinematics(0, 0, foundX, foundY, grabZ, foundYaw, robot.odometry.getRobotAngle())) {
 
-                        gamepad1.rumble(0.0, 0.3, 700);
+
 
                         target_r_rot = kinematics.getRobotAngle() + robot.odometry.getRobotAngle();
                         shoulder_rot = kinematics.getArmRotation();
@@ -288,7 +288,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                         telemetry.addLine("extension: " + kinematics.getArmExtension());
 
                     } else {
-                        gamepad1.rumble(0.8, 0.0, 700);
+                        gamepad1.rumble(0.0, 0.5, 600);
                     }
                     telemetry.update();
                 }
@@ -328,7 +328,7 @@ public class CompetitionTeleop extends BaseTeleOp {
 
                     startingAngle = robot.odometry.getRobotAngle();
                     robot.anglePID.setTarget(target_r_rot);
-                    robot.spampleArm.rotateShoulderTo(shoulder_rot+15);
+                    robot.spampleArm.rotateShoulderTo(shoulder_rot+10);
                     robot.spampleArm.rotateElbowTo(elbow);
                     robot.spampleArm.rotateTwistTo(twist);
                     robot.spampleArm.extendTo(extension);
