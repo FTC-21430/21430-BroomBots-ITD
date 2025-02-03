@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
+import org.firstinspires.ftc.teamcode.Robot.Systems.ServoPlus;
+
 
 
 //This class is the code foundations for making the robot's arm move.
@@ -24,9 +26,9 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbow=-36;
+    public static double spicemenGrabElbow=-38;
     public static double spicemenGrabExtension= 5.0;
-    public static double spicemenGrabShoulder= 119;
+    public static double spicemenGrabShoulder= 119.3;
     public static double specimenGrabTwist= 83;
 
     public armState currentArmState = armState.idle;
@@ -334,6 +336,7 @@ public class SpampleArm {
         test,
         fullyIdle,
         pictureTake
+
     }
 
     public void updateState(){
@@ -391,8 +394,8 @@ public class SpampleArm {
 
                 rotateTwistTo(90);
                 rotateElbowTo(-45);
-                extendTo(0);
-                rotateShoulderTo(135);
+                extendTo(2);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;
@@ -404,8 +407,8 @@ public class SpampleArm {
                 break;
             case grabSample2:
                 extendTo(2);
-                rotateShoulderTo(16.5);
-                rotateElbowTo(73.5);
+                rotateShoulderTo(16);
+                rotateElbowTo(67);
                 break;
 
 
@@ -430,8 +433,7 @@ public class SpampleArm {
 
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
-                extendTo(2.25);
-
+                extendTo(1);
 
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -467,9 +469,9 @@ public class SpampleArm {
             case level1Assent:
 
                 rotateTwistTo(0);
-                rotateElbowTo(0);
+                rotateElbowTo(60);
                 extendTo(0);
-                rotateShoulderTo(82);
+                rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
                 extensionMoved = false;

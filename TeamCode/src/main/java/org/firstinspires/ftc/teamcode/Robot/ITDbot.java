@@ -70,30 +70,23 @@ public class ITDbot extends Robot {
         while (runtime.seconds() - startedTime < seconds && opMode.opModeIsActive()){
                 updateRobot(holdPosition, false);
         }
-
     }
+
     public void ScoreSampleInHighBasket(){
         // Drives over to the high basket
         setRobotSpeed(Robot.Speed.SLOW);
         spampleArm.currentArmState = SpampleArm.armState.highBasket;
-        autoMoveTo(-55,-54,-40,2,3);
-
-
-
-
-
+        autoMoveTo(-54,-54,-40,2,3);
         chill(.7, true);
 
-        //Drives directly above high basket
+        // Drives directly above high basket
         driveTrain.setSpeedMultiplier(0.35);
-        autoMoveTo(-59.5,-59.5,-40,1.5,2);
+        autoMoveTo(-57.5,-56.5,-40,1.5,2);
         chill(0.2, true);
         driveTrain.setSpeedMultiplier(0.4);
 
-
         //Drops sample
         spampleArm.setClawPosition(Claw.ClawPosition.open);
-
         chill(0.45, true);
 
         // Brings claw and twist to regular position
@@ -102,121 +95,121 @@ public class ITDbot extends Robot {
 
         // Drive slightly back from the high basket
         autoMoveTo(-55,-46,0,2,0.5);
-
         spampleArm.currentArmState = SpampleArm.armState.test;
+
         // Shoulder back to normal position
         spampleArm.rotateTwistTo(0);
         spampleArm.rotateElbowTo(65);
         spampleArm.extendTo(2);
-
         spampleArm.rotateShoulderTo(90);
-
         chill(0.3, true);
-
     }
+
     public void GrabRightSample(){
+       // Prepares (kind of like initializing)
         setRobotSpeed(Robot.Speed.FAST);
-        spampleArm.rotateShoulderTo(64);
+        spampleArm.rotateShoulderTo(69);
         chill(0.4,true);
-        //  goes to position for hovering over sample
+
+        // Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample;
         spampleArm.rotateTwistTo(-90);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
-
         spampleArm.rotateElbowTo(65);
        
-        //Goes to the drive position for picking up sample
-        autoMoveTo(-48,-48,0,1,0.2);
+        // Goes to the drive position for picking up sample
+        autoMoveTo(-48,-52,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
-        spampleArm.rotateShoulderTo(68);
-
+//        spampleArm.rotateShoulderTo(32);
         chill(0.6,true);
-        //  goes to position for hovering over sample
+
+        //  Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
-
         chill(.5, true);
-        autoMoveTo(-47.2,-47.7,0,1,0.2);
 
-
-        //actually grabs the sample
-
+        // Actually grabs the sample
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
         chill(0.3, true);
 
-        //back to original position
+        // Back to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
-
-
         chill(0.4, true);
     }
     public void GrabMiddleSample(){
-
+        // Prepares (kind of like initialization)
         spampleArm.rotateElbowTo(65);
         spampleArm.rotateTwistTo(-90);
         spampleArm.setClawPosition(Claw.ClawPosition.open);
         setRobotSpeed(Robot.Speed.FAST);
-
-        spampleArm.rotateShoulderTo(64);
+        spampleArm.rotateShoulderTo(50);
         spampleArm.rotateElbowTo(65);
-        //Goes to the drive position for picking up sample
-        autoMoveTo(-57.4,-47.5,0,1,0.2);
 
+        // Goes to the drive position for picking up sample
+        autoMoveTo(-57.4,-52,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
-
         chill(0.4,true);
-        //  goes to position for hovering over sample
+
+        // Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
-
-
         chill(0.7, true);
-        autoMoveTo(-57.4,-47,0,1,0.2);
 
-
-        //actually grabs the sample
-        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
+//        // Actually grabs the sample
+//        spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
         chill(0.3, true);
 
-        //back to original position
+        // Returns to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
-
-
         chill(0.4, true);
     }
     public void GrabLeftSample() {
+        // Prepares (kind of like initialization)
         spampleArm.rotateElbowTo(65);
-
         spampleArm.rotateTwistTo(50);
-
         spampleArm.setClawPosition(Claw.ClawPosition.open);
         autoMoveTo(-54.5,-42.2,30,2,0.2);
         setRobotSpeed(Robot.Speed.FAST);
 
-        //Goes to the drive position for picking up sample
-        autoMoveTo(-54.5,-42.5,30,1,0.4);
-
+        // Goes to the drive position for picking up sample
+        autoMoveTo(-54.5,-45,30,1,0.4);
         setRobotSpeed(Robot.Speed.SLOW);
-
         chill(0.3,true);
-        //  goes to position for hovering over sample
+
+        // Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample;
-
-
+        chill(0.4, true);
+        autoMoveTo(-57,-46.4,30,1,0.2);
         chill(0.4, true);
 
-        autoMoveTo(-57,-42.4,30,1,0.2);
-        chill(0.4, true);
-
-        //actually grabs the sample
+        // Actually grabs the sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample2;
         chill(0.3, true);
+        spampleArm.currentArmState = SpampleArm.armState.test;
+        spampleArm.rotateShoulderTo(15.5);
         spampleArm.setClawPosition(Claw.ClawPosition.closed);
         chill(0.3, true);
 
-        //back to original position
+        // Return to original position
         spampleArm.currentArmState = SpampleArm.armState.idle;
+        autoMoveTo(-51,-47,0,1,0.2);
+    }
+    public void ScoreSpecimenHighChamber(double offsetX){
+        ScoreSpecimenHighChamber(offsetX,0);
+    }
+    public void ScoreSpecimenHighChamber(double offsetX,double offsetY){
+        setRobotSpeed(Speed.FAST);
+        spampleArm.rotateElbowTo(81.5);
+        //goes to drive position for scoring specimen
+        spampleArm.currentArmState = SpampleArm.armState.highChamber;
+        autoMoveTo(0 + offsetX,-52,0,2,0.2);
+        chill(0.5,true);
+        autoMoveTo(0+offsetX,-34.5+offsetY,0,2,0.2);
+        chill(0.15,true);
+        spampleArm.setClawPosition(Claw.ClawPosition.open);
+        chill(0.3,true);
+        autoMoveTo(0,-42,0,2,0.2);
+        spampleArm.currentArmState= SpampleArm.armState.idle;
 
-        autoMoveTo(-57.5,-46,0,1,0.2);
     }
 }
