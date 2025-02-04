@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -23,12 +24,12 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbowTeleop =-33;
+    public static double spicemenGrabElbowTeleop =-37;
     public static double spicemenGrabExtensionTeleop = 5.0;
-    public static double spicemenGrabShoulderTeleop = 119;
+    public static double spicemenGrabShoulderTeleop = 116;
     public static double specimenGrabTwistTeleop = 83;
 
-    public static double spicemenGrabElbowAuto =-38;
+    public static double spicemenGrabElbowAuto =-43.5;
     public static double spicemenGrabExtensionAuto = 5.0;
     public static double spicemenGrabShoulderAuto = 119.3;
     public static double specimenGrabTwistAuto = 83;
@@ -37,6 +38,8 @@ public class SpampleArm {
 
     //Arm sensors
     public AnalogInput armPotentiometer = null;
+
+    public DigitalChannel armLimitSwitch = null;
     
     //Actuators for the arm
 
@@ -93,6 +96,8 @@ public class SpampleArm {
 
     private double dConstantGrab = 0.0025;
 
+    private boolean calibratingExtension = false;
+
 
 
     private double shoulderTimer = 0.0;
@@ -124,7 +129,8 @@ public class SpampleArm {
         // you need to set how fast the motor moves before it will move at all.
         linearSlideMotor.setPower(1);
 
-
+        armLimitSwitch = hardwareMap.get(DigitalChannel.class, "extensionLimitSwitch");
+        armLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //Mapping/initializing servos
 
@@ -204,6 +210,18 @@ public class SpampleArm {
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
     public void updateArm(boolean isAuto){
+        int armSafetyOffset = 0;
+        if (currentArmState != armState.init && currentArmState != armState.test){
+            // ensures the arm is within 5 degrees to vertical.
+            if (armLimitSwitch.getState() && getArmAngle() > 90 - 5 && getArmAngle() < 90 + 5){
+                linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }else if(armLimitSwitch.getState()){
+                armSafetyOffset = 100;
+            }
+        }
+
+
         if (isAuto){
             updateStateAutonomous();
         }else {
@@ -222,7 +240,7 @@ public class SpampleArm {
 //        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
         shoulderPID.update(getArmAngle());
         shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() *Math.PI/180)*0.12);
-        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
+        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)) + armSafetyOffset);
     }
     
     
@@ -306,6 +324,7 @@ public class SpampleArm {
     public double getElbowRotation(){
         return elbowServo.getServoPos() - elbowAngleOffset;
     }
+
 
     // TODO Functions:
     /*
@@ -569,6 +588,7 @@ public class SpampleArm {
                 rotateShoulderTo(30);
             case test:
                 break;
+
         }
     }
     public void updateTeleopState(){
@@ -578,7 +598,7 @@ public class SpampleArm {
 
                 rotateTwistTo(0);
                 rotateElbowTo(0);
-                extendTo(0);
+                extendTo(2);
                 rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -598,7 +618,7 @@ public class SpampleArm {
             case idle:
                 rotateTwistTo(0);
                 rotateElbowTo(0);
-                extendTo(1);
+                extendTo(2);
                 rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;

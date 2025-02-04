@@ -25,11 +25,11 @@ public class Climber {
 
     private final double maxExtension = 12.75;
 
-    public static double leftLatchZero = 104;
-    public static double rightLatchZero = 271;
+    public static double leftLatchZero = 63;
+    public static double rightLatchZero = 291;
 
-    public static double latchReleaseMovementRight = 22;
-    public static double latchReleaseMovementLeft = 27;
+    public static double latchReleaseMovementRight = 52;
+    public static double latchReleaseMovementLeft = 57;
 
     private DcMotor leftClimberMotor;
     private DcMotor rightClimberMotor;
@@ -81,7 +81,7 @@ public class Climber {
 
 
         leftLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchL"), 295, 0, 295);
-
+        rightLatch = new ServoPlus(hardwareMap.get(Servo.class, "latchR"), 295,0,295);
 
 //        releaseLatches();
         lockLatches();

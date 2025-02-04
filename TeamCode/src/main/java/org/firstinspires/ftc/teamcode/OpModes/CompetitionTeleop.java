@@ -163,6 +163,35 @@ public class CompetitionTeleop extends BaseTeleOp {
                 robot.setTurnPIntake(false);
 
             }
+
+            //Climber operation
+            if (gamepad1.left_bumper && !climberSwitchPrev){
+                if (!robot.climber.getIfInitilized()){
+                    robot.climber.initClimber();
+                }
+                if (climberActive){
+                    climberActive = false;
+                }else{
+                    climberActive = true;
+                }
+            }
+
+            climberSwitchPrev = gamepad1.left_bumper;
+
+            if (climberActive){
+                robot.climber.releaseLatches();
+
+                if (gamepad1.left_trigger > 0.6){
+                    robot.climber.extendTo(12.5);
+                }else{
+                    robot.climber.extendTo(0);
+                }
+            }else{
+                robot.climber.lockLatches();
+                robot.climber.extendTo(0);
+            }
+
+
             if (!grabbingSample || !lookingForSample) {
 
                 if (gamepad2.dpad_down && !grabbingSample) {
