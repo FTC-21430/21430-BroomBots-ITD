@@ -51,7 +51,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        initialize(true);
+        initialize(true, false);
 
         sampleCamera = new SampleCamera(hardwareMap, telemetry);
 
@@ -179,7 +179,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
-                robot.updateRobot(false, false);
+                robot.updateRobot(false, false, false);
 
             }
 //            else if (grabbingSample) {
@@ -232,7 +232,7 @@ public class SampleDetectionTesting extends BaseTeleOp {
 
             robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
-            robot.updateRobot(false, false);
+            robot.updateRobot(false, false, false);
 
         }
         }

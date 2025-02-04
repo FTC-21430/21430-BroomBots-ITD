@@ -75,7 +75,7 @@ public class Robot {
 
   public Climber climber;
 
-  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde, boolean reset) {
+  public void init(HardwareMap hardwareMap, Telemetry telemetry, double robotX, double robotY, double robotAngle, LinearOpMode opMpde, boolean reset, boolean isAuto) {
 
     this.opMode = opMpde;
 
@@ -86,7 +86,7 @@ public class Robot {
     odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap, reset);
 
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
-    spampleArm = new SpampleArm(hardwareMap, runtime, reset);
+    spampleArm = new SpampleArm(hardwareMap, runtime, reset, isAuto);
 
 //    aprilTags = new AprilTagSystem(hardwareMap);
 
@@ -105,7 +105,7 @@ public class Robot {
       pathFollowing.followPath(odometry.getRobotX(), odometry.getRobotY(), odometry.getRobotAngle());
       driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
       
-      spampleArm.updateArm();
+      spampleArm.updateArm(true);
       telemetry.addLine("AutoMovingTO");
       telemetry.addData("X",odometry.getRobotX());
       telemetry.addData("Y", odometry.getRobotY());
@@ -157,7 +157,7 @@ public class Robot {
     }
 
 
-    public void updateRobot(boolean holdPosition, boolean autoSpeedChange){
+    public void updateRobot(boolean holdPosition, boolean autoSpeedChange, boolean isAuto){
 
     }
 

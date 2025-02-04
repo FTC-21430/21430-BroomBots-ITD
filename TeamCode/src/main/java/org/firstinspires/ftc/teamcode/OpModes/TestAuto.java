@@ -21,7 +21,7 @@ public class TestAuto extends BaseAuto{
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize(true);
+        initialize(true, false);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
@@ -46,7 +46,7 @@ public class TestAuto extends BaseAuto{
             if(gamepad1.dpad_up){
                 robot.spampleArm.currentArmState= SpampleArm.armState.highBasket;
             }
-            robot.updateRobot(true, false);
+            robot.updateRobot(true, false, true);
 
             telemetry.addData("X",robot.odometry.getRobotX());
             telemetry.addData("Y", robot.odometry.getRobotY());

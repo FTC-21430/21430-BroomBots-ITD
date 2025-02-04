@@ -6,6 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class DemoTeleOp extends BaseTeleOp {
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize(true);
+        initialize(true, false);
     }
 }

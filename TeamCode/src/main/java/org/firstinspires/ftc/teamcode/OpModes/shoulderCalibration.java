@@ -12,7 +12,7 @@ public class shoulderCalibration extends BaseTeleOp {
 
         @Override
         public void runOpMode() throws InterruptedException {
-            initialize(true);
+            initialize(true, false);
             waitForStart();
             while (opModeIsActive()) {
                 robot.spampleArm.currentArmState = SpampleArm.armState.test;

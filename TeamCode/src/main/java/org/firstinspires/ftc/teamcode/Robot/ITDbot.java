@@ -13,9 +13,9 @@ public class ITDbot extends Robot {
     public static double proportionalConstantAngleDef = 0.02;
     public SpampleArm arm;
  
-    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode,boolean reset){
-        super.init(hardwareMap, telemetry,0, 0, 0, opMode,reset);
-        spampleArm = new SpampleArm(hardwareMap, runtime,reset);
+    public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode,boolean reset, boolean isAuto){
+        super.init(hardwareMap, telemetry,0, 0, 0, opMode,reset, isAuto);
+        spampleArm = new SpampleArm(hardwareMap, runtime,reset, isAuto);
 }
 
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.
@@ -32,8 +32,8 @@ public class ITDbot extends Robot {
             pathFollowing.followPath(odometry.getRobotX(),odometry.getRobotY(),odometry.getRobotAngle());
             driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
 
-
-            spampleArm.updateArm();
+            //TODO, if wanting to use auto move to during teleop, fix the tuning issue between teleop and auto
+            spampleArm.updateArm(true);
 
             telemetry.addData("X",odometry.getRobotX());
             telemetry.addData("Y", odometry.getRobotY());
@@ -46,7 +46,7 @@ public class ITDbot extends Robot {
 
     }
     @Override
-    public void updateRobot(boolean holdPosition, boolean autoSpeedChange){
+    public void updateRobot(boolean holdPosition, boolean autoSpeedChange, boolean isAuto){
         if (autoSpeedChange) {
             if (spampleArm.currentArmState == SpampleArm.armState.idle) {
                 driveTrain.setSpeedMultiplier(1);
@@ -61,14 +61,14 @@ public class ITDbot extends Robot {
             driveTrain.setDrivePower(pathFollowing.getPowerF(), pathFollowing.getPowerS(), anglePID.getPower(), odometry.getRobotAngle());
         }
 
-        spampleArm.updateArm();
+        spampleArm.updateArm(isAuto);
     }
 
     @Override
     public void chill(double seconds, boolean holdPosition){
         double startedTime = runtime.seconds();
         while (runtime.seconds() - startedTime < seconds && opMode.opModeIsActive()){
-                updateRobot(holdPosition, false);
+                updateRobot(holdPosition, false, true);
         }
     }
 

@@ -61,7 +61,7 @@ public class MainTeleOp extends BaseTeleOp {
         final double slowSpeedMultiplier = 0.35;
         final double updateTagsSpeed = 0.15;
 
-        initialize(false);
+        initialize(false , false);
 
         telemetry.setMsTransmissionInterval(10);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
@@ -385,7 +385,7 @@ public class MainTeleOp extends BaseTeleOp {
                 robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
             }
 
-            robot.updateRobot(false, false);
+            robot.updateRobot(false, false,false);
 
             // the old input for the left stick x axis for gamepad 1,
             // updated at the end of the loop so the turning logic works :)

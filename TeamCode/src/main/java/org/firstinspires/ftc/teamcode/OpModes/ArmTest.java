@@ -15,7 +15,7 @@ public class ArmTest extends BaseTeleOp {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize(true);
+        initialize(true,false);
         waitForStart();
         while (opModeIsActive()) {
             robot.spampleArm.currentArmState = SpampleArm.armState.test;
@@ -45,7 +45,7 @@ public class ArmTest extends BaseTeleOp {
             }
 
             if (gamepad1.right_trigger > 0.6){
-                robot.updateRobot(false, false);
+                robot.updateRobot(false, false, false);
             }else{
                 robot.spampleArm.shoulderMotor.setPower(0);
             }

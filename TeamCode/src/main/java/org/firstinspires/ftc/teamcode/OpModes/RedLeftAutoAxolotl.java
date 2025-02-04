@@ -19,7 +19,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
         utlities = new Utlities();
 
-        initialize(true);
+        initialize(true, false);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
@@ -31,7 +31,7 @@ public class RedLeftAutoAxolotl extends BaseAuto {
 
 //        waitForStart();
         while (opModeInInit()){
-            robot.updateRobot(false, false);
+            robot.updateRobot(false, false, false);
             telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
             telemetry.update();
         }

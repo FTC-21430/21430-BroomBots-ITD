@@ -91,7 +91,7 @@ public class CompetitionTeleop extends BaseTeleOp {
     public void runOpMode() throws InterruptedException {
 
         // initializes the robot without resetting the odometry
-        initialize(true);
+        initialize(true, false);
 
         // creates the new classes for the camera and kinematics
         sampleCamera = new SampleCamera(hardwareMap, telemetry);
@@ -315,7 +315,7 @@ public class CompetitionTeleop extends BaseTeleOp {
 
                 robot.driveTrain.setDrivePower(-gamepad1.left_stick_y, gamepad1.left_stick_x, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
-                robot.updateRobot(false, false);
+                robot.updateRobot(false, false, false);
 
             } else if (grabbingSample) {
                 if (!grabbing && !lowering && !aligning && !raising) {
@@ -373,14 +373,14 @@ public class CompetitionTeleop extends BaseTeleOp {
 
                 robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
-                robot.updateRobot(false, false);
+                robot.updateRobot(false, false, false);
 
             }else{
                 robot.anglePID.update(robot.odometry.getRobotAngle());
 
                 robot.driveTrain.setDrivePower(0, 0, robot.anglePID.getPower(), robot.odometry.getRobotAngle());
 
-                robot.updateRobot(false, false);
+                robot.updateRobot(false, false, false);
             }
 
 

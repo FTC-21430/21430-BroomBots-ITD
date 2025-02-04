@@ -16,7 +16,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
 
         utlities = new Utlities();
 
-        initialize(true);
+        initialize(true, true);
 
         robot.driveTrain.setFieldCentricDriving(false);
 
@@ -27,7 +27,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
 
         while (opModeInInit()){
-            robot.updateRobot(false, false);
+            robot.updateRobot(false, false, false);
             telemetry.addData("currentArmState", robot.spampleArm.currentArmState);
             telemetry.update();
 

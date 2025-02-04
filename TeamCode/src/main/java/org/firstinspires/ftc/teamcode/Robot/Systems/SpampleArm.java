@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode.Robot.Systems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
-import org.firstinspires.ftc.teamcode.Robot.Systems.ServoPlus;
-
 
 
 //This class is the code foundations for making the robot's arm move.
@@ -26,10 +23,15 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbow=-38;
-    public static double spicemenGrabExtension= 5.0;
-    public static double spicemenGrabShoulder= 119.3;
-    public static double specimenGrabTwist= 83;
+    public static double spicemenGrabElbowTeleop =-33;
+    public static double spicemenGrabExtensionTeleop = 5.0;
+    public static double spicemenGrabShoulderTeleop = 119;
+    public static double specimenGrabTwistTeleop = 83;
+
+    public static double spicemenGrabElbowAuto =-38;
+    public static double spicemenGrabExtensionAuto = 5.0;
+    public static double spicemenGrabShoulderAuto = 119.3;
+    public static double specimenGrabTwistAuto = 83;
 
     public armState currentArmState = armState.idle;
 
@@ -99,7 +101,7 @@ public class SpampleArm {
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset, boolean isAuto){
 
         
         shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
@@ -122,10 +124,17 @@ public class SpampleArm {
         // you need to set how fast the motor moves before it will move at all.
         linearSlideMotor.setPower(1);
 
-        //Mapping/initializing servos
-        elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
-                264.3,0,264.3 );
 
+
+        //Mapping/initializing servos
+
+        if (isAuto){
+            elbowServo = new ServoPlus(hardwareMap.get(Servo.class,"elbowServo"),
+                    250,0,290 );
+        }else {
+            elbowServo = new ServoPlus(hardwareMap.get(Servo.class, "elbowServo"),
+                    264.3, 0, 264.3);
+        }
         twistServo = new ServoPlus(hardwareMap.get(Servo.class,"twistServo"),
                 260,0,260);
 
@@ -194,8 +203,12 @@ public class SpampleArm {
     /**
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
-    public void updateArm(){
-        updateState();
+    public void updateArm(boolean isAuto){
+        if (isAuto){
+            updateStateAutonomous();
+        }else {
+            updateTeleopState();
+        }
         if (getArmExtension() >= 7){
             shoulderPID.updateConstants(pConstantHigh,iConstant,dConstantHigh);
             shoulderPID.setIntegralMode(false);
@@ -339,7 +352,7 @@ public class SpampleArm {
 
     }
 
-    public void updateState(){
+    public void updateStateAutonomous(){
 
         switch (currentArmState){
             case lowChamber:
@@ -451,14 +464,233 @@ public class SpampleArm {
                 break;
             case grabSpecimen:
 
-                rotateTwistTo(specimenGrabTwist);
+                rotateTwistTo(specimenGrabTwistAuto);
                 if (!elbowAtPosition() || !elbowMoved){
                     if(!elbowMoved) {
-                        rotateElbowTo(spicemenGrabElbow);
+                        rotateElbowTo(spicemenGrabElbowAuto);
                         elbowMoved=true;
                     }else {
-                        extendTo(spicemenGrabExtension);
-                        rotateShoulderTo(spicemenGrabShoulder);
+                        extendTo(spicemenGrabExtensionAuto);
+                        rotateShoulderTo(spicemenGrabShoulderAuto);
+                        elbowMoved=false;
+                        shoulderMoved=false;
+                        extensionMoved=false;
+                    }
+                }
+
+                break;
+            case level1Assent:
+
+                rotateTwistTo(0);
+                rotateElbowTo(60);
+                extendTo(0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case specimenIdle:
+
+                rotateTwistTo(0);
+                if (!shoulderAtPosition() || !shoulderMoved) {
+                    if (!shoulderMoved) {
+                        rotateShoulderTo(90);
+                        shoulderMoved = true;
+                    }
+                }else {
+                    extendTo(1);
+                    rotateElbowTo(1);
+                    elbowMoved=true;
+                    rotateTwistTo(1);
+                    elbowMoved=false;
+                    shoulderMoved=false;
+                    extensionMoved=false;
+                }
+
+                break;
+            case sampleIdle:
+
+                rotateTwistTo(1);
+                if (!elbowAtPosition() || !elbowMoved) {
+                    if (!elbowMoved) {
+                        rotateElbowTo(1);
+                        elbowMoved = true;
+                    }
+                } else if (!extensionAtPosition() || !extensionMoved) {
+                    if (!extensionMoved) {
+                        extendTo(1);
+                        extensionMoved = true;
+                    }
+                } else if (!shoulderAtPosition() || !shoulderMoved) {
+                    if (!shoulderMoved) {
+                        rotateShoulderTo(90);
+                        shoulderMoved = true;
+                    }
+                }
+                else{
+                    elbowMoved=false;
+                    shoulderMoved=false;
+                    extensionMoved=false;
+                }
+                break;
+            case scoreHighChamber:
+
+                // rotateTwistTo(-90);
+                //rotateElbowTo(10);
+                extendTo(14.5);
+                //rotateShoulderTo(86);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case intake:
+                rotateShoulderTo(90);
+                break;
+            case spearHead:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+            case init:
+                setClawPosition(Claw.ClawPosition.closed);
+                extendTo(0);
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                rotateShoulderTo(137.5);
+                break;
+            case pictureTake:
+                extendTo(2);
+                rotateTwistTo(0);
+                rotateElbowTo(20);
+                rotateShoulderTo(30);
+            case test:
+                break;
+        }
+    }
+    public void updateTeleopState(){
+
+        switch (currentArmState){
+            case lowChamber:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case highBasket:
+
+                //setClawPosition(Claw.ClawPosition.grabOutside);
+                rotateTwistTo(90);
+                rotateElbowTo(-125);
+                extendTo(19);
+                rotateShoulderTo(94);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case idle:
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(1);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case fullyIdle:
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(0.0);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case lowBasket:
+                rotateTwistTo(90);
+                rotateElbowTo(-142);
+                extendTo(2);
+                rotateShoulderTo(100);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case dropSample:
+
+                rotateTwistTo(90);
+                rotateElbowTo(-45);
+                extendTo(2);
+                rotateShoulderTo(90);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case grabSample:
+                rotateShoulderTo(30);
+                extendTo(2);
+                rotateElbowTo(65.5);
+                break;
+            case grabSample2:
+                extendTo(2);
+                rotateShoulderTo(16.5);
+                rotateElbowTo(73.5);
+                break;
+
+
+
+//                if (!shoulderAtPosition() || !shoulderMoved){
+//                    if (!shoulderMoved) {
+//                        rotateShoulderTo(22);
+//                        shoulderMoved = true;
+//                    }
+//                } else if (!extensionAtPosition() || !extensionMoved) {
+//                    if (!extensionMoved) {
+//                        extendTo(5);
+//                        extensionMoved = true;
+//                    }
+//                } else {
+//                    shoulderMoved = false;
+//                    elbowMoved = false;
+//                    extensionMoved = false;
+//                }
+
+            case highChamber:
+
+                rotateTwistTo(-90);
+                rotateShoulderTo(90);
+                extendTo(2.25);
+
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case climberReady:
+
+                rotateTwistTo(0);
+                rotateElbowTo(0);
+                extendTo(1);
+                rotateShoulderTo(130);
+                shoulderMoved = false;
+                elbowMoved = false;
+                extensionMoved = false;
+                break;
+            case grabSpecimen:
+
+                rotateTwistTo(specimenGrabTwistTeleop);
+                if (!elbowAtPosition() || !elbowMoved){
+                    if(!elbowMoved) {
+                        rotateElbowTo(spicemenGrabElbowTeleop);
+                        elbowMoved=true;
+                    }else {
+                        extendTo(spicemenGrabExtensionTeleop);
+                        rotateShoulderTo(spicemenGrabShoulderTeleop);
                         elbowMoved=false;
                         shoulderMoved=false;
                         extensionMoved=false;

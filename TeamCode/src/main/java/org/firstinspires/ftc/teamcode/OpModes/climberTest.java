@@ -8,7 +8,7 @@ public class climberTest extends BaseTeleOp {
     private boolean climbingOld = false;
     @Override
     public void runOpMode() throws InterruptedException {
-        initialize(true);
+        initialize(true, false);
         waitForStart();
 
         while (opModeIsActive()) {
