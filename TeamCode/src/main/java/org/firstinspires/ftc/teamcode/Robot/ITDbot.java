@@ -15,7 +15,7 @@ public class ITDbot extends Robot {
  
     public void Init(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime, LinearOpMode opMode,boolean reset, boolean isAuto){
         super.init(hardwareMap, telemetry,0, 0, 0, opMode,reset, isAuto);
-        spampleArm = new SpampleArm(hardwareMap, runtime,reset, isAuto);
+        spampleArm = new SpampleArm(hardwareMap, runtime,reset, isAuto,telemetry);
 }
 
     // overrides the autoMoveTo method in Robot.java to add in more year specific things.

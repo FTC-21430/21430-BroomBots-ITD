@@ -86,7 +86,7 @@ public class Robot {
     odometry = new OdometryOTOS(robotX, robotY, robotAngle, telemetry, hardwareMap, reset);
 
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
-    spampleArm = new SpampleArm(hardwareMap, runtime, reset, isAuto);
+    spampleArm = new SpampleArm(hardwareMap, runtime, reset, isAuto,telemetry);
 
 //    aprilTags = new AprilTagSystem(hardwareMap);
 

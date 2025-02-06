@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Resources.PIDController;
 
 
@@ -101,12 +104,13 @@ public class SpampleArm {
 
 
     private double shoulderTimer = 0.0;
+    private Telemetry telemetry = null;
     
     /**
      * Arm constructor
      * @param hardwareMap Robot hardware map
      */
-    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset, boolean isAuto){
+    public SpampleArm (HardwareMap hardwareMap, ElapsedTime runtime, boolean reset, boolean isAuto, Telemetry telemetry){
 
         
         shoulderPID = new PIDController(pConstant, iConstant,dConstant, new ElapsedTime());
@@ -150,6 +154,7 @@ public class SpampleArm {
         shoulderAngleOffset = getArmAngle();
         
         this.runtime = runtime;
+        this.telemetry = telemetry;
 
     }
 
@@ -210,37 +215,44 @@ public class SpampleArm {
      * because the shoulder could be moving between setter calls of the linear slide, we have to update is constantly to correct.
      */
     public void updateArm(boolean isAuto){
-        int armSafetyOffset = 0;
-        if (currentArmState != armState.init && currentArmState != armState.test){
-            // ensures the arm is within 5 degrees to vertical.
-            if (armLimitSwitch.getState() && getArmAngle() > 90 - 5 && getArmAngle() < 90 + 5){
-                linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }else if(armLimitSwitch.getState()){
-                armSafetyOffset = 100;
-            }
-        }
+//        int armSafetyOffset = 0;
+        // broke the robot last time we checked :( 2/5/25 - Tobin
+//        if (currentArmState != armState.init && currentArmState != armState.test){
+//            // ensures the arm is within 5 degrees to vertical.
+//            if (armLimitSwitch.getState() && getArmAngle() > 90 - 5 && getArmAngle() < 90 + 5){
+//                linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            }else if(armLimitSwitch.getState()){
+//                armSafetyOffset = 100;
+//            }
+//        }
 
 
-        if (isAuto){
-            updateStateAutonomous();
+        if (getArmAngle() < 0 || getArmAngle() > 180){
+            RobotLog.e("ARM POTENTIOMETER IS LIKELY BROKEN: CHECK WIRING, WILL NOT UPDATE ARM");
+            telemetry.addLine("ARM POTENTIOMETER IS LIKELY BROKEN: CHECK WIRING, WILL NOT UPDATE ARM");
+
         }else {
-            updateTeleopState();
-        }
-        if (getArmExtension() >= 7){
-            shoulderPID.updateConstants(pConstantHigh,iConstant,dConstantHigh);
-            shoulderPID.setIntegralMode(false);
-        }else if(currentArmState == armState.grabSample2){
-            shoulderPID.updateConstants(pConstant, iConstant, dConstantGrab);
-        }else{
-            shoulderPID.updateConstants(pConstant,iConstant,dConstant);
-            shoulderPID.setIntegralMode(true);
-        }
+            if (isAuto) {
+                updateStateAutonomous();
+            } else {
+                updateTeleopState();
+            }
+            if (getArmExtension() >= 7) {
+                shoulderPID.updateConstants(pConstantHigh, iConstant, dConstantHigh);
+                shoulderPID.setIntegralMode(false);
+            } else if (currentArmState == armState.grabSample2) {
+                shoulderPID.updateConstants(pConstant, iConstant, dConstantGrab);
+            } else {
+                shoulderPID.updateConstants(pConstant, iConstant, dConstant);
+                shoulderPID.setIntegralMode(true);
+            }
 
 //        shoulderPID.updateConstants(pConstant, iConstant, dConstant);
-        shoulderPID.update(getArmAngle());
-        shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() *Math.PI/180)*0.12);
-        linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)) + armSafetyOffset);
+            shoulderPID.update(getArmAngle());
+            shoulderMotor.setPower(shoulderPID.getPower() + Math.cos(getArmAngle() * Math.PI / 180) * 0.12);
+            linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
+        }
     }
     
     
