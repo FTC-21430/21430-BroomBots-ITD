@@ -43,7 +43,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.currentArmState = SpampleArm.armState.test;
         robot.spampleArm.rotateTwistTo(-90);
         robot.spampleArm.rotateElbowTo(60);
-        robot.autoMoveTo(49, -48, 0,2,1);
+        robot.autoMoveTo(49.7, -48, 0,2,1);
 
         robot.spampleArm.rotateShoulderTo(30);
         robot.spampleArm.extendTo(2);
@@ -56,7 +56,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.chill(0.3,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.dropSample;
-        robot.autoMoveTo(59.3, -47.2,0,2,1);
+        robot.autoMoveTo(59.5, -47.2,0,2,1);
         robot.chill(0.4,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.test;
         robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
@@ -81,7 +81,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
         robot.chill(0.5,true);
         robot.setRobotSpeed(Robot.Speed.FAST);
-        robot.autoMoveTo(37, -48.5, 0,2,0.3);
+        robot.autoMoveTo(37, -48, 0,2,0.3);
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
         robot.chill(0.5,true);
         robot.autoMoveTo(37,-61.8,0,2,0.3);
@@ -103,7 +103,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.setRobotSpeed(Robot.Speed.FAST);
 
 
-        robot.autoMoveTo(37, -48.5, 0,2,0.3);
+        robot.autoMoveTo(37, -48, 0,2,0.3);
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
         robot.chill(0.6,true);
         robot.autoMoveTo(37,-61.8,0,2,0.3);

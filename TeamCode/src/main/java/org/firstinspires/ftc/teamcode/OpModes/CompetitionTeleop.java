@@ -136,108 +136,115 @@ public class CompetitionTeleop extends BaseTeleOp {
 
             // Arm control
 
-            if (manualMode){
-                if (gamepad2.right_bumper) {
+            if (robot.spampleArm.currentArmState != SpampleArm.armState.calibrating) {
+                if (manualMode) {
+                    if (gamepad2.right_bumper) {
 
-                    robot.spampleArm.saveShoulderTime();
-                    robot.spampleArm.currentArmState = SpampleArm.armState.grabSample;
+                        robot.spampleArm.saveShoulderTime();
+                        robot.spampleArm.currentArmState = SpampleArm.armState.grabSample;
+                    }
+                    if (gamepad2.right_trigger > 0.4) {
+
+                        robot.spampleArm.currentArmState = SpampleArm.armState.grabSample2;
+                    }
+                } else if (gamepad2.right_bumper) {
+                    grabbingSample = false;
+                    lookingForSample = false;
+                    sampleCamera.stopDetection();
+                    robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
+                    if (lookingForSample || grabbingSample) {
+                        robot.anglePID.setTarget(startingAngle);
+                    }
+                    extension = 2;
+                    target_r_rot = 0;
+                    shoulder_rot = 30;
+                    twist = 0;
+                    elbow = 60;
+
+                    robot.setTurnPIntake(false);
+
                 }
-                if (gamepad2.right_trigger > 0.4) {
 
-                    robot.spampleArm.currentArmState = SpampleArm.armState.grabSample2;
+                //Climber operation
+                if (gamepad1.left_bumper && !climberSwitchPrev) {
+                    if (!robot.climber.getIfInitilized()) {
+                        robot.climber.initClimber();
+                    }
+                    if (climberActive) {
+                        climberActive = false;
+                    } else {
+                        climberActive = true;
+                    }
                 }
-            }else if (gamepad2.right_bumper) {
-                grabbingSample = false;
-                lookingForSample = false;
-                sampleCamera.stopDetection();
-                robot.spampleArm.currentArmState = SpampleArm.armState.pictureTake;
-                if(lookingForSample || grabbingSample){
-                    robot.anglePID.setTarget(startingAngle);
-                }
-                extension = 2;
-                target_r_rot = 0;
-                shoulder_rot = 30;
-                twist = 0;
-                elbow = 60;
 
-                robot.setTurnPIntake(false);
+                climberSwitchPrev = gamepad1.left_bumper;
 
-            }
+                if (climberActive) {
+                    robot.climber.releaseLatches();
 
-            //Climber operation
-            if (gamepad1.left_bumper && !climberSwitchPrev){
-                if (!robot.climber.getIfInitilized()){
-                    robot.climber.initClimber();
-                }
-                if (climberActive){
-                    climberActive = false;
-                }else{
-                    climberActive = true;
-                }
-            }
-
-            climberSwitchPrev = gamepad1.left_bumper;
-
-            if (climberActive){
-                robot.climber.releaseLatches();
-
-                if (gamepad1.left_trigger > 0.6){
-                    robot.climber.extendTo(12.5);
-                }else{
+                    if (gamepad1.left_trigger > 0.6) {
+                        robot.climber.extendTo(12.5);
+                    } else {
+                        robot.climber.extendTo(0);
+                    }
+                } else {
+                    robot.climber.lockLatches();
                     robot.climber.extendTo(0);
                 }
-            }else{
-                robot.climber.lockLatches();
-                robot.climber.extendTo(0);
-            }
 
 
-            if (!grabbingSample || !lookingForSample) {
+                if (!grabbingSample || !lookingForSample) {
 
-                if (gamepad2.dpad_down && !grabbingSample) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-                    robot.setTurnPIntake(false);
-                }
-                if (gamepad2.dpad_up) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
-                }
-                if (gamepad2.triangle && !gp2tri) {
+                    if (gamepad2.dpad_down && !grabbingSample) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+                        robot.setTurnPIntake(false);
+                    }
+                    if (gamepad2.dpad_up) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.highBasket;
+                    }
+                    if (gamepad2.triangle && !gp2tri) {
+                        if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
+                        } else {
+                            robot.spampleArm.rotateElbowTo(88.5);
+                        }
+                        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+                    }
                     if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber) {
-                    } else {
-                        robot.spampleArm.rotateElbowTo(88.5);
+                        if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
+                            robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
+                        } else if (robot.spampleArm.getElbowRotation() > 94) {
+                            robot.spampleArm.rotateElbowTo(94);
+                        } else if (robot.spampleArm.getElbowRotation() < 84) {
+                            robot.spampleArm.rotateElbowTo(84);
+                        }
                     }
-                    robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
-                }
-                if (robot.spampleArm.currentArmState == SpampleArm.armState.highChamber){
-                    if (robot.spampleArm.getElbowRotation() <= 94 && robot.spampleArm.getElbowRotation() >= 84) {
-                        robot.spampleArm.rotateElbowTo(robot.spampleArm.getElbowRotation() + gamepad2.left_stick_y * robot.getDeltaTime() * -30);
-                    } else if (robot.spampleArm.getElbowRotation() > 94) {
-                        robot.spampleArm.rotateElbowTo(94);
-                    } else if (robot.spampleArm.getElbowRotation() < 84) {
-                        robot.spampleArm.rotateElbowTo(84);
+
+                    if (gamepad2.square) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.lowBasket;
+                    }
+                    if (gamepad2.dpad_left) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
+                    }
+                    if (gamepad2.dpad_right) {
+                        robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
+                    }
+
+                    if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
+                        robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
+                    } else if (robot.spampleArm.getTwist() > 90) {
+                        robot.spampleArm.rotateTwistTo(90);
+                    } else if (robot.spampleArm.getTwist() < -90) {
+                        robot.spampleArm.rotateTwistTo(-90);
+                    }
+
+                    if (robot.spampleArm.currentArmState == SpampleArm.armState.idle) {
+                        if (gamepad1.touchpad || gamepad2.touchpad) {
+                            robot.spampleArm.calibrateExtension();
+                        }
                     }
                 }
 
-                if (gamepad2.square) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.lowBasket;
-                }
-                if (gamepad2.dpad_left) {
-                    robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
-                }
-                if (gamepad2.dpad_right){
-                    robot.spampleArm.currentArmState = SpampleArm.armState.climberReady;
-                }
-
-                if (robot.spampleArm.getTwist() <= 90 && robot.spampleArm.getTwist() >= -90) {
-                    robot.spampleArm.rotateTwistTo(robot.spampleArm.getTwist() + gamepad2.right_stick_x * robot.getDeltaTime() * 180);
-                } else if (robot.spampleArm.getTwist() > 90) {
-                    robot.spampleArm.rotateTwistTo(90);
-                } else if (robot.spampleArm.getTwist() < -90) {
-                    robot.spampleArm.rotateTwistTo(-90);
-                }
             }
-
-
 
             if (robot.spampleArm.currentArmState == SpampleArm.armState.pictureTake && !lookingForSample && !grabbingSample && !manualMode) {
                 // starts the vision detection process in either red, blue or yellow.
@@ -274,7 +281,7 @@ public class CompetitionTeleop extends BaseTeleOp {
                 else if (sampleCamera.didWeFindOne()) {
                     sampleCamera.acceptBuffer();
                     sampleCamera.stopDetection();
-                    telemetry.addData("I found it!: ", sampleCamera.didWeFindOne());
+//                    telemetry.addData("I found it!: ", sampleCamera.didWeFindOne());
 
                     lookingForSample = false;
 
@@ -286,14 +293,14 @@ public class CompetitionTeleop extends BaseTeleOp {
                     foundY = sampleCamera.getSampleY();
                     foundYaw = sampleCamera.getSampleYaw();
 
-                    telemetry.addData("No, I did!: ", sampleCamera.didWeFindOne());
-                    telemetry.addLine("SampleX: " + foundX);
-                    telemetry.addLine("SampleY: " + foundY);
-                    telemetry.addLine("SampleYaw: " + foundYaw);
-                    telemetry.addLine("------------");
-                    telemetry.addLine("camera X: " + sampleCamera.cameraXRobot);
-                    telemetry.addLine("camera Y: " + sampleCamera.cameraYRobot);
-                    telemetry.addLine("camera Z: " + sampleCamera.cameraZRobot);
+//                    telemetry.addData("No, I did!: ", sampleCamera.didWeFindOne());
+//                    telemetry.addLine("SampleX: " + foundX);
+//                    telemetry.addLine("SampleY: " + foundY);
+//                    telemetry.addLine("SampleYaw: " + foundYaw);
+//                    telemetry.addLine("------------");
+//                    telemetry.addLine("camera X: " + sampleCamera.cameraXRobot);
+//                    telemetry.addLine("camera Y: " + sampleCamera.cameraYRobot);
+//                    telemetry.addLine("camera Z: " + sampleCamera.cameraZRobot);
 
 
                     if (kinematics.calculateKinematics(0, 0, foundX, foundY, grabZ, foundYaw, robot.odometry.getRobotAngle())) {
@@ -309,17 +316,17 @@ public class CompetitionTeleop extends BaseTeleOp {
                         grabbingSample = true;
                         startingAngle = robot.odometry.getRobotAngle();
 
-                        telemetry.addLine("------");
-                        telemetry.addLine("target_r_rot: " + kinematics.getRobotAngle());
-                        telemetry.addLine("shoulder rot: " + kinematics.getArmRotation());
-                        telemetry.addLine("elbow: " + kinematics.getElbowRotation());
-                        telemetry.addLine("twisty twist: " + kinematics.getTwist());
-                        telemetry.addLine("extension: " + kinematics.getArmExtension());
+//                        telemetry.addLine("------");
+//                        telemetry.addLine("target_r_rot: " + kinematics.getRobotAngle());
+//                        telemetry.addLine("shoulder rot: " + kinematics.getArmRotation());
+//                        telemetry.addLine("elbow: " + kinematics.getElbowRotation());
+//                        telemetry.addLine("twisty twist: " + kinematics.getTwist());
+//                        telemetry.addLine("extension: " + kinematics.getArmExtension());
 
                     } else {
                         gamepad1.rumble(0.0, 0.5, 600);
                     }
-                    telemetry.update();
+
                 }
                 }
 
@@ -413,6 +420,9 @@ public class CompetitionTeleop extends BaseTeleOp {
             }
 
 
+            telemetry.addData("arm limit switch", robot.spampleArm.getArmLimitSwitchPressed());
+            telemetry.update();
         }
+
     }
 }

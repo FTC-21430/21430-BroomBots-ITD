@@ -27,12 +27,12 @@ public class SpampleArm {
     public boolean shoulderMoved = false;
     public boolean elbowMoved = false;
 
-    public static double spicemenGrabElbowTeleop =-37;
-    public static double spicemenGrabExtensionTeleop = 5.0;
-    public static double spicemenGrabShoulderTeleop = 116;
+    public static double spicemenGrabElbowTeleop =-40;
+    public static double spicemenGrabExtensionTeleop = 4.7;
+    public static double spicemenGrabShoulderTeleop = 119;
     public static double specimenGrabTwistTeleop = 83;
 
-    public static double spicemenGrabElbowAuto =-43.5;
+    public static double spicemenGrabElbowAuto =-46.5;
     public static double spicemenGrabExtensionAuto = 5.0;
     public static double spicemenGrabShoulderAuto = 119.3;
     public static double specimenGrabTwistAuto = 83;
@@ -42,7 +42,7 @@ public class SpampleArm {
     //Arm sensors
     public AnalogInput armPotentiometer = null;
 
-    public DigitalChannel armLimitSwitch = null;
+    private DigitalChannel armLimitSwitch = null;
     
     //Actuators for the arm
 
@@ -99,9 +99,11 @@ public class SpampleArm {
 
     private double dConstantGrab = 0.0025;
 
-    private boolean calibratingExtension = false;
+    private boolean startedCalibratingExtension = false;
+    private double calibrationTimer = 0;
 
-
+    private boolean calibReleasing = false;
+    private boolean calibRetracting = false;
 
     private double shoulderTimer = 0.0;
     private Telemetry telemetry = null;
@@ -178,10 +180,17 @@ public class SpampleArm {
         return linearSlideMotor.getCurrentPosition() / linearSlideTicksPerInch;
     }
 
+    public void calibrateExtension(){
+        startedCalibratingExtension = true;
+        currentArmState = armState.calibrating;
+        calibrationTimer = runtime.seconds();
+    }
+
     /**
      * Controls the shoulder motor
      * @param angle Angle for shoulder in degrees
      */
+
     public void rotateShoulderTo (double angle){
         
         // I tried to do some fancy calibration and stuff but it did not work :(
@@ -254,8 +263,11 @@ public class SpampleArm {
             linearSlideMotor.setTargetPosition((int) ((targetExtension * linearSlideTicksPerInch) + (shoulderMotor.getCurrentPosition() * shoulderRotationToSlide)));
         }
     }
-    
-    
+
+
+    public boolean getArmLimitSwitchPressed(){
+        return armLimitSwitch.getState();
+    }
     /**
      * Controls the linear slide
      * @param inches Distance for extension in inches
@@ -274,6 +286,8 @@ public class SpampleArm {
      * Controls the elbow motor
      * @param angle Angle for elbow in degrees
      */
+
+
 
     public void rotateElbowTo (double angle){
 
@@ -379,7 +393,8 @@ public class SpampleArm {
         init,
         test,
         fullyIdle,
-        pictureTake
+        pictureTake,
+        calibrating
 
     }
 
@@ -600,6 +615,42 @@ public class SpampleArm {
                 rotateShoulderTo(30);
             case test:
                 break;
+            case calibrating:
+                rotateShoulderTo(90);
+                if (startedCalibratingExtension){
+                    startedCalibratingExtension = false;
+                    if (getArmLimitSwitchPressed()){
+                        calibReleasing = true;
+                        linearSlideMotor.setPower(0);
+                    }else {
+                        calibRetracting = true;
+                        linearSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        linearSlideMotor.setPower(-0.55);
+                    }
+                } else{
+                    if (calibReleasing){
+                        if (runtime.seconds() > calibrationTimer + 0.4){
+                            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            linearSlideMotor.setPower(1);
+                            extendTo(2);
+                            currentArmState = armState.idle;
+                        }
+                    } else if(calibRetracting){
+                        if (getArmLimitSwitchPressed()){
+                            linearSlideMotor.setPower(0);
+                            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            linearSlideMotor.setPower(1);
+                            extendTo(2);
+                            currentArmState = armState.idle;
+                        }
+                    }else{
+                        currentArmState = armState.idle;
+                    }
+                }
+
+                break;
 
         }
     }
@@ -819,6 +870,41 @@ public class SpampleArm {
                 rotateElbowTo(20);
                 rotateShoulderTo(30);
             case test:
+                break;
+            case calibrating:
+                if (startedCalibratingExtension){
+                    startedCalibratingExtension = false;
+                    if (getArmLimitSwitchPressed()){
+                        calibReleasing = true;
+                        linearSlideMotor.setPower(0);
+                    }else {
+                        calibRetracting = true;
+                        linearSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        linearSlideMotor.setPower(-0.55);
+                    }
+                    } else{
+                        if (calibReleasing){
+                         if (runtime.seconds() > calibrationTimer + 0.4){
+                            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            linearSlideMotor.setPower(1);
+                            extendTo(2);
+                            currentArmState = armState.idle;
+                         }
+                        } else if(calibRetracting){
+                        if (getArmLimitSwitchPressed()){
+                            linearSlideMotor.setPower(0);
+                            linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            linearSlideMotor.setPower(1);
+                            extendTo(2);
+                            currentArmState = armState.idle;
+                        }
+                    }else{
+                        currentArmState = armState.idle;
+                    }
+                }
+
                 break;
         }
     }

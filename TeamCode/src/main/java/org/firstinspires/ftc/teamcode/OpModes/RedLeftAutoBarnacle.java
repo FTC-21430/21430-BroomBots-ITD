@@ -41,6 +41,10 @@ public class RedLeftAutoBarnacle extends BaseAuto {
         robot.autoMoveTo(-42,-50,-40,2,3);
 
        robot.ScoreSampleInHighBasket();
+       robot.chill(0.4,true);
+       robot.spampleArm.calibrateExtension();
+       robot.chill(0.6,true);
+
 
       robot.GrabRightSample();
 
@@ -57,9 +61,11 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         robot.setRobotSpeed(Robot.Speed.FAST);
 
-        robot.spampleArm.currentArmState = SpampleArm.armState.fullyIdle;
+
+        robot.spampleArm.calibrateExtension();
         robot.chill(0.4, true);
         robot.autoMoveTo(-38,-12, -90, 2, 3);
+
         robot.autoMoveTo(-26,-12, -90, 4, 3);
         robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
         robot.chill(3,false);
