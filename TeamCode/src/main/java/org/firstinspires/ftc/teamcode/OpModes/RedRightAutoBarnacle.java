@@ -34,6 +34,9 @@ public class RedRightAutoBarnacle extends BaseAuto{
         }
         //This is the starting position
         robot.odometry.overridePosition(8,-63,-90);
+        robot.spampleArm.currentArmState = SpampleArm.armState.test;
+        robot.spampleArm.extendTo(2);
+        robot.chill(0.4,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
 
         robot.ScoreSpecimenHighChamber(0);

@@ -34,16 +34,17 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         // Sets starting position
         robot.odometry.overridePosition(-40,-63,-90);
-
         robot.spampleArm.currentArmState = SpampleArm.armState.test;
-        robot.spampleArm.extendTo(1);
-
+        robot.spampleArm.extendTo(2);
         robot.autoMoveTo(-42,-50,-40,2,3);
+        robot.spampleArm.currentArmState = SpampleArm.armState.idle;
+        robot.chill(0.4,true);
+        robot.spampleArm.calibrateExtension();
+        robot.chill(0.4,true);
+
+
 
        robot.ScoreSampleInHighBasket();
-       robot.chill(0.4,true);
-       robot.spampleArm.calibrateExtension();
-       robot.chill(0.6,true);
 
 
       robot.GrabRightSample();
@@ -61,14 +62,12 @@ public class RedLeftAutoBarnacle extends BaseAuto {
 
         robot.setRobotSpeed(Robot.Speed.FAST);
 
-
-        robot.spampleArm.calibrateExtension();
-        robot.chill(0.4, true);
+        robot.spampleArm.currentArmState = SpampleArm.armState.fullyIdle;
         robot.autoMoveTo(-38,-12, -90, 2, 3);
 
-        robot.autoMoveTo(-26,-12, -90, 4, 3);
+        robot.autoMoveTo(-27,-12, -90, 4, 3);
         robot.spampleArm.currentArmState = SpampleArm.armState.level1Assent;
-        robot.chill(3,false);
+        robot.chill(3,true);
     }
 
 

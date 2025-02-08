@@ -19,6 +19,10 @@ public class OdometryOTOS {
   //where the center of the robot is now
   private double robotX, robotY; // in inches
   private double robotAngle; // in degrees
+
+//  private static double startX = 0;
+//  private static double startY = 0;
+//  private static double startYaw = 0;
   
   /**
    * the contructor for this class, used to set some variables
@@ -29,7 +33,7 @@ public class OdometryOTOS {
    */
   public OdometryOTOS(double initX, double initY, double robotAngle, Telemetry telemetry, HardwareMap hardwareMap, boolean reset){
     OTOS = hardwareMap.get(SparkFunOTOS.class, "OTOS");
-    configureOtos();
+    configureOtos(true);
     if (reset){
       robotX = initX;
       robotY = initY;
@@ -38,6 +42,11 @@ public class OdometryOTOS {
       this.robotAngle = robotAngle;
       overridePosition(robotX,robotY,robotAngle);
     }
+//      OTOS.setLinearScalar(1.011);
+//      OTOS.setAngularScalar(0.993);
+//      this.robotAngle = robotAngle;
+//      overridePosition(startX,startY,startYaw);
+//    }
   }
   
   // this does all of the math to recalculate where to robot is.
@@ -65,7 +74,7 @@ public class OdometryOTOS {
   
   public double getRobotY(){return robotY;}
   
-  private void configureOtos() {
+  private void configureOtos(boolean reset) {
     OTOS.setLinearUnit(DistanceUnit.INCH);
     OTOS.setAngularUnit(AngleUnit.DEGREES);
     
@@ -92,14 +101,15 @@ public class OdometryOTOS {
     OTOS.setAngularScalar(1.0);
 
     OTOS.calibrateImu();
-    
-    // Reset the tracking algorithm - this resets the position to the origin,
-    // but can also be used to recover from some rare tracking errors
-    OTOS.resetTracking();
-    
-    SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
-    OTOS.setPosition(currentPosition);
-    
+
+    if (reset) {
+      // Reset the tracking algorithm - this resets the position to the origin,
+      // but can also be used to recover from some rare tracking errors
+      OTOS.resetTracking();
+
+      SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+      OTOS.setPosition(currentPosition);
+    }
     // Get the hardware and firmware version
     SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
     SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();

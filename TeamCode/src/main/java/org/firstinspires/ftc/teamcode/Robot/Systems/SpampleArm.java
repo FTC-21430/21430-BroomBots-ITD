@@ -425,7 +425,7 @@ public class SpampleArm {
             case idle:
                 rotateTwistTo(0);
                 rotateElbowTo(0);
-                extendTo(1);
+                extendTo(2);
                 rotateShoulderTo(90);
                 shoulderMoved = false;
                 elbowMoved = false;

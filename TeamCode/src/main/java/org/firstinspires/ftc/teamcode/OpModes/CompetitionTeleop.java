@@ -85,19 +85,21 @@ public class CompetitionTeleop extends BaseTeleOp {
 
     // for ensuring that climberActive only switches once a push of the button
     boolean climberSwitchPrev = false;
+    private double startingAngleOffset  = 0;
 
     // The main code that runs during init
     @Override
     public void runOpMode() throws InterruptedException {
 
         // initializes the robot without resetting the odometry
-        initialize(true, false);
+        initialize(false, false);
 
         // creates the new classes for the camera and kinematics
         sampleCamera = new SampleCamera(hardwareMap, telemetry);
         kinematics = new InverseKinematics();
 
         waitForStart();
+       
         while(opModeIsActive()) {
 
             // get and update functions

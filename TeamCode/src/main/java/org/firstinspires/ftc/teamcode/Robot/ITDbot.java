@@ -118,7 +118,7 @@ public class ITDbot extends Robot {
         spampleArm.rotateElbowTo(65);
        
         // Goes to the drive position for picking up sample
-        autoMoveTo(-48,-50.5,0,1,0.2);
+        autoMoveTo(-48,-51.3,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
 //        spampleArm.rotateShoulderTo(32);
         chill(0.6,true);
@@ -145,7 +145,7 @@ public class ITDbot extends Robot {
         spampleArm.rotateElbowTo(65);
 
         // Goes to the drive position for picking up sample
-        autoMoveTo(-57.4,-50.5,0,1,0.2);
+        autoMoveTo(-57.4,-51.9,0,1,0.2);
         setRobotSpeed(Robot.Speed.SLOW);
         chill(0.4,true);
 
@@ -179,7 +179,7 @@ public class ITDbot extends Robot {
         // Goes to position for hovering over sample
         spampleArm.currentArmState = SpampleArm.armState.grabSample;
         chill(0.4, true);
-        autoMoveTo(-57,-46.4,30,1,0.2);
+        autoMoveTo(-57,-45.4,30,1,0.2);
         chill(0.4, true);
 
         // Actually grabs the sample

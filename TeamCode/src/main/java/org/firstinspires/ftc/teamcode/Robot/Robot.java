@@ -87,7 +87,7 @@ public class Robot {
 
     pathFollowing = new PathFollowing(P_CONSTANT_FAST, P_CONSTANT_FAST, I_CONSTANT_FAST, I_CONSTANT_FAST, D_CONSTANT_FAST, D_CONSTANT_FAST, runtime);
     spampleArm = new SpampleArm(hardwareMap, runtime, reset, isAuto,telemetry);
-
+    anglePID.setTarget(odometry.getRobotAngle());
 //    aprilTags = new AprilTagSystem(hardwareMap);
 
     climber =  new Climber(hardwareMap,telemetry);
