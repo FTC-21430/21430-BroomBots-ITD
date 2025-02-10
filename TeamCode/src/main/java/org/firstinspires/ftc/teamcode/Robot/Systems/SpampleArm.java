@@ -492,7 +492,7 @@ public class SpampleArm {
 
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
-                extendTo(1);
+                extendTo(1.65);
 
                 shoulderMoved = false;
                 elbowMoved = false;
@@ -748,7 +748,7 @@ public class SpampleArm {
 
                 rotateTwistTo(-90);
                 rotateShoulderTo(90);
-                extendTo(2.25);
+                extendTo(2.4);
 
                 shoulderMoved = false;
                 elbowMoved = false;

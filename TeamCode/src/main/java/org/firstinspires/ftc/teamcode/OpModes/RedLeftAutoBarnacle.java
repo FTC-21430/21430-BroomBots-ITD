@@ -38,9 +38,9 @@ public class RedLeftAutoBarnacle extends BaseAuto {
         robot.spampleArm.extendTo(2);
         robot.autoMoveTo(-42,-50,-40,2,3);
         robot.spampleArm.currentArmState = SpampleArm.armState.idle;
-        robot.chill(0.4,true);
-        robot.spampleArm.calibrateExtension();
-        robot.chill(0.4,true);
+//        robot.chill(0.4,true);
+//        robot.spampleArm.calibrateExtension();
+//        robot.chill(0.4,true);
 
 
 

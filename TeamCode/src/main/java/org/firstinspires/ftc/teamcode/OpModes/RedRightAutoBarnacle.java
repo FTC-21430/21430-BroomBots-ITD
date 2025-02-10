@@ -39,7 +39,20 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.chill(0.4,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
 
-        robot.ScoreSpecimenHighChamber(0);
+
+        robot.setRobotSpeed(Robot.Speed.FAST);
+        robot.spampleArm.rotateElbowTo(79);
+        //goes to drive position for scoring specimen
+        robot.spampleArm.currentArmState = SpampleArm.armState.highChamber;
+        robot.autoMoveTo(0,-52,0,2,0.2);
+        robot.chill(0.5,true);
+        robot.autoMoveTo(0,-34.5,0,2,0.2);
+        robot.chill(0.15,true);
+        robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
+        robot.chill(0.3,true);
+        robot.autoMoveTo(0,-42,0,2,0.2);
+        robot.spampleArm.currentArmState= SpampleArm.armState.idle;
+
 
         robot.autoMoveTo(40, -48, 0,2,1);
         setAutoSpeedSlow();
@@ -59,7 +72,7 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.chill(0.3,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.dropSample;
-        robot.autoMoveTo(59.5, -47.2,0,2,1);
+        robot.autoMoveTo(58.5, -47.2,0,2,1);
         robot.chill(0.4,true);
         robot.spampleArm.currentArmState = SpampleArm.armState.test;
         robot.spampleArm.setClawPosition(Claw.ClawPosition.open);
@@ -92,13 +105,14 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.chill(0.3,true);
         robot.setRobotSpeed(Robot.Speed.FAST);
+
         robot.ScoreSpecimenHighChamber(2);
 
 
-        robot.autoMoveTo(37, -48, 0,2,0.3);
+        robot.autoMoveTo(34, -48, 0,2,0.3);
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
         robot.chill(0.6,true);
-        robot.autoMoveTo(37,-61.8,0,2,0.3);
+        robot.autoMoveTo(34,-61.8,0,2,0.3);
         robot.chill(0.5,true);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.chill(0.3,true);
@@ -106,10 +120,10 @@ public class RedRightAutoBarnacle extends BaseAuto{
         robot.setRobotSpeed(Robot.Speed.FAST);
 
 
-        robot.autoMoveTo(37, -48, 0,2,0.3);
+        robot.autoMoveTo(34, -48, 0,2,0.3);
         robot.spampleArm.currentArmState = SpampleArm.armState.grabSpecimen;
         robot.chill(0.6,true);
-        robot.autoMoveTo(37,-61.8,0,2,0.3);
+        robot.autoMoveTo(34,-61.8,0,2,0.3);
         robot.chill(0.5,true);
         robot.spampleArm.setClawPosition(Claw.ClawPosition.closed);
         robot.chill(0.3,true);
