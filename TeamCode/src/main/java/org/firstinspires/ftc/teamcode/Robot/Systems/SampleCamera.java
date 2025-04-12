@@ -29,7 +29,7 @@ public class SampleCamera {
     //These values are a part of a correction to give us the right position..
     // this is a janky solution so if there is time to do better, please do! - Tobin 1/29/25
     public static double DETECTION_OFFSET_X = -1.7;
-    public static double DETECTION_OFFSET_Y = -2.55;
+    public static double DETECTION_OFFSET_Y = -1.55;
 
     // what we measured from the robot
     private final double Y_LENS_OFFSET_MEASURED = 21.6+ Math.sqrt(3);
