@@ -30,7 +30,18 @@ public class Robot {
 
   public static double pConIntake = 0.05;
   public static double dCon = 0;
-  
+
+  //TODO: tune these values you microscopic speck of dust.
+  public static double P_CONSTANT_FAST = 0.00350;
+  public static double I_CONSTANT_FAST = 0.000001;
+  public static double D_CONSTANT_FAST = 0.00015;
+  public static double SPEED_MULTIPLIER_FAST = 1;
+  public static double P_CONSTANT_SLOW = 0.0;
+  public static double I_CONSTANT_SLOW = 0;
+  public static double D_CONSTANT_SLOW = 0.0;
+  public static double SPEED_MULTIPLIER_SLOW = 1;
+
+
   private double drive;
   private double slide;
   private double turn;
@@ -49,14 +60,7 @@ public class Robot {
   private boolean CurrentAlign = true;
   private boolean DriverOrientationDriveMode = true;
 
-  private static final double P_CONSTANT_FAST = 0.15;
-  private static final double I_CONSTANT_FAST = 0.1;
-  private static final double D_CONSTANT_FAST = 0.02;
-  private static final double SPEED_MULTIPLIER_FAST = 1;
-  private static final double P_CONSTANT_SLOW = 0.5;
-  private static final double I_CONSTANT_SLOW = 1;
-  private static final double D_CONSTANT_SLOW = 0.02;
-  private static final double SPEED_MULTIPLIER_SLOW = 0.5;
+
 
   public double derivativeConstantAngle;
   public double proportionalConstantAngle;
